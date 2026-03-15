@@ -763,7 +763,7 @@ body {
                         <select class="neo-select" id="word-category">
                             <option value="" disabled selected>Pilih Kategori...</option>
                         </select>
-                        <input type="text" class="neo-input" id="word-level" placeholder="Level (1/2/3)">
+                        <input type="number" class="neo-input" id="word-level" placeholder="Level (1/2/3)" min="1" max="10">
                     </div>
                     <button class="neo-btn" onclick="saveVocabulary()">Simpan</button>
                 </div>
@@ -1528,7 +1528,9 @@ async function saveVocabulary() {
   const romaji = document.getElementById('word-romaji').value.trim();
   const lang = document.getElementById('word-lang').value;
   const cat = document.getElementById('word-category').value;
-  const level = document.getElementById('word-level').value.trim() || '1';
+  const levelInput = document.getElementById('word-level').value.trim();
+  const level = parseInt(levelInput) || 1;
+
   if (!word || !trans || !lang || !cat) {
     alert('Isi field yang wajib (kata asal, terjemahan, bahasa, kategori)');
     return;

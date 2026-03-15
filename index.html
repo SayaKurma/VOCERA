@@ -635,20 +635,9 @@
       regUserError: '',
       regPassError: '',
       availableLanguages: [],
-      localThemes: {
-        Inggris: { "Animals": "Hewan", "Fruits": "Buah-buahan" },
-        Jepang: { "動物": "Hewan", "果物": "Buah-buahan" },
-        Spanyol: { "Animales": "Hewan" },
-        Italia: { "Animali": "Hewan" },
-        Esperanto: { "Bestoj": "Hewan" }
-      },
+      availableCategories: [],
       localUI: {}
     };
-
-    for (let lang in moduleConfig) {}
-    ["Inggris","Jepang","Spanyol","Italia","Esperanto"].forEach(l => {
-      if (!state.localUI[l]) state.localUI[l] = {};
-    });
 
     let timerInterval = null;
     let currentModuleColor = '#FFF';
@@ -916,8 +905,121 @@
       }
     }
 
+    async function loadPublicCategories() {
+      const cached = localStorage.getItem('vocera_categories');
+      const cacheTime = localStorage.getItem('vocera_categories_time');
+      const now = Date.now();
+
+      if (cached && cacheTime && (now - parseInt(cacheTime)) < 300000) {
+        try {
+          state.availableCategories = JSON.parse(cached);
+          return;
+        } catch {
+          localStorage.removeItem('vocera_categories');
+        }
+      }
+
+      const Category = Parse.Object.extend("Category");
+      const query = new Parse.Query(Category);
+      query.equalTo("isActive", true);
+      query.equalTo("language", state.lang);
+      query.ascending("order");
+
+      try {
+        const results = await query.find();
+        state.availableCategories = results.map(c => ({
+          name: c.get('name'),
+          displayName: c.get('displayName'),
+          icon: c.get('icon'),
+          order: c.get('order')
+        }));
+
+        localStorage.setItem('vocera_categories', JSON.stringify(state.availableCategories));
+        localStorage.setItem('vocera_categories_time', now.toString());
+
+      } catch (e) {
+        console.error("Gagal load kategori publik", e);
+        state.availableCategories = [];
+      }
+    }
+
+    async function loadPublicUISettings() {
+      const cached = localStorage.getItem('vocera_ui_settings_' + state.lang);
+      const cacheTime = localStorage.getItem('vocera_ui_settings_time');
+      const now = Date.now();
+
+      if (cached && cacheTime && (now - parseInt(cacheTime)) < 300000) {
+        try {
+          state.localUI[state.lang] = JSON.parse(cached);
+          return;
+        } catch {
+          localStorage.removeItem('vocera_ui_settings_' + state.lang);
+        }
+      }
+
+      const UISettings = Parse.Object.extend("LanguageSettings");
+      const query = new Parse.Query(UISettings);
+      query.equalTo("language", state.lang);
+
+      try {
+        const results = await query.find();
+        const uiData = {};
+        results.forEach(item => {
+          uiData[item.get('key')] = {
+            t: item.get('value'),
+            icon: item.get('icon') || ''
+          };
+        });
+
+        const defaults = {
+          study: { t: "Study" }, quiz: { t: "Quiz" }, tf: { t: "True/False" },
+          match: { t: "Match" }, guess: { t: "Guess" }
+        };
+        state.localUI[state.lang] = { ...defaults, ...uiData };
+
+        localStorage.setItem('vocera_ui_settings_' + state.lang, JSON.stringify(state.localUI[state.lang]));
+        localStorage.setItem('vocera_ui_settings_time', now.toString());
+
+      } catch (e) {
+        console.error("Gagal load UI settings", e);
+      }
+    }
+
+    function renderMainMenu() {
+      const ui = state.localUI[state.lang];
+      const menuContainer = document.getElementById('main-menu');
+
+      if (state.availableCategories.length === 0) {
+        menuContainer.innerHTML = `
+        <div style="padding:40px 20px; text-align:center; grid-column: span 2;">
+          <div style="font-size:3rem; margin-bottom:16px;">📭</div>
+          <div style="font-weight:700; margin-bottom:8px;">Belum Ada Konten</div>
+          <div style="color:var(--text-sub); font-size:0.9rem;">
+            Kategori belum tersedia untuk bahasa ini.
+          </div>
+        </div>`;
+        return;
+      }
+
+      menuContainer.innerHTML = `
+        ${renderBentoItem('study', ui.study || {t:"Study"}, indoLabels.study)}
+        ${renderBentoItem('quiz', ui.quiz || {t:"Quiz"}, indoLabels.quiz)}
+        ${renderBentoItem('tf', ui.tf || {t:"True/False"}, indoLabels.tf)}
+        ${renderBentoItem('match', ui.match || {t:"Match"}, indoLabels.match)}
+        ${renderBentoItem('guess', ui.guess || {t:"Guess"}, indoLabels.guess)}
+      `;
+    }
+
     async function init() {
-      document.getElementById('main-menu').innerHTML = '<div style="padding:20px; text-align:center;">Memuat data...</div>';
+      document.getElementById('main-menu').innerHTML = `
+        <div style="padding:40px 20px; text-align:center;">
+          <div style="font-size:3rem; margin-bottom:16px;">⏳</div>
+          <div style="font-weight:700;">Memuat data...</div>
+          <div style="font-size:0.85rem; color:var(--text-sub); margin-top:8px;">
+            Sinkronisasi dengan server
+          </div>
+        </div>`;
+
       const current = Parse.User.current();
       if (current) {
         state.isLoggedIn = true;
@@ -928,21 +1030,14 @@
       }
       loadProgress();
       await loadPublicLanguages();
+      await loadPublicCategories();
+      await loadPublicUISettings();
+
       document.getElementById('lang-indicator').innerText = state.lang;
-      const defaultUI = {
-        study: { t: "Study" }, quiz: { t: "Quiz" }, tf: { t: "True/False" },
-        match: { t: "Match" }, guess: { t: "Guess" }, theme: { t: "Select Theme" }, num: { t: "Select Level" }, back: { t: "Back" }
-      };
-      state.localUI[state.lang] = defaultUI;
-      document.getElementById('main-menu').innerHTML = `
-        ${renderBentoItem('study', defaultUI.study, indoLabels.study)}
-        ${renderBentoItem('quiz', defaultUI.quiz, indoLabels.quiz)}
-        ${renderBentoItem('tf', defaultUI.tf, indoLabels.tf)}
-        ${renderBentoItem('match', defaultUI.match, indoLabels.match)}
-        ${renderBentoItem('guess', defaultUI.guess, indoLabels.guess)}
-      `;
-      document.getElementById('h-theme').innerHTML = getPageTitle(defaultUI.theme);
-      document.getElementById('h-num').innerHTML = getPageTitle(defaultUI.num);
+
+      renderMainMenu();
+      document.getElementById('h-theme').innerHTML = getPageTitle({t: "Pilih Tema"});
+      document.getElementById('h-num').innerHTML = getPageTitle({t: "Pilih Level"});
     }
 
     function openThemes(m, color) {
@@ -953,40 +1048,43 @@
       }
       state.module = m;
       currentModuleColor = color;
-      const themes = state.localThemes[state.lang] || { "Animals": "Hewan" };
-      const cont = document.getElementById('theme-cont');
-      cont.innerHTML = Object.entries(themes).map(([display, sub]) => {
-        const onClickHandler = (state.module === 'study') ? `startStudyAll('${display}')` : `openNumbers('${display}')`;
-        return `
-          <div class="neo-box list-item" onclick="${onClickHandler}" style="background:var(--color-white)">
-            <div class="btn-text">
-              <span class="main-t">${display}</span>
-              <span class="sub-t">${sub}</span>
-            </div>
-            <span style="font-size:1.5rem">📂</span>
-          </div>
-        `;
-      }).join('');
-      document.getElementById('theme-page').classList.add('active');
-    }
 
-    async function loadVocabulary(lang, theme) {
-      const Vocab = Parse.Object.extend("Vocabulary");
-      const query = new Parse.Query(Vocab);
-      query.equalTo("language", lang);
-      query.equalTo("category", theme);
-      const results = await query.find();
-      const grouped = {};
-      for (let item of results) {
-        const level = item.get('level') || "1";
-        if (!grouped[level]) grouped[level] = [];
-        grouped[level].push({
-          id: item.get('word'),
-          t: item.get('translation'),
-          r: item.get('romaji') || ''
-        });
+      if (!state.availableCategories || state.availableCategories.length === 0) {
+        showMsg(false, "Belum ada kategori tersedia");
+        return;
       }
-      return grouped;
+
+      const themes = {};
+      state.availableCategories.forEach(cat => {
+        themes[cat.name] = cat.displayName;
+      });
+
+      const cont = document.getElementById('theme-cont');
+
+      if (Object.keys(themes).length === 0) {
+        cont.innerHTML = `
+          <div style="padding:40px 20px; text-align:center;">
+            <div style="font-size:3rem; margin-bottom:16px;">📭</div>
+            <div style="font-weight:700;">Belum Ada Kategori</div>
+            <div style="color:var(--text-sub); font-size:0.9rem; margin-top:8px;">
+              Hubungi admin untuk menambahkan konten
+            </div>
+          </div>`;
+      } else {
+        cont.innerHTML = Object.entries(themes).map(([display, sub]) => {
+          const onClickHandler = (state.module === 'study') ? `startStudyAll('${display}')` : `openNumbers('${display}')`;
+          return `
+            <div class="neo-box list-item" onclick="${onClickHandler}" style="background:var(--color-white)">
+              <div class="btn-text">
+                <span class="main-t">${display}</span>
+                <span class="sub-t">${sub}</span>
+              </div>
+              <span style="font-size:1.5rem">📂</span>
+            </div>
+          `;
+        }).join('');
+      }
+      document.getElementById('theme-page').classList.add('active');
     }
 
     async function startStudyAll(t) {
@@ -1437,6 +1535,32 @@
         setTimeout(() => closePage('footer-modal'), 1000);
       } catch (e) { showMsg(false, "Gagal mengirim"); }
       btn.innerText = "KIRIM SARAN"; btn.classList.remove('disabled');
+    }
+
+    async function loadVocabulary(lang, theme) {
+      const Vocab = Parse.Object.extend("Vocabulary");
+      const query = new Parse.Query(Vocab);
+      query.equalTo("language", lang);
+      query.equalTo("category", theme);
+      query.equalTo("isActive", true);
+
+      const results = await query.find();
+
+      if (results.length === 0) {
+        return { "1": [] };
+      }
+
+      const grouped = {};
+      for (let item of results) {
+        const level = item.get('level') || "1";
+        if (!grouped[level]) grouped[level] = [];
+        grouped[level].push({
+          id: item.get('word'),
+          t: item.get('translation'),
+          r: item.get('romaji') || ''
+        });
+      }
+      return grouped;
     }
 
     init();

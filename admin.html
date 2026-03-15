@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VOCERA - Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://npmcdn.com/parse@3.5.1/dist/parse.min.js"></script>
+<style>
+:root {
+    --bg-color: #FFFDF2;
+    --text-main: #111111;
+    --text-sub: #555555;
+    --color-1: #FFE66D;
+    --color-2: #4ECDC4;
+    --color-3: #FF6B6B;
+    --color-4: #C792EA;
+    --color-5: #FF9F1C;
+    --color-white: #FFFFFF;
+    --border-thick: 3px solid #111111;
+    --border-thin: 2px solid #111111;
+    --shadow-hard: 4px 4px 0px #111111;
+    --shadow-hard-hover: 6px 6px 0px #111111;
+    --radius-main: 16px;
+    --radius-sm: 12px;
+    --sidebar-width: 280px;
+    --header-height: 70px;
+    --touch-target: 48px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--color-white);
+    border-right: var(--border-thick);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-1) var(--color-white);
+}
+
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: var(--color-white); }
+.sidebar::-webkit-scrollbar-thumb { background: var(--color-1); border: 2px solid #111; border-radius: 3px; }
+
+.sidebar-header {
+    padding: 20px 16px;
+    border-bottom: var(--border-thick);
+    background: var(--color-1);
+    box-shadow: var(--shadow-hard);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.sidebar-header h1 {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.sidebar-header span { color: var(--color-3); }
+
+.sidebar-menu {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.menu-category {
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--text-sub);
+    padding: 10px 8px 4px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+
+.menu-item {
+    padding: 14px 16px;
+    border: 2px solid #111;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--color-white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 2px 2px 0px #111;
+    text-decoration: none;
+    color: var(--text-main);
+    min-height: var(--touch-target);
+    touch-action: manipulation;
+    white-space: nowrap;
+}
+
+.menu-item:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px #111;
+    background: #f9f9f9;
+}
+
+.menu-item:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #111;
+}
+
+.menu-item.active {
+    background: var(--color-2);
+    color: white;
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #111;
+    border-color: #111;
+}
+
+.menu-item i { margin-right: 10px; font-style: normal; font-size: 1.1rem; }
+
+.sidebar-footer {
+    padding: 12px;
+    border-top: var(--border-thick);
+    background: var(--color-white);
+    position: sticky;
+    bottom: 0;
+    flex-shrink: 0;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 24px 16px;
+    min-height: 100vh;
+    transition: margin-left 0.3s;
+    width: 100%;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background: var(--color-white);
+    padding: 16px;
+    border: var(--border-thick);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-hard);
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    gap: 12px;
+}
+
+.admin-title {
+    font-size: 1.4rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.2;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: var(--color-4);
+    border: var(--border-thin);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    color: white;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.neo-box {
+    background: var(--color-white);
+    border: var(--border-thick);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-hard);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.2s;
+}
+
+.neo-box:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #111;
+}
+
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--color-white);
+    border: var(--border-thick);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-hard);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 6px;
+}
+
+.stat-card.c1::before { background: var(--color-1); }
+.stat-card.c2::before { background: var(--color-2); }
+.stat-card.c3::before { background: var(--color-3); }
+.stat-card.c4::before { background: var(--color-4); }
+
+.stat-card h3 { font-size: 2rem; font-weight: 900; margin-bottom: 6px; z-index: 2; line-height: 1.2; }
+.stat-card p { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; opacity: 0.8; z-index: 2; }
+
+.table-responsive {
+    overflow-x: auto;
+    border: var(--border-thick);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-hard);
+    background: var(--color-white);
+    margin-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--color-1);
+    border: 2px solid #111;
+    border-radius: 4px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.admin-table th, .admin-table td {
+    padding: 14px 12px;
+    text-align: left;
+    border-bottom: 2px solid #111;
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.admin-table th {
+    background: var(--color-1);
+    font-weight: 900;
+    text-transform: uppercase;
+    border-right: 2px solid #111;
+    position: sticky;
+    top: 0;
+    font-size: 0.8rem;
+}
+
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table tr:hover { background: #f9f9f9; }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.neo-input, .neo-select, .neo-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    outline: none;
+    background: var(--color-white);
+    border: var(--border-thick);
+    border-radius: var(--radius-sm);
+    box-shadow: 2px 2px 0px #111;
+    font-family: 'Outfit', sans-serif;
+    min-height: var(--touch-target);
+    touch-action: manipulation;
+}
+
+.neo-input:focus, .neo-select:focus, .neo-textarea:focus {
+    background: #f0f8ff;
+    box-shadow: 4px 4px 0px #111;
+}
+
+.neo-textarea { resize: vertical; min-height: 100px; }
+
+.neo-btn {
+    padding: 14px 24px;
+    font-weight: 800;
+    border: var(--border-thick);
+    border-radius: var(--radius-sm);
+    box-shadow: 2px 2px 0px #111;
+    cursor: pointer;
+    background: var(--color-2);
+    color: #111;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: var(--touch-target);
+    touch-action: manipulation;
+    white-space: nowrap;
+}
+
+.neo-btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0px #111; }
+.neo-btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #111; }
+.neo-btn.danger { background: var(--color-3); color: white; }
+.neo-btn.warning { background: var(--color-1); }
+.neo-btn.secondary { background: var(--color-white); }
+
+.section { display: none; animation: fadeIn 0.3s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.mobile-toggle {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1100;
+    background: var(--color-1);
+    border: var(--border-thick);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-hard);
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    touch-action: manipulation;
+}
+
+.mobile-toggle:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #111;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+}
+
+.overlay.active { display: block; }
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border: 2px solid #111;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.badge.success { background: var(--color-2); color: white; }
+.badge.danger { background: var(--color-3); color: white; }
+.badge.warning { background: var(--color-1); }
+
+.action-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.action-btns .neo-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    min-height: 40px;
+}
+
+@media (max-width: 1024px) {
+    .sidebar { 
+        transform: translateX(-100%); 
+        width: 280px;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; padding: 70px 16px 24px; }
+    .mobile-toggle { display: flex; align-items: center; justify-content: center; }
+    .admin-header { 
+        flex-direction: row; 
+        gap: 12px; 
+        top: 60px;
+        padding: 14px;
+    }
+    .admin-title { font-size: 1.2rem; }
+    .user-profile span { display: none; }
+    .bento-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+    :root {
+        --radius-main: 12px;
+        --radius-sm: 10px;
+    }
+    
+    .sidebar { width: 85vw; max-width: 300px; }
+    
+    .main-content { 
+        padding: 65px 12px 20px;
+    }
+    
+    .admin-header {
+        padding: 12px;
+        top: 55px;
+    }
+    
+    .admin-title { 
+        font-size: 1.1rem;
+    }
+    
+    .bento-grid { 
+        grid-template-columns: 1fr; 
+        gap: 12px;
+    }
+    
+    .stat-card {
+        min-height: 100px;
+        padding: 16px;
+    }
+    
+    .stat-card h3 { 
+        font-size: 1.8rem;
+    }
+    
+    .neo-box {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .neo-input, .neo-select, .neo-textarea {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+    }
+    
+    .neo-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+    }
+    
+    .neo-btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .admin-table th, .admin-table td {
+        padding: 12px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .action-btns {
+        flex-direction: column;
+    }
+    
+    .action-btns .neo-btn {
+        width: 100%;
+    }
+    
+    .sidebar-header h1 {
+        font-size: 1.3rem;
+    }    
+    .menu-item {
+        font-size: 0.85rem;
+        padding: 12px 14px;
+    }
+    
+    .avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .stat-card h3 { font-size: 1.5rem; }
+    .admin-title { font-size: 1rem; }
+    .sidebar { width: 90vw; }
+    .menu-category { font-size: 0.65rem; }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .sidebar { height: 100vh; }
+    .menu-category { padding: 6px 8px 2px; }
+    .menu-item { padding: 10px 14px; min-height: 44px; }
+    .main-content { padding: 60px 12px 16px; }
+    .admin-header { margin-bottom: 16px; padding: 10px; }
+    .neo-box { padding: 14px; margin-bottom: 14px; }
+}
+
+@media screen and (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+}
+
+@supports (padding: max(0px)) {
+    .main-content {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+    .mobile-toggle {
+        left: max(12px, env(safe-area-inset-left));
+        top: max(12px, env(safe-area-inset-top));
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle Menu">☰</div>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="admin-wrapper">
+    <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
+        <div class="sidebar-header">
+            <h1>VOCERA<span>.</span>Admin</h1>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-category">Utama</div>
+            <div class="menu-item active" onclick="showSection('dashboard', this)" role="button" tabindex="0">📊 1. Dashboard</div>
+            
+            <div class="menu-category">Konten & Belajar</div>
+            <div class="menu-item" onclick="showSection('users', this)" role="button" tabindex="0">👥 2. Pengguna</div>
+            <div class="menu-item" onclick="showSection('languages', this)" role="button" tabindex="0">🌐 3. Bahasa</div>
+            <div class="menu-item" onclick="showSection('vocabulary', this)" role="button" tabindex="0">📚 4. Kosakata</div>
+            <div class="menu-item" onclick="showSection('question-bank', this)" role="button" tabindex="0">📝 5. Bank Soal</div>
+            <div class="menu-item" onclick="showSection('learning-structure', this)" role="button" tabindex="0">🏗️ 6. Level</div>
+            
+            <div class="menu-category">Konfigurasi Game</div>
+            <div class="menu-item" onclick="showSection('game-modules', this)" role="button" tabindex="0">🎮 7. Modul Game</div>
+            <div class="menu-item" onclick="showSection('ui-settings', this)" role="button" tabindex="0">🎨 8. UI Settings</div>
+            
+            <div class="menu-category">Data & Analitik</div>
+            <div class="menu-item" onclick="showSection('analytics', this)" role="button" tabindex="0">📈 9. Analitik</div>
+            <div class="menu-item" onclick="showSection('leaderboard', this)" role="button" tabindex="0">🏆 10. Leaderboard</div>
+            <div class="menu-item" onclick="showSection('feedback', this)" role="button" tabindex="0">💬 11. Feedback</div>
+            
+            <div class="menu-category">Sistem & Keamanan</div>
+            <div class="menu-item" onclick="showSection('authentication', this)" role="button" tabindex="0">🔐 12. Autentikasi</div>
+            <div class="menu-item" onclick="showSection('security', this)" role="button" tabindex="0">🛡️ 13. Keamanan</div>
+            <div class="menu-item" onclick="showSection('integrations', this)" role="button" tabindex="0">🔌 14. Integrasi</div>
+            <div class="menu-item" onclick="showSection('logs', this)" role="button" tabindex="0">📜 15. Logs</div>
+            <div class="menu-item" onclick="showSection('settings', this)" role="button" tabindex="0">⚙️ 16. Pengaturan</div>
+            <div class="menu-item" onclick="showSection('admin-management', this)" role="button" tabindex="0">👨‍💼 17. Admin</div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="menu-item" style="background:var(--color-3); color:white;" onclick="handleLogout()" role="button" tabindex="0">🚪 Logout</div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="admin-header">
+            <h2 class="admin-title" id="page-title">Dashboard</h2>
+            <div class="user-profile">
+                <span id="admin-username">Super Admin</span>
+                <div class="avatar" aria-hidden="true" id="admin-avatar">A</div>
+            </div>
+        </header>
+
+        <div id="dashboard" class="section active">
+            <div class="bento-grid">
+                <div class="stat-card c1"><h3 id="total-users">0</h3><p>Total Pengguna</p></div>
+                <div class="stat-card c2"><h3 id="feedback-new">0</h3><p>Feedback Baru</p></div>
+                <div class="stat-card c3"><h3 id="total-vocab">0</h3><p>Total Kosakata</p></div>
+                <div class="stat-card c4"><h3 id="total-langs">5</h3><p>Bahasa Aktif</p></div>
+            </div>
+            <div class="neo-box">
+                <h3 style="margin-bottom:16px;">🔥 Feedback Terbaru</h3>
+                <div class="table-responsive">
+                    <table class="admin-table" role="table" id="feedback-table-dash">
+                        <thead><tr><th scope="col">User</th><th scope="col">Pesan</th><th scope="col">Waktu</th><th scope="col">Status</th></tr></thead>
+                        <tbody id="feedback-dash-body">
+                            <tr><td colspan="4">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="users" class="section">
+            <div class="neo-box">
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+                    <input type="text" class="neo-input" placeholder="Cari pengguna..." style="flex:1; min-width:200px; margin:0;" id="search-user">
+                    <button class="neo-btn" onclick="loadUsers()">Refresh</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table" role="table">
+                        <thead><tr><th scope="col">Username</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col">Terdaftar</th><th scope="col">Aksi</th></tr></thead>
+                        <tbody id="users-table-body">
+                            <tr><td colspan="5">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="languages" class="section">
+            <div class="neo-box">
+                <h3>Daftar Bahasa Aktif</h3>
+                <div class="bento-grid" style="margin-top:20px;" id="lang-grid">
+                    <div class="neo-box" style="margin:0; background:var(--color-1);"><h4>🇯🇵 Jepang</h4><p>Status: Aktif</p><button class="neo-btn" style="margin-top:10px; width:100%;" onclick="alert('kelola jepang')">Kelola</button></div>
+                    <div class="neo-box" style="margin:0; background:var(--color-2);"><h4>🇬🇧 Inggris</h4><p>Status: Aktif</p><button class="neo-btn" style="margin-top:10px; width:100%;" onclick="alert('kelola inggris')">Kelola</button></div>
+                    <div class="neo-box" style="margin:0; border-style:dashed; display:flex; align-items:center; justify-content:center; cursor:pointer; min-height:120px;" onclick="alert('Tambah bahasa')"><h4>+ Tambah</h4></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="vocabulary" class="section">
+            <div class="neo-box">
+                <div class="neo-btn-group" style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
+                    <button class="neo-btn" onclick="showAddWordForm()">+ Tambah Kata</button>
+                </div>
+                <div id="add-word-form" style="display:none; margin-bottom:20px; padding:16px; background:var(--color-1); border:var(--border-thick); border-radius:var(--radius-sm);">
+                    <h4>Tambah Kosakata Baru</h4>
+                    <div class="form-grid">
+                        <input type="text" class="neo-input" id="word-id" placeholder="Kata asal (id)">
+                        <input type="text" class="neo-input" id="word-trans" placeholder="Terjemahan">
+                        <input type="text" class="neo-input" id="word-romaji" placeholder="Romaji (opsional)">
+                        <select class="neo-select" id="word-lang">
+                            <option>Inggris</option>
+                            <option>Jepang</option>
+                            <option>Spanyol</option>
+                            <option>Italia</option>
+                            <option>Esperanto</option>
+                        </select>
+                        <input type="text" class="neo-input" id="word-category" placeholder="Kategori (contoh: Animals)">
+                        <input type="text" class="neo-input" id="word-level" placeholder="Level (1/2/3)">
+                    </div>
+                    <button class="neo-btn" onclick="saveVocabulary()">Simpan</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table" role="table">
+                        <thead><tr><th scope="col">ID (Indo)</th><th scope="col">Translasi</th><th scope="col">Romaji</th><th scope="col">Bahasa</th><th scope="col">Kategori</th><th scope="col">Level</th><th scope="col">Aksi</th></tr></thead>
+                        <tbody id="vocab-table-body">
+                            <tr><td colspan="7">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="question-bank" class="section">
+            <div class="neo-box">
+                <h3>Bank Soal Quiz</h3>
+                <div class="form-grid" style="margin-top:20px;">
+                    <input type="text" class="neo-input" placeholder="Pertanyaan">
+                    <input type="text" class="neo-input" placeholder="Jawaban Benar">
+                </div>
+                <div class="form-grid">
+                    <input type="text" class="neo-input" placeholder="Pilihan A">
+                    <input type="text" class="neo-input" placeholder="Pilihan B">
+                </div>
+                <button class="neo-btn" style="width:100%;">Simpan Soal</button>
+            </div>
+        </div>
+
+        <div id="learning-structure" class="section">
+            <div class="neo-box">
+                <h3>Peta Pembelajaran</h3>
+                <p style="margin-bottom:16px; color:var(--text-sub);">Atur urutan level dan bab.</p>
+                <div class="form-grid">
+                    <div>
+                        <label style="font-weight:700; display:block; margin-bottom:8px;">Level</label>
+                        <select class="neo-select"><option>Level 1</option><option>Level 2</option></select>
+                    </div>
+                    <div>
+                        <label style="font-weight:700; display:block; margin-bottom:8px;">Bab</label>
+                        <input type="text" class="neo-input" value="Hiragana Dasar">
+                    </div>
+                </div>
+                <button class="neo-btn" style="width:100%;">Update Struktur</button>
+            </div>
+        </div>
+
+        <div id="game-modules" class="section">
+            <div class="bento-grid">
+                <div class="neo-box" style="background:var(--color-2)"><h3>Quiz Mode</h3><p>Status: AKTIF</p><button class="neo-btn" style="margin-top:16px; background:white; width:100%;">Setting</button></div>
+                <div class="neo-box" style="background:var(--color-3)"><h3>True/False</h3><p>Status: AKTIF</p><button class="neo-btn" style="margin-top:16px; background:white; width:100%;">Setting</button></div>
+                <div class="neo-box" style="background:var(--color-4)"><h3>Matching</h3><p>Status: AKTIF</p><button class="neo-btn" style="margin-top:16px; background:white; width:100%;">Setting</button></div>
+                <div class="neo-box" style="background:var(--color-5)"><h3>Guess</h3><p>Status: AKTIF</p><button class="neo-btn" style="margin-top:16px; background:white; width:100%;">Setting</button></div>
+            </div>
+            <div class="neo-box">
+                <h3>Pengaturan Global</h3>
+                <div class="form-grid" style="margin-top:16px;">
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Timer (detik)</label><input type="number" class="neo-input" value="15"></div>
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Skor Maks</label><input type="number" class="neo-input" value="100"></div>
+                </div>
+                <button class="neo-btn" style="width:100%;">Simpan</button>
+            </div>
+        </div>
+
+        <div id="ui-settings" class="section">
+            <div class="neo-box">
+                <h3>Tampilan Aplikasi</h3>
+                <div class="form-grid" style="margin-top:20px;">
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Warna Utama</label><input type="color" class="neo-input" value="#FFE66D" style="height:50px; padding:4px;"></div>
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Font Size</label><select class="neo-select"><option>Normal</option><option>Besar</option></select></div>
+                </div>
+                <div style="margin-top:16px;">
+                    <label style="display:flex; align-items:center; gap:10px; font-weight:700; min-height:48px;">
+                        <input type="checkbox" checked style="width:20px; height:20px;"> Aktifkan Efek Suara
+                    </label>
+                </div>
+                <button class="neo-btn" style="width:100%; margin-top:20px;">Simpan UI</button>
+            </div>
+        </div>
+
+        <div id="analytics" class="section">
+            <div class="neo-box">
+                <h3>Grafik Pembelajaran</h3>
+                <div style="height:250px; background:#f0f0f0; border:2px solid #111; display:flex; align-items:center; justify-content:center; margin-top:20px; border-radius:12px;">
+                    <span style="color:var(--text-sub); font-weight:700;">[Area Grafik Chart.js]</span>
+                </div>
+                <div class="bento-grid" style="margin-top:20px;">
+                    <div class="neo-box"><h4>Soal Tersulit</h4><p style="color:var(--text-sub);">Kata: "Elephant"</p></div>
+                    <div class="neo-box"><h4>Waktu Rata-rata</h4><p style="color:var(--text-sub);">12 detik/soal</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="leaderboard" class="section">
+            <div class="neo-box">
+                <h3>Peringkat Global</h3>
+                <div class="table-responsive">
+                    <table class="admin-table" role="table">
+                        <thead><tr><th scope="col">Rank</th><th scope="col">User</th><th scope="col">Skor Total</th><th scope="col">Level</th></tr></thead>
+                        <tbody>
+                            <tr><td>🥇 1</td><td>master_jepang</td><td>50,000</td><td>15</td></tr>
+                            <tr><td>🥈 2</td><td>lingo_fan</td><td>45,200</td><td>14</td></tr>
+                            <tr><td>🥉 3</td><td>newbie_1</td><td>30,100</td><td>10</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="feedback" class="section">
+            <div class="neo-box">
+                <h3>Kotak Masuk Saran</h3>
+                <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;" id="feedback-list">
+                    <p>Memuat feedback...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="authentication" class="section">
+            <div class="neo-box">
+                <h3>Pengaturan Login</h3>
+                <div class="form-grid" style="margin-top:20px;">
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Session Timeout (menit)</label><input type="number" class="neo-input" value="60"></div>
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Min. Password</label><input type="number" class="neo-input" value="8"></div>
+                </div>
+                <button class="neo-btn" style="width:100%;">Simpan Kebijakan</button>
+            </div>
+        </div>
+
+        <div id="security" class="section">
+            <div class="neo-box">
+                <h3>Keamanan Sistem</h3>
+                <div style="margin:16px 0;">
+                    <label style="display:flex; align-items:center; gap:10px; font-weight:700; min-height:48px;">
+                        <input type="checkbox" checked style="width:20px; height:20px;"> Aktifkan 2FA untuk Admin
+                    </label>
+                </div>
+                <div style="margin:16px 0;">
+                    <label style="display:flex; align-items:center; gap:10px; font-weight:700; min-height:48px;">
+                        <input type="checkbox" style="width:20px; height:20px;"> Blokir IP Mencurigakan
+                    </label>
+                </div>
+                <button class="neo-btn danger" style="width:100%;">Flush Session Cache</button>
+            </div>
+        </div>
+
+        <div id="integrations" class="section">
+            <div class="neo-box">
+                <h3>API Keys</h3>
+                <div class="form-grid" style="margin-top:16px;">
+                    <input type="text" class="neo-input" value="pk_live_..." readonly style="background:#f5f5f5;">
+                    <button class="neo-btn secondary">Generate</button>
+                </div>
+                <h3 style="margin-top:24px;">Webhooks</h3>
+                <input type="text" class="neo-input" placeholder="URL Webhook Endpoint" style="margin-top:12px;">
+                <button class="neo-btn" style="width:100%; margin-top:16px;">Simpan Webhook</button>
+            </div>
+        </div>
+
+        <div id="logs" class="section">
+            <div class="neo-box">
+                <h3>System Logs</h3>
+                <div class="table-responsive">
+                    <table class="admin-table" role="table">
+                        <thead><tr><th scope="col">Waktu</th><th scope="col">Level</th><th scope="col">Pesan</th></tr></thead>
+                        <tbody>
+                            <tr><td>10:00:01</td><td><span class="badge success">INFO</span></td><td>Backup berhasil</td></tr>
+                            <tr><td>09:45:20</td><td><span class="badge danger">ERROR</span></td><td>Gagal koneksi API</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings" class="section">
+            <div class="neo-box">
+                <h3>Pengaturan Umum</h3>
+                <div class="form-grid" style="margin-top:20px;">
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Nama Aplikasi</label><input type="text" class="neo-input" value="KUBIS"></div>
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Versi</label><input type="text" class="neo-input" value="1.0.0"></div>
+                </div>
+                <div style="margin-top:16px;">
+                    <label style="display:flex; align-items:center; gap:10px; font-weight:700; min-height:48px;">
+                        <input type="checkbox" style="width:20px; height:20px;"> Mode Maintenance
+                    </label>
+                </div>
+                <button class="neo-btn" style="width:100%; margin-top:20px;">Simpan Pengaturan</button>
+            </div>
+        </div>
+
+        <div id="admin-management" class="section">
+            <div class="neo-box">
+                <h3>Manajemen Admin</h3>
+                <div class="table-responsive">
+                    <table class="admin-table" role="table">
+                        <thead><tr><th scope="col">Admin</th><th scope="col">Role</th><th scope="col">Last Login</th><th scope="col">Aksi</th></tr></thead>
+                        <tbody>
+                            <tr><td>Super Admin</td><td>Owner</td><td>Sekarang</td><td>-</td></tr>
+                            <tr><td>Editor 1</td><td>Editor</td><td>1 hari lalu</td><td><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;">Hapus</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="neo-btn" style="width:100%; margin-top:16px;">+ Tambah Admin</button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+Parse.initialize("j2ARdnYDMO2xGHZG9y1fcakwIfdEsGBEZZUjFPif", "OaN4WU4KlVV0iYz108BfeGVmiZbyNc5azZ5EVNDO");
+Parse.serverURL = 'https://parseapi.back4app.com/';
+
+let currentUser = null;
+
+async function checkAdmin() {
+    const user = Parse.User.current();
+    if (!user) {
+        window.location.href = 'index.html';
+        return;
+    }
+    currentUser = user;
+    document.getElementById('admin-username').innerText = user.getUsername();
+    document.getElementById('admin-avatar').innerText = user.getUsername()[0].toUpperCase();
+    loadDashboardStats();
+    loadFeedback();
+    loadUsers();
+    loadVocabulary();
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+    if (window.innerWidth <= 1024) {
+        if (sidebar.classList.contains('open')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+}
+
+function showSection(sectionId, element) {
+    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+    element.classList.add('active');
+    const titleText = element.innerText.split('. ')[1] || element.innerText;
+    document.getElementById('page-title').innerText = titleText;
+    if (window.innerWidth <= 1024) toggleSidebar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.menu-item').forEach(item => {
+    item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            item.click();
+        }
+    });
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('open')) toggleSidebar();
+    }
+});
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        if (window.innerWidth > 1024) {
+            document.body.style.overflow = '';
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+    }, 250);
+});
+
+document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+
+async function loadDashboardStats() {
+    const userQuery = new Parse.Query(Parse.User);
+    const userCount = await userQuery.count();
+    document.getElementById('total-users').innerText = userCount;
+
+    const vocabQuery = new Parse.Query('Vocabulary');
+    const vocabCount = await vocabQuery.count();
+    document.getElementById('total-vocab').innerText = vocabCount;
+
+    const fbQuery = new Parse.Query('Feedback');
+    fbQuery.equalTo('status', 'baru');
+    const fbCount = await fbQuery.count();
+    document.getElementById('feedback-new').innerText = fbCount;
+}
+
+async function loadFeedback() {
+    const Feedback = Parse.Object.extend('Feedback');
+    const query = new Parse.Query(Feedback);
+    query.include('user');
+    query.descending('createdAt');
+    query.limit(5);
+    const results = await query.find();
+    const tbody = document.getElementById('feedback-dash-body');
+    const listDiv = document.getElementById('feedback-list');
+    if (tbody) {
+        if (results.length === 0) tbody.innerHTML = '<tr><td colspan="4">Belum ada feedback</td></tr>';
+        else {
+            tbody.innerHTML = results.map(fb => {
+                const user = fb.get('user') ? fb.get('user').getUsername() : 'Anonymous';
+                const time = fb.get('createdAt') ? new Date(fb.get('createdAt')).toLocaleString() : '-';
+                const status = fb.get('status') || 'baru';
+                const badge = status === 'baru' ? '<span class="badge danger">Baru</span>' : '<span class="badge success">Dibaca</span>';
+                return `<tr><td>${user}</td><td>${fb.get('message')}</td><td>${time}</td><td>${badge}</td></tr>`;
+            }).join('');
+        }
+    }
+    if (listDiv) {
+        if (results.length === 0) listDiv.innerHTML = '<p>Belum ada feedback</p>';
+        else {
+            listDiv.innerHTML = results.map(fb => {
+                const user = fb.get('user') ? fb.get('user').getUsername() : 'Anonymous';
+                return `<div style="border:2px solid #111; padding:16px; border-radius:12px; background:white;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                        <b>${user}</b><span style="font-size:0.8rem; color:var(--text-sub);">${new Date(fb.get('createdAt')).toLocaleString()}</span>
+                    </div>
+                    <p style="margin-bottom:12px;">"${fb.get('message')}"</p>
+                    <div class="neo-btn-group" style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="neo-btn" style="padding:10px 16px; font-size:0.85rem;" onclick="markFeedbackRead('${fb.id}')">Tandai Dibaca</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    }
+}
+
+async function markFeedbackRead(id) {
+    const fb = new Parse.Object('Feedback');
+    fb.id = id;
+    fb.set('status', 'dibaca');
+    await fb.save();
+    loadFeedback();
+}
+
+async function loadUsers() {
+    const query = new Parse.Query(Parse.User);
+    query.descending('createdAt');
+    const users = await query.find();
+    const tbody = document.getElementById('users-table-body');
+    if (users.length === 0) tbody.innerHTML = '<tr><td colspan="5">Tidak ada pengguna</td></tr>';
+    else {
+        tbody.innerHTML = users.map(u => {
+            const created = u.get('createdAt') ? new Date(u.get('createdAt')).toLocaleDateString() : '-';
+            return `<tr>
+                <td>${u.getUsername()}</td>
+                <td>${u.getEmail() || '-'}</td>
+                <td>User</td>
+                <td>${created}</td>
+                <td><div class="action-btns"><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteUser('${u.id}')">Hapus</button></div></td>
+            </tr>`;
+        }).join('');
+    }
+}
+
+async function deleteUser(id) {
+    if (!confirm('Hapus pengguna ini?')) return;
+    const user = new Parse.User();
+    user.id = id;
+    await user.destroy();
+    loadUsers();
+    loadDashboardStats();
+}
+
+async function loadVocabulary() {
+    const Vocab = Parse.Object.extend('Vocabulary');
+    const query = new Parse.Query(Vocab);
+    query.descending('createdAt');
+    const items = await query.find();
+    const tbody = document.getElementById('vocab-table-body');
+    if (items.length === 0) tbody.innerHTML = '<tr><td colspan="7">Belum ada kosakata</td></tr>';
+    else {
+        tbody.innerHTML = items.map(v => {
+            return `<tr>
+                <td>${v.get('word') || '-'}</td>
+                <td>${v.get('translation') || '-'}</td>
+                <td>${v.get('romaji') || '-'}</td>
+                <td>${v.get('language') || '-'}</td>
+                <td>${v.get('category') || '-'}</td>
+                <td>${v.get('level') || '1'}</td>
+                <td><div class="action-btns"><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteVocab('${v.id}')">Hapus</button></div></td>
+            </tr>`;
+        }).join('');
+    }
+}
+
+async function deleteVocab(id) {
+    if (!confirm('Hapus kosakata ini?')) return;
+    const v = new Parse.Object('Vocabulary');
+    v.id = id;
+    await v.destroy();
+    loadVocabulary();
+    loadDashboardStats();
+}
+
+function showAddWordForm() {
+    const form = document.getElementById('add-word-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function saveVocabulary() {
+    const word = document.getElementById('word-id').value.trim();
+    const trans = document.getElementById('word-trans').value.trim();
+    const romaji = document.getElementById('word-romaji').value.trim();
+    const lang = document.getElementById('word-lang').value;
+    const cat = document.getElementById('word-category').value.trim();
+    const level = document.getElementById('word-level').value.trim() || '1';
+    if (!word || !trans || !lang || !cat) {
+        alert('Isi field yang wajib (kata asal, terjemahan, bahasa, kategori)');
+        return;
+    }
+    const Vocab = Parse.Object.extend('Vocabulary');
+    const v = new Vocab();
+    v.set('word', word);
+    v.set('translation', trans);
+    if (romaji) v.set('romaji', romaji);
+    v.set('language', lang);
+    v.set('category', cat);
+    v.set('level', level);
+    await v.save();
+    alert('Tersimpan');
+    document.getElementById('add-word-form').style.display = 'none';
+    document.getElementById('word-id').value = '';
+    document.getElementById('word-trans').value = '';
+    document.getElementById('word-romaji').value = '';
+    document.getElementById('word-category').value = '';
+    document.getElementById('word-level').value = '1';
+    loadVocabulary();
+    loadDashboardStats();
+}
+
+async function handleLogout() {
+    await Parse.User.logOut();
+    window.location.href = 'index.html';
+}
+
+checkAdmin();
+</script>
+</body>
+</html>

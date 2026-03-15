@@ -1542,16 +1542,20 @@ async function saveVocabulary() {
   v.set('category', cat);
   v.set('level', level);
   v.set('isActive', true);
-  await v.save();
-  alert('Tersimpan');
-  document.getElementById('add-word-form').style.display = 'none';
-  document.getElementById('word-id').value = '';
-  document.getElementById('word-trans').value = '';
-  document.getElementById('word-romaji').value = '';
-  document.getElementById('word-category').value = '';
-  document.getElementById('word-level').value = '1';
-  loadVocabulary();
-  loadDashboardStats();
+  try {
+    await v.save();
+    showMsg(true, 'Kosakata berhasil disimpan');
+    document.getElementById('add-word-form').style.display = 'none';
+    document.getElementById('word-id').value = '';
+    document.getElementById('word-trans').value = '';
+    document.getElementById('word-romaji').value = '';
+    document.getElementById('word-category').value = '';
+    document.getElementById('word-level').value = '1';
+    loadVocabulary();
+    loadDashboardStats();
+  } catch (e) {
+    showMsg(false, 'Gagal menyimpan kosakata: ' + e.message);
+  }
 }
 
 async function handleLogout() {

@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOCERA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://npmcdn.com/parse@3.5.1/dist/parse.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #FFFDF2;
+      --text-main: #111111;
+      --text-sub: #555555;
+      --color-1: #FFE66D;
+      --color-2: #4ECDC4;
+      --color-3: #FF6B6B;
+      --color-4: #C792EA;
+      --color-5: #FF9F1C;
+      --color-white: #FFFFFF;
+      --border-thick: 3px solid #111111;
+      --shadow-hard: 4px 4px 0px #111111;
+      --shadow-hard-hover: 6px 6px 0px #111111;
+      --radius-main: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .neo-box {
+      background: var(--color-white);
+      border: var(--border-thick);
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-hard);
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+      cursor: pointer;
+    }
+
+    .neo-box:active {
+      transform: translate(4px, 4px);
+      box-shadow: 0px 0px 0px #111111;
+    }
+
+    .opt-btn.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      background: #aaa !important;
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #111;
+    }
+
+    .romaji-text {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+      font-style: italic;
+      margin-left: 4px;
+      font-weight: 500;
+    }
+
+    .page-title .romaji-text {
+        font-size: 1rem;
+        display: block;
+        margin-top: 4px;
+        margin-left: 0;
+    }
+
+    .big-word .romaji-text {
+      font-size: 1.2rem;
+      display: block;
+      margin-top: 8px;
+    }
+
+    #app {
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 40px 24px 160px;
+      flex: 1;
+      position: relative;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 900;
+      margin: 0;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+    }
+
+    .lang-badge {
+      background: var(--color-1);
+      border: 2px solid #111;
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 2px 2px 0px #111;
+      cursor: pointer;
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .bento-item {
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 140px;
+    }
+
+    .bento-item:nth-child(1) {
+      grid-column: span 2;
+      min-height: 120px;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .bento-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .bento-item:nth-child(1) .bento-icon {
+      margin-bottom: 0;
+      margin-right: 20px;
+      font-size: 3rem;
+    }
+
+    .btn-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .main-t {
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .sub-t {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .page {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-color);
+      padding: 40px 24px 100px;
+      z-index: 100;
+      overflow-y: auto;
+    }
+
+    .page.active {
+      display: block;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header-page {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .back-btn {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-white);
+      font-size: 1.5rem;
+      border: 2px solid #111;
+      border-radius: 12px;
+      box-shadow: 2px 2px 0px #111;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .back-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 0 0 0 #111;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 40px;
+    }
+
+    .list-item {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .num-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .num-btn {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 900;
+      position: relative;
+    }
+
+    .num-btn.locked {
+      opacity: 0.5;
+      filter: grayscale(100%);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .num-btn .lock-icon {
+      font-size: 1.2rem;
+      margin-left: 4px;
+    }
+
+    .big-word {
+      font-size: 3rem;
+      font-weight: 900;
+      text-align: center;
+      margin: 40px 0;
+      color: var(--text-main);
+      background: var(--color-white);
+      padding: 24px;
+      border: var(--border-thick);
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-hard);
+      word-wrap: break-word;
+    }
+
+    .opt-btn {
+      width: 100%;
+      padding: 20px;
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .neo-input {
+      width: 100%;
+      padding: 24px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 24px;
+      outline: none;
+      background: var(--color-white);
+      border: var(--border-thick);
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-hard);
+    }
+
+    .neo-input:focus {
+      background: #f0f8ff;
+    }
+
+    .neo-input.valid {
+      border-color: var(--color-2);
+      box-shadow: 0 0 0 2px var(--color-2);
+    }
+
+    .neo-input.invalid {
+      border-color: var(--color-3);
+      box-shadow: 0 0 0 2px var(--color-3);
+    }
+
+    .neo-textarea {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: 'Outfit', sans-serif;
+      text-align: left;
+      margin-bottom: 24px;
+      outline: none;
+      background: var(--color-white);
+      border: var(--border-thick);
+      border-radius: var(--radius-main);
+      box-shadow: var(--shadow-hard);
+      min-height: 120px;
+      resize: vertical;
+    }
+    .neo-textarea:focus {
+      background: #f0f8ff;
+    }
+
+    .match-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .match-box {
+      padding: 20px 10px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .match-box.selected {
+      background: var(--color-main);
+      color: white;
+      border-style: dashed;
+      box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.5);
+      transform: translate(2px, 2px);
+    }
+
+    .match-box.hidden {
+      visibility: hidden;
+    }
+
+    #game-cont {
+      padding-bottom: 100px;
+    }
+
+    .game-header-info {
+      display: flex;
+      gap: 16px;
+      margin-left: auto;
+    }
+
+    .score-badge, .timer-badge {
+      background: var(--color-white);
+      border: 2px solid #111;
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: 2px 2px 0px #111;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 48px);
+      max-width: 400px;
+      background: var(--text-main);
+      border: 3px solid #111;
+      border-radius: 24px;
+      padding: 16px 24px;
+      box-shadow: var(--shadow-hard);
+      z-index: 200;
+    }
+
+    .footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-btn {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      color: var(--color-white);
+    }
+
+    .footer-btn span {
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .footer-btn:active {
+      transform: scale(0.9);
+    }
+
+    .toast-container {
+      position: fixed;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-main);
+      color: var(--color-white);
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      z-index: 1000;
+      border: 3px solid #111;
+      transition: top 0.4s cubic-bezier(0.68, -0.55, 0.26, 1.55), opacity 0.4s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-hard);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .toast-container.show {
+      top: 30px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast-icon {
+      font-size: 1.5rem;
+    }
+    .guess-lives {
+      text-align: center;
+      margin-bottom: 16px;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--color-3);
+    }
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .password-wrapper input {
+      padding-right: 50px;
+      margin-bottom: 0;
+    }
+    .toggle-pw {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      z-index: 5;
+    }
+    .strength-bar {
+      height: 6px;
+      background: #ddd;
+      border-radius: 3px;
+      margin: -8px 0 16px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--color-3);
+      transition: width 0.3s, background 0.3s;
+    }
+    .password-feedback {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: center;
+      margin-top: -8px;
+      margin-bottom: 8px;
+      min-height: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div id="toast" class="toast-container">
+    <span id="toast-icon" class="toast-icon"></span>
+    <span id="toast-msg"></span>
+  </div>
+
+  <div id="app">
+    <div id="home">
+      <header>
+        <h1>VOCERA<span style="color:var(--color-3)">.</span></h1>
+        <div class="lang-badge" id="lang-indicator" onclick="openFooter('bahasa')"></div>
+      </header>
+      <div class="bento-grid" id="main-menu"></div>
+    </div>
+
+    <div id="theme-page" class="page">
+      <div class="header-page">
+        <button class="back-btn" onclick="closePage('theme-page')">←</button>
+        <h2 class="page-title" id="h-theme"></h2>
+      </div>
+      <div id="theme-cont" class="menu-list"></div>
+    </div>
+
+    <div id="number-page" class="page">
+      <div class="header-page">
+        <button class="back-btn" onclick="closePage('number-page')">←</button>
+        <h2 class="page-title" id="h-num"></h2>
+      </div>
+      <div id="number-cont" class="num-grid"></div>
+    </div>
+
+    <div id="game-page" class="page">
+      <div class="header-page">
+        <button class="back-btn" onclick="closePage('game-page')">←</button>
+        <h2 class="page-title" id="h-game">Game</h2>
+        <div class="game-header-info" id="game-header-info">
+          <div class="score-badge" id="game-score">🏆 0</div>
+          <div class="timer-badge" id="game-timer">⏳ 15s</div>
+        </div>
+      </div>
+      <div id="game-cont"></div>
+    </div>
+
+    <div id="footer-modal" class="page">
+      <div class="header-page">
+        <button class="back-btn" onclick="closePage('footer-modal')">←</button>
+        <h2 class="page-title" id="f-title"></h2>
+      </div>
+      <div id="f-cont" class="menu-list"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-nav">
+      <button class="footer-btn" onclick="openFooter('saran')">
+        <span style="font-size:1.2rem">💬</span>
+        <span>Saran</span>
+      </button>
+      <button class="footer-btn" onclick="openFooter('profil')">
+        <span style="font-size:1.2rem">👤</span>
+        <span>Profil</span>
+      </button>
+      <button class="footer-btn" onclick="openFooter('dev')">
+        <span style="font-size:1.2rem">👨‍💻</span>
+        <span>Dev</span>
+      </button>
+      <button class="footer-btn" onclick="openFooter('share')">
+        <span style="font-size:1.2rem">🔗</span>
+        <span>Share</span>
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    Parse.initialize("j2ARdnYDMO2xGHZG9y1fcakwIfdEsGBEZZUjFPif", "OaN4WU4KlVV0iYz108BfeGVmiZbyNc5azZ5EVNDO");
+    Parse.serverURL = 'https://parseapi.back4app.com/';
+
+    const moduleConfig = {
+      'study': { color: 'var(--color-1)', icon: '📚' },
+      'quiz': { color: 'var(--color-2)', icon: '🎯' },
+      'tf': { color: 'var(--color-3)', icon: '⚖️' },
+      'match': { color: 'var(--color-4)', icon: '🧩' },
+      'guess': { color: 'var(--color-5)', icon: '🤔' }
+    };
+
+    const indoLabels = {
+      study: "Belajar Kosakata",
+      quiz: "Uji Kemampuan",
+      tf: "Benar atau Salah",
+      match: "Pasangkan Kata",
+      guess: "Tebak Kata"
+    };
+
+    const state = {
+      lang: "Inggris",
+      module: "",
+      theme: "",
+      number: "",
+      queue: [],
+      index: 0,
+      score: 0,
+      timeLeft: 15,
+      wrongAttempts: 0,
+      correctCount: 0,
+      wrongCount: 0,
+      matchErrors: {},
+      unlockedLevels: {},
+      isLoggedIn: false,
+      currentUser: null,
+      authMode: 'login',
+      loginError: '',
+      regUserError: '',
+      regPassError: '',
+      localThemes: {
+        Inggris: { "Animals": "Hewan", "Fruits": "Buah-buahan" },
+        Jepang: { "動物": "Hewan", "果物": "Buah-buahan" },
+        Spanyol: { "Animales": "Hewan" },
+        Italia: { "Animali": "Hewan" },
+        Esperanto: { "Bestoj": "Hewan" }
+      },
+      localUI: {}
+    };
+
+    for (let lang in moduleConfig) {}
+    ["Inggris","Jepang","Spanyol","Italia","Esperanto"].forEach(l => {
+      if (!state.localUI[l]) state.localUI[l] = {};
+    });
+
+    let timerInterval = null;
+    let currentModuleColor = '#FFF';
+    let m1 = null;
+
+    function getLangText(data) {
+      if (typeof data === 'string') return data;
+      if (typeof data === 'object' && data !== null) {
+        const t = data.t || '';
+        const r = data.r || '';
+        if (state.lang === 'Jepang' && r) {
+          return `${t} <span class="romaji-text">(${r})</span>`;
+        }
+        return t;
+      }
+      return '';
+    }
+
+    function getPageTitle(data) {
+        if (typeof data === 'string') return data;
+        if (typeof data === 'object' && data !== null) {
+            const t = data.t || '';
+            const r = data.r || '';
+            if (state.lang === 'Jepang' && r) {
+                return `${t}<span class="romaji-text">${r}</span>`;
+            }
+            return t;
+        }
+        return '';
+    }
+
+    const footerConfig = {
+      'profil': {
+        title: "Profil Pengguna",
+        render: () => {
+          if (state.isLoggedIn) {
+            if (state.authMode === 'change_password') {
+              return `
+              <div class="neo-box list-item" style="flex-direction:column; gap:12px;">
+                <span class="main-t" style="margin-bottom:8px;">Ubah Password</span>
+                <div class="password-wrapper">
+                  <input type="password" id="curr-pass" class="neo-input" placeholder="Password Saat Ini" style="padding:12px;">
+                  <span class="toggle-pw" onclick="togglePasswordVisibility('curr-pass')" role="button" tabindex="0" aria-label="Tampilkan password" onkeypress="if(event.key==='Enter')togglePasswordVisibility('curr-pass')">👁️</span>
+                </div>
+                <div class="password-wrapper">
+                  <input type="password" id="new-pass" class="neo-input" placeholder="Password Baru" style="padding:12px;" oninput="validatePasswordStrength(); checkPasswordMatch()">
+                  <span class="toggle-pw" onclick="togglePasswordVisibility('new-pass')" role="button" tabindex="0" aria-label="Tampilkan password" onkeypress="if(event.key==='Enter')togglePasswordVisibility('new-pass')">👁️</span>
+                </div>
+                <div class="strength-bar">
+                  <div id="strength-fill" class="strength-fill"></div>
+                </div>
+                <div class="password-wrapper">
+                  <input type="password" id="confirm-pass" class="neo-input" placeholder="Konfirmasi Password Baru" style="padding:12px;" oninput="checkPasswordMatch()">
+                  <span class="toggle-pw" onclick="togglePasswordVisibility('confirm-pass')" role="button" tabindex="0" aria-label="Tampilkan password" onkeypress="if(event.key==='Enter')togglePasswordVisibility('confirm-pass')">👁️</span>
+                </div>
+                <div id="password-feedback" class="password-feedback"></div>
+                <div class="neo-box opt-btn disabled" style="background:var(--color-2)" onclick="submitChangePassword()" id="change-pw-btn">SIMPAN</div>
+                <div class="neo-box opt-btn" style="background:var(--color-1)" onclick="switchAuthMode('profile_view')">BATAL</div>
+              </div>`;
+            } else {
+              return `
+              <div class="neo-box list-item" style="flex-direction:column; text-align:center;">
+                <span class="main-t">Halo, ${state.currentUser}!</span>
+                <span class="sub-t">Status: Premium Member</span>
+                <div class="neo-box opt-btn" style="background:var(--color-4); margin-top:16px;" onclick="switchAuthMode('change_password')">Ubah Password</div>
+                <div class="neo-box opt-btn" style="background:var(--color-3); margin-top:16px;" onclick="handleLogout()">Logout</div>
+              </div>`;
+            }
+          } else {
+            const isLogin = state.authMode === 'login';
+            
+            const loginErr = state.loginError ? 
+                `<div style="color:var(--color-3); font-size:0.85rem; margin:-8px 0 8px; font-weight:700;">${state.loginError}</div>` : '';
+            const regUserErr = state.regUserError ? 
+                `<div style="color:var(--color-3); font-size:0.85rem; margin:-8px 0 8px; font-weight:700;">${state.regUserError}</div>` : '';
+            const regPassErr = state.regPassError ? 
+                `<div style="color:var(--color-3); font-size:0.85rem; margin:-8px 0 8px; font-weight:700;">${state.regPassError}</div>` : '';
+
+            if (isLogin) {
+              return `
+              <div class="neo-box list-item" style="flex-direction:column; gap:12px;">
+                ${loginErr}
+                <input type="text" id="login-user" class="neo-input" placeholder="Username" style="padding:12px;">
+                <div class="password-wrapper">
+                  <input type="password" id="login-pass" class="neo-input" placeholder="Password" style="padding:12px;">
+                  <span class="toggle-pw" onclick="togglePasswordVisibility('login-pass')" role="button" tabindex="0" aria-label="Tampilkan password" onkeypress="if(event.key==='Enter')togglePasswordVisibility('login-pass')">👁️</span>
+                </div>
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%; font-size:0.85rem; font-weight:600;">
+                  <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                    <input type="checkbox" id="remember-me"> Ingat Saya
+                  </label>
+                  <span style="color:var(--text-sub); cursor:not-allowed; opacity:0.7;">Lupa Password?</span>
+                </div>
+
+                <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="submitLogin()">MASUK</div>
+                
+                <div style="text-align:center; font-size:0.9rem; margin-top:8px;">
+                  Belum Punya Akun? 
+                  <span style="color:var(--color-3); font-weight:800; cursor:pointer;" onclick="switchAuthMode('register')">Daftar</span>
+                </div>
+              </div>`;
+            } else {
+              return `
+              <div class="neo-box list-item" style="flex-direction:column; gap:12px;">
+                ${regUserErr}
+                <input type="text" id="reg-user" class="neo-input" placeholder="Buat Username" style="padding:12px;">
+                ${regPassErr}
+                <div class="password-wrapper">
+                  <input type="password" id="reg-pass" class="neo-input" placeholder="Password" style="padding:12px;" oninput="validateRegisterPasswordStrength(); checkRegisterPasswordMatch()">
+                  <span class="toggle-pw" onclick="togglePasswordVisibility('reg-pass')" role="button" tabindex="0" aria-label="Tampilkan password" onkeypress="if(event.key==='Enter')togglePasswordVisibility('reg-pass')">👁️</span>
+                </div>
+                <div class="strength-bar">
+                  <div id="reg-strength-fill" class="strength-fill"></div>
+                </div>
+                <div class="password-wrapper">
+                  <input type="password" id="reg-confirm" class="neo-input" placeholder="Konfirmasi Password" style="padding:12px;" oninput="checkRegisterPasswordMatch()">
+                  <span class="toggle-pw" onclick="togglePasswordVisibility('reg-confirm')" role="button" tabindex="0" aria-label="Tampilkan password" onkeypress="if(event.key==='Enter')togglePasswordVisibility('reg-confirm')">👁️</span>
+                </div>
+                <div id="reg-password-feedback" class="password-feedback"></div>
+                
+                <div class="neo-box opt-btn disabled" style="background:var(--color-4)" onclick="submitRegister()" id="register-btn">DAFTAR</div>
+                
+                <div style="text-align:center; font-size:0.9rem; margin-top:8px;">
+                  Sudah Punya Akun? 
+                  <span style="color:var(--color-2); font-weight:800; cursor:pointer;" onclick="switchAuthMode('login')">Masuk</span>
+                </div>
+              </div>`;
+            }
+          }
+        }
+      },
+      'bahasa': {
+        title: "Pilih Bahasa",
+        render: () => {
+          return ["Inggris","Jepang","Spanyol","Italia","Esperanto"].map(l => `
+            <div class="neo-box list-item" onclick="setLang('${l}')">
+              <span class="main-t">${l}</span>
+              <span style="font-size:1.2rem">▶</span>
+            </div>
+          `).join('');
+        }
+      },
+      'saran': {
+        title: "Kirim Saran",
+        render: () => {
+          return `
+          <div class="neo-box list-item" style="flex-direction:column; gap:12px; background:var(--color-white)">
+              <span style="font-size:2rem; align-self:center">💬</span>
+              <span class="sub-t" style="align-self:center; text-align:center">Masukan Anda berharga bagi kami</span>
+              <textarea id="saran-input" class="neo-textarea" placeholder="Tuliskan saran atau laporan bug di sini..."></textarea>
+              <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="kirimSaranParse()">
+                  KIRIM SARAN
+              </div>
+          </div>
+          `;
+        }
+      },
+      'dev': {
+        title: "Tentang Developer",
+        render: () => {
+          return `
+            <div class="neo-box list-item" style="background:var(--color-4); flex-direction:column; text-align:center; gap:12px;">
+              <span style="font-size:3rem">👨‍💻</span>
+              <span class="main-t">Vocera Team</span>
+              <span class="sub-t">v6.0 Premium Edition</span>
+              <span class="sub-t" style="margin-top:8px; opacity:0.7">Dibuat dengan ❤️ untuk Pembelajaran</span>
+            </div>
+          `;
+        }
+      },
+      'share': {
+        title: "Bagikan Aplikasi",
+        render: () => {
+          return `
+            <div class="neo-box list-item" style="background:var(--color-5); flex-direction:column; text-align:center; gap:12px;" onclick="handleShare()">
+              <span style="font-size:3rem">🔗</span>
+              <span class="main-t">Bagikan Sekarang</span>
+              <span class="sub-t">Undang teman belajar bersama</span>
+            </div>
+          `;
+        }
+      }
+    };
+
+    function loadProgress() {
+      const saved = localStorage.getItem('lingoflow_unlocked');
+      if (saved) {
+        try { state.unlockedLevels = JSON.parse(saved); } catch { state.unlockedLevels = {}; }
+      } else state.unlockedLevels = {};
+    }
+
+    function saveProgress() {
+      localStorage.setItem('lingoflow_unlocked', JSON.stringify(state.unlockedLevels));
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function updateScoreDisplay() {
+      document.getElementById('game-score').innerText = `🏆 ${Math.round(state.score)}`;
+    }
+
+    function updateTimerDisplay() {
+      document.getElementById('game-timer').innerText = `⏳ ${state.timeLeft}s`;
+    }
+
+    function stopTimer() {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+
+    function startTimer() {
+      if (state.module === 'study') return;
+      stopTimer();
+      state.timeLeft = 15;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        state.timeLeft -= 1;
+        updateTimerDisplay();
+        if (state.timeLeft <= 0) {
+          stopTimer();
+          if (state.module === 'match') return;
+        }
+      }, 1000);
+    }
+
+    function renderBentoItem(mod, main, sub) {
+      const conf = moduleConfig[mod];
+      return `
+        <div class="neo-box bento-item" style="background:${conf.color}" onclick="openThemes('${mod}', '${conf.color}')">
+          <div class="bento-icon">${conf.icon}</div>
+          <div class="btn-text">
+            <span class="main-t">${getLangText(main)}</span>
+            <span class="sub-t">${sub}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    async function init() {
+      const current = Parse.User.current();
+      if (current) {
+        state.isLoggedIn = true;
+        state.currentUser = current.getUsername();
+      } else {
+        state.isLoggedIn = false;
+        state.currentUser = null;
+      }
+      loadProgress();
+      const defaultUI = {
+        study: { t: "Study" }, quiz: { t: "Quiz" }, tf: { t: "True/False" },
+        match: { t: "Match" }, guess: { t: "Guess" }, theme: { t: "Select Theme" }, num: { t: "Select Level" }, back: { t: "Back" }
+      };
+      state.localUI[state.lang] = defaultUI;
+      document.getElementById('lang-indicator').innerText = state.lang;
+      document.getElementById('main-menu').innerHTML = `
+        ${renderBentoItem('study', defaultUI.study, indoLabels.study)}
+        ${renderBentoItem('quiz', defaultUI.quiz, indoLabels.quiz)}
+        ${renderBentoItem('tf', defaultUI.tf, indoLabels.tf)}
+        ${renderBentoItem('match', defaultUI.match, indoLabels.match)}
+        ${renderBentoItem('guess', defaultUI.guess, indoLabels.guess)}
+      `;
+      document.getElementById('h-theme').innerHTML = getPageTitle(defaultUI.theme);
+      document.getElementById('h-num').innerHTML = getPageTitle(defaultUI.num);
+    }
+
+    function openThemes(m, color) {
+      if (!state.isLoggedIn) {
+        showMsg(false, "Silakan login terlebih dahulu!");
+        openFooter('profil');
+        return;
+      }
+      state.module = m;
+      currentModuleColor = color;
+      const themes = state.localThemes[state.lang] || { "Animals": "Hewan" };
+      const cont = document.getElementById('theme-cont');
+      cont.innerHTML = Object.entries(themes).map(([display, sub]) => {
+        const onClickHandler = (state.module === 'study') ? `startStudyAll('${display}')` : `openNumbers('${display}')`;
+        return `
+          <div class="neo-box list-item" onclick="${onClickHandler}" style="background:var(--color-white)">
+            <div class="btn-text">
+              <span class="main-t">${display}</span>
+              <span class="sub-t">${sub}</span>
+            </div>
+            <span style="font-size:1.5rem">📂</span>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('theme-page').classList.add('active');
+    }
+
+    async function loadVocabulary(lang, theme) {
+      const Vocab = Parse.Object.extend("Vocabulary");
+      const query = new Parse.Query(Vocab);
+      query.equalTo("language", lang);
+      query.equalTo("category", theme);
+      const results = await query.find();
+      const grouped = {};
+      for (let item of results) {
+        const level = item.get('level') || "1";
+        if (!grouped[level]) grouped[level] = [];
+        grouped[level].push({
+          id: item.get('word'),
+          t: item.get('translation'),
+          r: item.get('romaji') || ''
+        });
+      }
+      return grouped;
+    }
+
+    async function startStudyAll(t) {
+      state.theme = t;
+      const data = await loadVocabulary(state.lang, t);
+      const allLevels = Object.values(data);
+      const combined = [];
+      allLevels.forEach(levelArr => combined.push(...levelArr));
+      state.queue = shuffle([...combined]);
+      state.index = 0;
+      stopTimer();
+      document.getElementById('game-page').classList.add('active');
+      renderGame();
+    }
+
+    async function openNumbers(t) {
+      state.theme = t;
+      const data = await loadVocabulary(state.lang, t);
+      const unlocked = state.unlockedLevels[state.lang]?.[t]?.[state.module] || [];
+      document.getElementById('number-cont').innerHTML = Object.keys(data).map(n => {
+        const isUnlocked = unlocked.includes(n);
+        const lockIcon = isUnlocked ? '' : '<span class="lock-icon">🔒</span>';
+        const lockedClass = isUnlocked ? '' : 'locked';
+        return `
+          <div class="neo-box num-btn ${lockedClass}" style="background:${currentModuleColor}" onclick="handleLevelClick('${n}')">
+            ${n} ${lockIcon}
+          </div>
+        `;
+      }).join('');
+      document.getElementById('number-page').classList.add('active');
+    }
+
+    function handleLevelClick(levelNumber) {
+      const unlocked = state.unlockedLevels[state.lang]?.[state.theme]?.[state.module] || [];
+      if (!unlocked.includes(levelNumber)) {
+        showMsg(false, "Level ini belum terbuka!");
+        return;
+      }
+      startGame(levelNumber);
+    }
+
+    async function startGame(n) {
+      stopTimer();
+      state.number = n;
+      state.score = 0;
+      state.timeLeft = 15;
+      state.wrongAttempts = 0;
+      state.correctCount = 0;
+      state.wrongCount = 0;
+      state.matchErrors = {};
+      updateScoreDisplay();
+      updateTimerDisplay();
+      const data = await loadVocabulary(state.lang, state.theme);
+      const rawData = data[n] || [];
+      state.index = 0;
+      state.queue = shuffle([...rawData]);
+      document.getElementById('game-page').classList.add('active');
+      renderGame();
+    }
+
+    function openFooter(type) {
+      const config = footerConfig[type];
+      if (!config) return;
+      const ft = document.getElementById('f-title');
+      const fc = document.getElementById('f-cont');
+      ft.innerText = config.title;
+      fc.innerHTML = config.render();
+      document.getElementById('footer-modal').classList.add('active');
+    }
+
+    function closePage(id) {
+      if (id === 'game-page') stopTimer();
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function showEndGame() {
+      stopTimer();
+      const currentLevel = parseInt(state.number);
+      const nextLevel = (currentLevel + 1).toString();
+      if (!state.unlockedLevels[state.lang]) state.unlockedLevels[state.lang] = {};
+      if (!state.unlockedLevels[state.lang][state.theme]) state.unlockedLevels[state.lang][state.theme] = {};
+      if (!state.unlockedLevels[state.lang][state.theme][state.module]) {
+        state.unlockedLevels[state.lang][state.theme][state.module] = [];
+      }
+      if (!state.unlockedLevels[state.lang][state.theme][state.module].includes(nextLevel)) {
+        state.unlockedLevels[state.lang][state.theme][state.module].push(nextLevel);
+        saveProgress();
+      }
+      const finalScore = Math.round(state.score);
+      const cont = document.getElementById('game-cont');
+      cont.innerHTML = `
+        <div style="text-align:center; margin-top:40px;">
+          <div style="font-size:5rem; margin-bottom:20px;">🏆</div>
+          <h2 style="font-size:2rem; font-weight:900; margin-bottom:10px;">Kuis Selesai!</h2>
+          <p style="color:var(--text-sub); margin-bottom:40px;">Kamu telah menyelesaikan semua kata dalam level ini.</p>
+          <h3 style="font-size:2.5rem; font-weight:900; margin-bottom:40px; color:var(--color-3)">Skor Akhir: ${finalScore}</h3>
+          <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="closePage('game-page')">
+            Kembali ke Menu
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGame() {
+      stopTimer();
+      document.getElementById('game-score').style.display = 'none';
+      const headerInfo = document.querySelector('.game-header-info');
+      if (state.module === 'study') headerInfo.style.display = 'none';
+      else headerInfo.style.display = 'flex';
+      const cont = document.getElementById('game-cont');
+      if (state.module !== 'study' && state.index >= state.queue.length) {
+        showEndGame();
+        return;
+      }
+      const data = state.queue;
+      const item = state.module !== 'match' ? data[state.index] : null;
+
+      if (state.module === 'study') {
+        cont.innerHTML = data.map(i => {
+          const romajiHtml = (state.lang === 'Jepang' && i.r) ? `<span class="romaji-text">(${i.r})</span>` : '';
+          return `
+            <div class="neo-box list-item" style="margin-bottom:16px; background:var(--color-white)">
+              <b style="font-size:1.2rem">${i.id} ${romajiHtml}</b>
+              <span style="font-size:1.2rem; color:var(--text-sub)">=</span>
+              <span style="font-size:1.2rem; font-weight:800; color:var(--text-main)">${i.t}</span>
+            </div>
+          `;
+        }).join('');
+      }
+      else if (state.module === 'quiz') {
+        const romajiHint = (state.lang === 'Jepang' && item.r) ? `<span class="romaji-text">${item.r}</span>` : '';
+        startTimer();
+        cont.innerHTML = `
+          <div class="big-word" style="background:${currentModuleColor}">${item.t} ${romajiHint}</div>
+          <div id="quiz-options">
+            ${data.map(o => `
+              <div class="neo-box opt-btn" style="background:${currentModuleColor}" onclick="cekQuiz(this, '${o.id}', '${item.id}')">${o.id}</div>
+            `).join('')}
+          </div>
+        `;
+      }
+      else if (state.module === 'tf') {
+        startTimer();
+        const isCorrect = Math.random() > 0.5;
+        const wrongItem = data.find(x => x.id !== item.id) || item;
+        const displayId = isCorrect ? item.id : wrongItem.id;
+        cont.innerHTML = `
+          <div class="big-word" style="font-size:2rem; background:${currentModuleColor}">
+            "${item.t}"<br><span style="font-size:1rem; opacity:0.7">berarti</span><br>"${displayId}"?
+          </div>
+          <div style="display:flex; gap:16px;">
+            <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="cekTF(${isCorrect}, true)">BENAR</div>
+            <div class="neo-box opt-btn" style="background:var(--color-3)" onclick="cekTF(${isCorrect}, false)">SALAH</div>
+          </div>
+        `;
+      }
+      else if (state.module === 'match') {
+        cont.innerHTML = `<div class="match-container" id="match-grid"></div>`;
+        const d1 = [...data].sort(() => 0.5 - Math.random());
+        const d2 = [...data].sort(() => 0.5 - Math.random());
+        document.getElementById('match-grid').innerHTML = `
+          <div class="match-col">
+            ${d1.map(x => `
+              <div class="neo-box match-box" style="--color-main:var(--color-2)" onclick="handleMatch(this,'id','${x.t}')">
+                ${x.id}
+              </div>
+            `).join('')}
+          </div>
+          <div class="match-col">
+            ${d2.map(x => `
+              <div class="neo-box match-box" style="--color-main:var(--color-4)" onclick="handleMatch(this,'t','${x.t}')">
+                ${x.t}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+      else if (state.module === 'guess') {
+        const romajiHint = (state.lang === 'Jepang' && item.r) ? `<span class="romaji-text">${item.r}</span>` : '';
+        startTimer();
+        const lives = Math.max(0, 3 - state.wrongAttempts);
+        cont.innerHTML = `
+          <div class="big-word" style="background:${currentModuleColor}">${item.t} ${romajiHint}</div>
+          <div class="guess-lives">❤️ Sisa kesempatan: ${lives}</div>
+          <input type="text" class="neo-input" id="guess-input" placeholder="Ketik terjemahannya..." autocomplete="off">
+          <div class="neo-box opt-btn" style="background:var(--text-main); color:white;" id="guess-btn" onclick="cekGuess()">PERIKSA</div>
+        `;
+        document.getElementById('guess-input').focus();
+      }
+    }
+
+    function cekQuiz(btn, userChoice, correctId) {
+      stopTimer();
+      if (userChoice === correctId) {
+        const N = state.queue.length;
+        const S = state.wrongAttempts;
+        const poinPerSoal = (100 / N) * Math.max(0, 1 - (S / (N - 1 || 1)));
+        state.score += poinPerSoal;
+        state.wrongAttempts = 0;
+        showMsg(true, `Tepat Sekali!`);
+        state.index++;
+        setTimeout(renderGame, 800);
+      } else {
+        btn.classList.add('disabled');
+        state.wrongAttempts++;
+        showMsg(false, "Coba lagi");
+      }
+    }
+
+    function cekTF(isCorrect, userChoice) {
+      stopTimer();
+      const totalSoal = state.queue.length;
+      const poinPerSoal = 100 / totalSoal;
+      if ((isCorrect && userChoice) || (!isCorrect && !userChoice)) {
+        state.score += poinPerSoal;
+        showMsg(true, `Tepat Sekali!`);
+        updateScoreDisplay();
+      } else {
+        state.wrongCount++;
+        showMsg(false, "Oops, Salah!");
+      }
+      state.index++;
+      setTimeout(renderGame, 800);
+    }
+
+    function cekGuess() {
+      stopTimer();
+      const inputEl = document.getElementById('guess-input');
+      const btnEl = document.getElementById('guess-btn');
+      const val = inputEl.value.trim();
+      const item = state.queue[state.index];
+      const correctId = item.id;
+      const correctRomaji = (state.lang === 'Jepang' && item.r) ? item.r : null;
+
+      if (val.length < 2) {
+        showMsg(false, "Minimal 2 karakter");
+        inputEl.focus();
+        return;
+      }
+
+      inputEl.disabled = true;
+      btnEl.classList.add('disabled');
+
+      const isIdMatch = val.toLowerCase() === correctId.toLowerCase();
+      const isRomajiMatch = correctRomaji ? val.toLowerCase() === correctRomaji.toLowerCase() : false;
+
+      if (isIdMatch || isRomajiMatch) {
+        const L = 3;
+        const MAX_TIME = 15;
+        const baseScore = 100 / state.queue.length;
+        const S = state.wrongAttempts;
+        const errorFactor = Math.max(0, 1 - (Math.min(S, L) / L));
+        const timeFactor = state.timeLeft / MAX_TIME;
+        const poinPerSoal = baseScore * errorFactor * timeFactor;
+
+        state.score += poinPerSoal;
+        showMsg(true, `Luar Biasa!`);
+        state.wrongAttempts = 0;
+        state.index++;
+        setTimeout(renderGame, 1500);
+      } else {
+        const remaining = 2 - state.wrongAttempts;
+        state.wrongAttempts++;
+
+        if (state.wrongAttempts >= 3) {
+          showMsg(false, `Batas salah. Jawaban: ${correctId}${correctRomaji ? ' / ' + correctRomaji : ''}`);
+          inputEl.disabled = true;
+          btnEl.classList.add('disabled');
+          state.wrongAttempts = 0;
+          state.index++;
+          setTimeout(renderGame, 2000);
+        } else {
+          showMsg(false, `Salah. Sisa kesempatan: ${remaining}`);
+          inputEl.disabled = false;
+          btnEl.classList.remove('disabled');
+          setTimeout(() => inputEl.focus(), 100);
+        }
+      }
+    }
+
+    function handleMatch(el, type, val) {
+      if (!m1) {
+        m1 = { el, type, val };
+        el.classList.add('selected');
+      } else {
+        if (m1.type !== type && m1.val === val) {
+          el.classList.add('selected');
+          const K = state.queue.length;
+          const S = state.matchErrors[val] || 0;
+          const bobot = 100 / K;
+          const faktorPenalti = Math.max(0, 1 - (S / (K - 1 || 1)));
+          const poinAkhir = bobot * faktorPenalti;
+          state.score += poinAkhir;
+          showMsg(true, `Pasangan Benar!`);
+          setTimeout(() => {
+            el.classList.add('hidden');
+            m1.el.classList.add('hidden');
+            m1 = null;
+            const hiddenCount = document.querySelectorAll('.match-box.hidden').length;
+            const totalBoxes = state.queue.length * 2;
+            if (hiddenCount >= totalBoxes) {
+              state.index = state.queue.length;
+              setTimeout(renderGame, 500);
+            }
+          }, 300);
+        } else {
+          state.matchErrors[val] = (state.matchErrors[val] || 0) + 1;
+          el.classList.add('selected');
+          setTimeout(() => {
+            m1.el.classList.remove('selected');
+            el.classList.remove('selected');
+            m1 = null;
+          }, 300);
+        }
+      }
+    }
+
+    function showMsg(isSuccess, text) {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const msg = document.getElementById('toast-msg');
+
+      if (isSuccess) {
+        toast.style.background = "var(--color-2)";
+        toast.style.color = "#111";
+        icon.innerText = "✅";
+      } else {
+        toast.style.background = "var(--color-3)";
+        toast.style.color = "#111";
+        icon.innerText = "❌";
+      }
+      msg.innerText = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    async function handleShare() {
+      const shareData = {
+        title: 'VOCERA',
+        text: 'Ayo belajar bahasa baru dengan Vocera!',
+        url: window.location.href
+      };
+      try {
+        if (navigator.share) { await navigator.share(shareData); showMsg(true, "Terima kasih telah berbagi!"); }
+        else { await navigator.clipboard.writeText(window.location.href); showMsg(true, "Link disalin ke clipboard!"); }
+      } catch (err) { showMsg(false, "Gagal membagikan."); }
+    }
+
+    function setLang(l) {
+      state.lang = l;
+      init();
+      closePage('footer-modal');
+      showMsg(true, "Bahasa diganti ke " + l);
+    }
+
+    function switchAuthMode(mode) {
+      state.authMode = mode;
+      state.loginError = ''; state.regUserError = ''; state.regPassError = '';
+      openFooter('profil');
+    }
+
+    function togglePasswordVisibility(inputId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      input.type = (input.type === "password") ? "text" : "password";
+    }
+
+    function validatePasswordStrength() { return true; }
+    function checkPasswordMatch() {}
+    function validateRegisterPasswordStrength() { return true; }
+    function checkRegisterPasswordMatch() {}
+
+    async function submitLogin() {
+      const userField = document.getElementById('login-user');
+      const passField = document.getElementById('login-pass');
+      const username = userField?.value.trim() || '';
+      const password = passField?.value.trim() || '';
+      state.loginError = '';
+      try {
+        const user = await Parse.User.logIn(username, password);
+        state.isLoggedIn = true; state.currentUser = user.getUsername();
+        showMsg(true, "Login Berhasil!");
+        openFooter('profil');
+        init();
+      } catch (e) {
+        state.loginError = '❌ Username atau Password salah!';
+        openFooter('profil');
+      }
+    }
+
+    async function submitRegister() {
+      const userField = document.getElementById('reg-user');
+      const passField = document.getElementById('reg-pass');
+      const confirmField = document.getElementById('reg-confirm');
+      const username = userField?.value.trim() || '';
+      const password = passField?.value.trim() || '';
+      const confirm = confirmField?.value.trim() || '';
+      state.regUserError = ''; state.regPassError = '';
+
+      if (username.length < 3) { state.regUserError = '❌ Username min 3 karakter!'; openFooter('profil'); return; }
+      if (password.length < 3) { state.regPassError = '❌ Password terlalu pendek'; openFooter('profil'); return; }
+      if (password !== confirm) { state.regPassError = '❌ Konfirmasi tidak cocok!'; openFooter('profil'); return; }
+
+      try {
+        const user = new Parse.User();
+        user.set("username", username);
+        user.set("password", password);
+        await user.signUp();
+        showMsg(true, "Pendaftaran Berhasil! Silakan Masuk.");
+        switchAuthMode('login');
+      } catch (e) {
+        state.regUserError = '❌ Username mungkin sudah digunakan';
+        openFooter('profil');
+      }
+    }
+
+    function submitChangePassword() { showMsg(false, "Fitur ubah password via Parse dikembangkan"); }
+
+    async function handleLogout() {
+      await Parse.User.logOut();
+      state.isLoggedIn = false; state.currentUser = null;
+      showMsg(true, "Berhasil Logout");
+      openFooter('profil');
+      init();
+    }
+
+    async function kirimSaranParse() {
+      const inputEl = document.getElementById('saran-input');
+      const val = inputEl.value.trim();
+      if (val.length < 10) { showMsg(false, "Saran terlalu pendek (Min. 10 karakter)"); inputEl.focus(); return; }
+      const btn = document.querySelector('#f-cont .opt-btn');
+      btn.innerText = "MENGIRIM..."; btn.classList.add('disabled');
+      try {
+        const Feedback = Parse.Object.extend("Feedback");
+        const fb = new Feedback();
+        fb.set("message", val);
+        fb.set("status", "baru");
+        if (Parse.User.current()) fb.set("user", Parse.User.current());
+        await fb.save();
+        inputEl.value = "";
+        showMsg(true, "Terima kasih atas saran Anda!");
+        setTimeout(() => closePage('footer-modal'), 1000);
+      } catch (e) { showMsg(false, "Gagal mengirim"); }
+      btn.innerText = "KIRIM SARAN"; btn.classList.remove('disabled');
+    }
+
+    init();
+  </script>
+</body>
+</html>

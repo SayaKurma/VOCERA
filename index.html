@@ -634,6 +634,7 @@
       loginError: '',
       regUserError: '',
       regPassError: '',
+      availableLanguages: [],
       localThemes: {
         Inggris: { "Animals": "Hewan", "Fruits": "Buah-buahan" },
         Jepang: { "動物": "Hewan", "果物": "Buah-buahan" },
@@ -718,7 +719,7 @@
             }
           } else {
             const isLogin = state.authMode === 'login';
-            
+
             const loginErr = state.loginError ? 
                 `<div style="color:var(--color-3); font-size:0.85rem; margin:-8px 0 8px; font-weight:700;">${state.loginError}</div>` : '';
             const regUserErr = state.regUserError ? 
@@ -783,9 +784,10 @@
       'bahasa': {
         title: "Pilih Bahasa",
         render: () => {
-          return ["Inggris","Jepang","Spanyol","Italia","Esperanto"].map(l => `
-            <div class="neo-box list-item" onclick="setLang('${l}')">
-              <span class="main-t">${l}</span>
+          if (state.availableLanguages.length === 0) return '<div style="padding:20px;">Memuat...</div>';
+          return state.availableLanguages.map(l => `
+            <div class="neo-box list-item" onclick="setLang('${l.name}')" style="background:var(--color-white)">
+              <span class="main-t">${l.icon} ${l.name}</span>
               <span style="font-size:1.2rem">▶</span>
             </div>
           `).join('');
@@ -892,7 +894,30 @@
       `;
     }
 
+    async function loadPublicLanguages() {
+      const Language = Parse.Object.extend("Language");
+      const query = new Parse.Query(Language);
+      query.equalTo("isActive", true);
+      try {
+        const results = await query.find();
+        state.availableLanguages = results.map(l => ({
+          name: l.get('name'),
+          code: l.get('code'),
+          icon: l.get('icon'),
+          color: l.get('color')
+        }));
+        const currentLangExists = state.availableLanguages.find(l => l.name === state.lang);
+        if (!currentLangExists && state.availableLanguages.length > 0) {
+          state.lang = state.availableLanguages[0].name;
+        }
+      } catch (e) {
+        console.error("Gagal load bahasa publik", e);
+        state.availableLanguages = [{name:"Inggris", icon:"🇬🇧", color:"#FFE66D"}];
+      }
+    }
+
     async function init() {
+      document.getElementById('main-menu').innerHTML = '<div style="padding:20px; text-align:center;">Memuat data...</div>';
       const current = Parse.User.current();
       if (current) {
         state.isLoggedIn = true;
@@ -902,12 +927,13 @@
         state.currentUser = null;
       }
       loadProgress();
+      await loadPublicLanguages();
+      document.getElementById('lang-indicator').innerText = state.lang;
       const defaultUI = {
         study: { t: "Study" }, quiz: { t: "Quiz" }, tf: { t: "True/False" },
         match: { t: "Match" }, guess: { t: "Guess" }, theme: { t: "Select Theme" }, num: { t: "Select Level" }, back: { t: "Back" }
       };
       state.localUI[state.lang] = defaultUI;
-      document.getElementById('lang-indicator').innerText = state.lang;
       document.getElementById('main-menu').innerHTML = `
         ${renderBentoItem('study', defaultUI.study, indoLabels.study)}
         ${renderBentoItem('quiz', defaultUI.quiz, indoLabels.quiz)}
@@ -1311,6 +1337,7 @@
 
     function setLang(l) {
       state.lang = l;
+      localStorage.setItem('vocera_pref_lang', l);
       init();
       closePage('footer-modal');
       showMsg(true, "Bahasa diganti ke " + l);

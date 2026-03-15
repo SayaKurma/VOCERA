@@ -22,7 +22,6 @@
       --shadow-hard-hover: 6px 6px 0px #111111;
       --radius-main: 16px;
     }
-
     * {
       margin: 0;
       padding: 0;
@@ -30,7 +29,6 @@
       -webkit-tap-highlight-color: transparent;
       font-family: 'Outfit', sans-serif;
     }
-
     body {
       background-color: var(--bg-color);
       color: var(--text-main);
@@ -39,7 +37,6 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-
     .neo-box {
       background: var(--color-white);
       border: var(--border-thick);
@@ -48,12 +45,10 @@
       transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
       cursor: pointer;
     }
-
     .neo-box:active {
       transform: translate(4px, 4px);
       box-shadow: 0px 0px 0px #111111;
     }
-
     .opt-btn.disabled {
       opacity: 0.4;
       pointer-events: none;
@@ -61,7 +56,6 @@
       transform: translate(2px, 2px);
       box-shadow: 1px 1px 0px #111;
     }
-
     .romaji-text {
       font-size: 0.9rem;
       color: var(--text-sub);
@@ -69,20 +63,17 @@
       margin-left: 4px;
       font-weight: 500;
     }
-
     .page-title .romaji-text {
         font-size: 1rem;
         display: block;
         margin-top: 4px;
         margin-left: 0;
     }
-
     .big-word .romaji-text {
       font-size: 1.2rem;
       display: block;
       margin-top: 8px;
     }
-
     #app {
       max-width: 480px;
       margin: 0 auto;
@@ -91,14 +82,12 @@
       flex: 1;
       position: relative;
     }
-
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 40px;
     }
-
     h1 {
       font-size: 2.8rem;
       font-weight: 900;
@@ -106,7 +95,6 @@
       letter-spacing: -1px;
       text-transform: uppercase;
     }
-
     .lang-badge {
       background: var(--color-1);
       border: 2px solid #111;
@@ -117,13 +105,11 @@
       box-shadow: 2px 2px 0px #111;
       cursor: pointer;
     }
-
     .bento-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
-
     .bento-item {
       padding: 24px 20px;
       display: flex;
@@ -131,43 +117,36 @@
       justify-content: space-between;
       min-height: 140px;
     }
-
     .bento-item:nth-child(1) {
       grid-column: span 2;
       min-height: 120px;
       flex-direction: row;
       align-items: center;
     }
-
     .bento-icon {
       font-size: 2.5rem;
       margin-bottom: 12px;
     }
-
     .bento-item:nth-child(1) .bento-icon {
       margin-bottom: 0;
       margin-right: 20px;
       font-size: 3rem;
     }
-
     .btn-text {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-
     .main-t {
       font-size: 1.25rem;
       font-weight: 800;
     }
-
     .sub-t {
       font-size: 0.85rem;
       font-weight: 600;
       text-transform: uppercase;
       opacity: 0.8;
     }
-
     .page {
       display: none;
       position: fixed;
@@ -180,12 +159,10 @@
       z-index: 100;
       overflow-y: auto;
     }
-
     .page.active {
       display: block;
       animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
     @keyframes slideUp {
       from {
         opacity: 0;
@@ -196,14 +173,12 @@
         transform: translateY(0);
       }
     }
-
     .header-page {
       display: flex;
       align-items: center;
       gap: 16px;
       margin-bottom: 32px;
     }
-
     .back-btn {
       width: 48px;
       height: 48px;
@@ -218,12 +193,10 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     .back-btn:active {
       transform: translate(2px, 2px);
       box-shadow: 0 0 0 #111;
     }
-
     .page-title {
       font-size: 1.8rem;
       font-weight: 900;
@@ -231,27 +204,23 @@
       display: flex;
       flex-direction: column;
     }
-
     .menu-list {
       display: flex;
       flex-direction: column;
       gap: 16px;
       padding-bottom: 40px;
     }
-
     .list-item {
       padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .num-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 16px;
     }
-
     .num-btn {
       aspect-ratio: 1;
       display: flex;
@@ -261,19 +230,16 @@
       font-weight: 900;
       position: relative;
     }
-
     .num-btn.locked {
       opacity: 0.5;
       filter: grayscale(100%);
       cursor: not-allowed;
       pointer-events: none;
     }
-
     .num-btn .lock-icon {
       font-size: 1.2rem;
       margin-left: 4px;
     }
-
     .big-word {
       font-size: 3rem;
       font-weight: 900;
@@ -287,7 +253,6 @@
       box-shadow: var(--shadow-hard);
       word-wrap: break-word;
     }
-
     .opt-btn {
       width: 100%;
       padding: 20px;
@@ -296,7 +261,6 @@
       font-weight: 800;
       text-align: center;
     }
-
     .neo-input {
       width: 100%;
       padding: 24px;
@@ -310,21 +274,17 @@
       border-radius: var(--radius-main);
       box-shadow: var(--shadow-hard);
     }
-
     .neo-input:focus {
       background: #f0f8ff;
     }
-
     .neo-input.valid {
       border-color: var(--color-2);
       box-shadow: 0 0 0 2px var(--color-2);
     }
-
     .neo-input.invalid {
       border-color: var(--color-3);
       box-shadow: 0 0 0 2px var(--color-3);
     }
-
     .neo-textarea {
       width: 100%;
       padding: 16px;
@@ -344,26 +304,22 @@
     .neo-textarea:focus {
       background: #f0f8ff;
     }
-
     .match-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
-
     .match-col {
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
-
     .match-box {
       padding: 20px 10px;
       text-align: center;
       font-weight: 800;
       font-size: 1.1rem;
     }
-
     .match-box.selected {
       background: var(--color-main);
       color: white;
@@ -371,21 +327,17 @@
       box-shadow: inset 2px 2px 0px rgba(0, 0, 0, 0.5);
       transform: translate(2px, 2px);
     }
-
     .match-box.hidden {
       visibility: hidden;
     }
-
     #game-cont {
       padding-bottom: 100px;
     }
-
     .game-header-info {
       display: flex;
       gap: 16px;
       margin-left: auto;
     }
-
     .score-badge, .timer-badge {
       background: var(--color-white);
       border: 2px solid #111;
@@ -398,7 +350,6 @@
       align-items: center;
       gap: 4px;
     }
-
     footer {
       position: fixed;
       bottom: 24px;
@@ -413,13 +364,11 @@
       box-shadow: var(--shadow-hard);
       z-index: 200;
     }
-
     .footer-nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .footer-btn {
       background: none;
       border: none;
@@ -430,16 +379,13 @@
       cursor: pointer;
       color: var(--color-white);
     }
-
     .footer-btn span {
       font-size: 0.7rem;
       font-weight: 700;
     }
-
     .footer-btn:active {
       transform: scale(0.9);
     }
-
     .toast-container {
       position: fixed;
       top: -150px;
@@ -461,13 +407,11 @@
       opacity: 0;
       pointer-events: none;
     }
-
     .toast-container.show {
       top: 30px;
       opacity: 1;
       pointer-events: auto;
     }
-
     .toast-icon {
       font-size: 1.5rem;
     }
@@ -526,7 +470,6 @@
     <span id="toast-icon" class="toast-icon"></span>
     <span id="toast-msg"></span>
   </div>
-
   <div id="app">
     <div id="home">
       <header>
@@ -535,7 +478,6 @@
       </header>
       <div class="bento-grid" id="main-menu"></div>
     </div>
-
     <div id="theme-page" class="page">
       <div class="header-page">
         <button class="back-btn" onclick="closePage('theme-page')">←</button>
@@ -543,7 +485,6 @@
       </div>
       <div id="theme-cont" class="menu-list"></div>
     </div>
-
     <div id="number-page" class="page">
       <div class="header-page">
         <button class="back-btn" onclick="closePage('number-page')">←</button>
@@ -551,7 +492,6 @@
       </div>
       <div id="number-cont" class="num-grid"></div>
     </div>
-
     <div id="game-page" class="page">
       <div class="header-page">
         <button class="back-btn" onclick="closePage('game-page')">←</button>
@@ -563,7 +503,6 @@
       </div>
       <div id="game-cont"></div>
     </div>
-
     <div id="footer-modal" class="page">
       <div class="header-page">
         <button class="back-btn" onclick="closePage('footer-modal')">←</button>
@@ -572,7 +511,6 @@
       <div id="f-cont" class="menu-list"></div>
     </div>
   </div>
-
   <footer>
     <div class="footer-nav">
       <button class="footer-btn" onclick="openFooter('saran')">
@@ -593,11 +531,9 @@
       </button>
     </div>
   </footer>
-
   <script>
     Parse.initialize("j2ARdnYDMO2xGHZG9y1fcakwIfdEsGBEZZUjFPif", "OaN4WU4KlVV0iYz108BfeGVmiZbyNc5azZ5EVNDO");
     Parse.serverURL = 'https://parseapi.back4app.com/';
-
     const moduleConfig = {
       'study': { color: 'var(--color-1)', icon: '📚' },
       'quiz': { color: 'var(--color-2)', icon: '🎯' },
@@ -605,7 +541,6 @@
       'match': { color: 'var(--color-4)', icon: '🧩' },
       'guess': { color: 'var(--color-5)', icon: '🤔' }
     };
-
     const indoLabels = {
       study: "Belajar Kosakata",
       quiz: "Uji Kemampuan",
@@ -613,7 +548,6 @@
       match: "Pasangkan Kata",
       guess: "Tebak Kata"
     };
-
     const state = {
       lang: "Inggris",
       module: "",
@@ -638,11 +572,10 @@
       availableCategories: [],
       localUI: {}
     };
-
     let timerInterval = null;
     let currentModuleColor = '#FFF';
     let m1 = null;
-
+    let loadingTimeout = null;
     function getLangText(data) {
       if (typeof data === 'string') return data;
       if (typeof data === 'object' && data !== null) {
@@ -655,7 +588,6 @@
       }
       return '';
     }
-
     function getPageTitle(data) {
         if (typeof data === 'string') return data;
         if (typeof data === 'object' && data !== null) {
@@ -668,7 +600,6 @@
         }
         return '';
     }
-
     const footerConfig = {
       'profil': {
         title: "Profil Pengguna",
@@ -708,14 +639,12 @@
             }
           } else {
             const isLogin = state.authMode === 'login';
-
             const loginErr = state.loginError ? 
                 `<div style="color:var(--color-3); font-size:0.85rem; margin:-8px 0 8px; font-weight:700;">${state.loginError}</div>` : '';
             const regUserErr = state.regUserError ? 
                 `<div style="color:var(--color-3); font-size:0.85rem; margin:-8px 0 8px; font-weight:700;">${state.regUserError}</div>` : '';
             const regPassErr = state.regPassError ? 
                 `<div style="color:var(--color-3); font-size:0.85rem; margin:-8px 0 8px; font-weight:700;">${state.regPassError}</div>` : '';
-
             if (isLogin) {
               return `
               <div class="neo-box list-item" style="flex-direction:column; gap:12px;">
@@ -725,16 +654,13 @@
                   <input type="password" id="login-pass" class="neo-input" placeholder="Password" style="padding:12px;">
                   <span class="toggle-pw" onclick="togglePasswordVisibility('login-pass')" role="button" tabindex="0" aria-label="Tampilkan password" onkeypress="if(event.key==='Enter')togglePasswordVisibility('login-pass')">👁️</span>
                 </div>
-                
                 <div style="display:flex; justify-content:space-between; align-items:center; width:100%; font-size:0.85rem; font-weight:600;">
                   <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
                     <input type="checkbox" id="remember-me"> Ingat Saya
                   </label>
                   <span style="color:var(--text-sub); cursor:not-allowed; opacity:0.7;">Lupa Password?</span>
                 </div>
-
                 <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="submitLogin()">MASUK</div>
-                
                 <div style="text-align:center; font-size:0.9rem; margin-top:8px;">
                   Belum Punya Akun? 
                   <span style="color:var(--color-3); font-weight:800; cursor:pointer;" onclick="switchAuthMode('register')">Daftar</span>
@@ -758,9 +684,7 @@
                   <span class="toggle-pw" onclick="togglePasswordVisibility('reg-confirm')" role="button" tabindex="0" aria-label="Tampilkan password" onkeypress="if(event.key==='Enter')togglePasswordVisibility('reg-confirm')">👁️</span>
                 </div>
                 <div id="reg-password-feedback" class="password-feedback"></div>
-                
                 <div class="neo-box opt-btn disabled" style="background:var(--color-4)" onclick="submitRegister()" id="register-btn">DAFTAR</div>
-                
                 <div style="text-align:center; font-size:0.9rem; margin-top:8px;">
                   Sudah Punya Akun? 
                   <span style="color:var(--color-2); font-weight:800; cursor:pointer;" onclick="switchAuthMode('login')">Masuk</span>
@@ -823,18 +747,15 @@
         }
       }
     };
-
     function loadProgress() {
       const saved = localStorage.getItem('lingoflow_unlocked');
       if (saved) {
         try { state.unlockedLevels = JSON.parse(saved); } catch { state.unlockedLevels = {}; }
       } else state.unlockedLevels = {};
     }
-
     function saveProgress() {
       localStorage.setItem('lingoflow_unlocked', JSON.stringify(state.unlockedLevels));
     }
-
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -842,19 +763,15 @@
       }
       return array;
     }
-
     function updateScoreDisplay() {
       document.getElementById('game-score').innerText = `🏆 ${Math.round(state.score)}`;
     }
-
     function updateTimerDisplay() {
       document.getElementById('game-timer').innerText = `⏳ ${state.timeLeft}s`;
     }
-
     function stopTimer() {
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
     }
-
     function startTimer() {
       if (state.module === 'study') return;
       stopTimer();
@@ -869,7 +786,6 @@
         }
       }, 1000);
     }
-
     function renderBentoItem(mod, main, sub) {
       const conf = moduleConfig[mod];
       return `
@@ -882,7 +798,6 @@
         </div>
       `;
     }
-
     async function loadPublicLanguages() {
       const Language = Parse.Object.extend("Language");
       const query = new Parse.Query(Language);
@@ -904,50 +819,50 @@
         state.availableLanguages = [{name:"Inggris", icon:"🇬🇧", color:"#FFE66D"}];
       }
     }
-
+    function normalizeString(str) {
+      if (!str) return '';
+      return str.toString().trim().toLowerCase();
+    }
     async function loadPublicCategories() {
+      state.availableCategories = [];
       const cached = localStorage.getItem('vocera_categories');
       const cacheTime = localStorage.getItem('vocera_categories_time');
       const now = Date.now();
-
       if (cached && cacheTime && (now - parseInt(cacheTime)) < 300000) {
         try {
           state.availableCategories = JSON.parse(cached);
+          console.log('📦 Categories from cache:', state.availableCategories.length);
           return;
         } catch {
           localStorage.removeItem('vocera_categories');
         }
       }
-
       const Category = Parse.Object.extend("Category");
       const query = new Parse.Query(Category);
       query.equalTo("isActive", true);
-      query.equalTo("language", state.lang);
+      query.equalTo("language", state.lang.trim());
       query.ascending("order");
-
       try {
         const results = await query.find();
+        console.log('📦 Categories from server:', results.length);
         state.availableCategories = results.map(c => ({
-          name: c.get('name'),
-          displayName: c.get('displayName'),
-          icon: c.get('icon'),
-          order: c.get('order')
-        }));
-
+          name: c.get('name') || '',
+          displayName: c.get('displayName') || c.get('name') || '',
+          icon: c.get('icon') || '📁',
+          order: c.get('order') || 1
+        })).filter(c => c.name);
         localStorage.setItem('vocera_categories', JSON.stringify(state.availableCategories));
         localStorage.setItem('vocera_categories_time', now.toString());
-
       } catch (e) {
         console.error("Gagal load kategori publik", e);
         state.availableCategories = [];
+        showMsg(false, "Gagal memuat kategori");
       }
     }
-
     async function loadPublicUISettings() {
       const cached = localStorage.getItem('vocera_ui_settings_' + state.lang);
       const cacheTime = localStorage.getItem('vocera_ui_settings_time');
       const now = Date.now();
-
       if (cached && cacheTime && (now - parseInt(cacheTime)) < 300000) {
         try {
           state.localUI[state.lang] = JSON.parse(cached);
@@ -956,11 +871,9 @@
           localStorage.removeItem('vocera_ui_settings_' + state.lang);
         }
       }
-
       const UISettings = Parse.Object.extend("LanguageSettings");
       const query = new Parse.Query(UISettings);
       query.equalTo("language", state.lang);
-
       try {
         const results = await query.find();
         const uiData = {};
@@ -970,25 +883,20 @@
             icon: item.get('icon') || ''
           };
         });
-
         const defaults = {
           study: { t: "Study" }, quiz: { t: "Quiz" }, tf: { t: "True/False" },
           match: { t: "Match" }, guess: { t: "Guess" }
         };
         state.localUI[state.lang] = { ...defaults, ...uiData };
-
         localStorage.setItem('vocera_ui_settings_' + state.lang, JSON.stringify(state.localUI[state.lang]));
         localStorage.setItem('vocera_ui_settings_time', now.toString());
-
       } catch (e) {
         console.error("Gagal load UI settings", e);
       }
     }
-
     function renderMainMenu() {
       const ui = state.localUI[state.lang];
       const menuContainer = document.getElementById('main-menu');
-
       if (state.availableCategories.length === 0) {
         menuContainer.innerHTML = `
         <div style="padding:40px 20px; text-align:center; grid-column: span 2;">
@@ -1000,7 +908,6 @@
         </div>`;
         return;
       }
-
       menuContainer.innerHTML = `
         ${renderBentoItem('study', ui.study || {t:"Study"}, indoLabels.study)}
         ${renderBentoItem('quiz', ui.quiz || {t:"Quiz"}, indoLabels.quiz)}
@@ -1009,9 +916,69 @@
         ${renderBentoItem('guess', ui.guess || {t:"Guess"}, indoLabels.guess)}
       `;
     }
-
+    function standardizeVocabItem(item) {
+      if (!item) return null;
+      if (typeof item === 'string') {
+        return { id: item, t: item, r: '', level: '1' };
+      }
+      if (typeof item.get === 'function') {
+        return {
+          id: item.get('word') || '',
+          t: item.get('translation') || '',
+          r: item.get('romaji') || '',
+          level: String(item.get('level') || 1)
+        };
+      }
+      return {
+        id: item.id || '',
+        t: item.t || '',
+        r: item.r || '',
+        level: String(item.level || 1)
+      };
+    }
+    async function loadVocabulary(lang, theme) {
+      const grouped = {};
+      try {
+        console.log('🔍 Loading vocabulary:', { lang, theme });
+        const Vocab = Parse.Object.extend("Vocabulary");
+        const query = new Parse.Query(Vocab);
+        query.equalTo("language", lang.trim());
+        query.equalTo("category", theme.trim());
+        query.equalTo("isActive", true);
+        const results = await query.find();
+        console.log('📦 Results received:', results.length, 'items');
+        console.log('📦 Sample data:', results.slice(0, 2).map(r => r.attributes));
+        for (let item of results) {
+          let level = item.get('level');
+          if (level === null || level === undefined || isNaN(level)) {
+            level = 1;
+            console.warn('⚠️ Level invalid, defaulting to 1 for item:', item.get('word'));
+          }
+          level = String(parseInt(level));
+          if (!grouped[level]) { grouped[level] = []; }
+          const standardizedItem = {
+            id: item.get('word') || '',
+            t: item.get('translation') || '',
+            r: item.get('romaji') || '',
+            level: level
+          };
+          if (standardizedItem.id && standardizedItem.t) {
+            grouped[level].push(standardizedItem);
+          } else {
+            console.warn('⚠️ Data korup skipped:', item.id);
+          }
+        }
+        console.log('✅ Grouped data:', grouped);
+        return grouped;
+      } catch (e) {
+        console.error('❌ Error loadVocabulary:', e);
+        showMsg(false, "Gagal memuat data. Periksa koneksi internet.");
+        return { "1": [] };
+      }
+    }
     async function init() {
-      document.getElementById('main-menu').innerHTML = `
+      const menuContainer = document.getElementById('main-menu');
+      menuContainer.innerHTML = `
         <div style="padding:40px 20px; text-align:center;">
           <div style="font-size:3rem; margin-bottom:16px;">⏳</div>
           <div style="font-weight:700;">Memuat data...</div>
@@ -1019,27 +986,40 @@
             Sinkronisasi dengan server
           </div>
         </div>`;
-
-      const current = Parse.User.current();
-      if (current) {
-        state.isLoggedIn = true;
-        state.currentUser = current.getUsername();
-      } else {
-        state.isLoggedIn = false;
-        state.currentUser = null;
+      loadingTimeout = setTimeout(() => {
+        menuContainer.innerHTML = `
+        <div style="padding:40px 20px; text-align:center; grid-column: span 2;">
+          <div style="font-size:3rem; margin-bottom:16px;">⚠️</div>
+          <div style="font-weight:700; margin-bottom:8px;">Koneksi Timeout</div>
+          <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="init()">
+            🔄 Coba Lagi
+          </div>
+        </div>`;
+      }, 10000);
+      try {
+        const current = Parse.User.current();
+        if (current) {
+          state.isLoggedIn = true;
+          state.currentUser = current.getUsername();
+        } else {
+          state.isLoggedIn = false;
+          state.currentUser = null;
+        }
+        loadProgress();
+        await loadPublicLanguages();
+        await loadPublicCategories();
+        await loadPublicUISettings();
+        clearTimeout(loadingTimeout);
+        document.getElementById('lang-indicator').innerText = state.lang;
+        renderMainMenu();
+        document.getElementById('h-theme').innerHTML = getPageTitle({t: "Pilih Tema"});
+        document.getElementById('h-num').innerHTML = getPageTitle({t: "Pilih Level"});
+      } catch (e) {
+        clearTimeout(loadingTimeout);
+        console.error('Init error:', e);
+        showMsg(false, "Gagal inisialisasi aplikasi");
       }
-      loadProgress();
-      await loadPublicLanguages();
-      await loadPublicCategories();
-      await loadPublicUISettings();
-
-      document.getElementById('lang-indicator').innerText = state.lang;
-
-      renderMainMenu();
-      document.getElementById('h-theme').innerHTML = getPageTitle({t: "Pilih Tema"});
-      document.getElementById('h-num').innerHTML = getPageTitle({t: "Pilih Level"});
     }
-
     function openThemes(m, color) {
       if (!state.isLoggedIn) {
         showMsg(false, "Silakan login terlebih dahulu!");
@@ -1048,19 +1028,15 @@
       }
       state.module = m;
       currentModuleColor = color;
-
       if (!state.availableCategories || state.availableCategories.length === 0) {
         showMsg(false, "Belum ada kategori tersedia");
         return;
       }
-
       const themes = {};
       state.availableCategories.forEach(cat => {
         themes[cat.name] = cat.displayName;
       });
-
       const cont = document.getElementById('theme-cont');
-
       if (Object.keys(themes).length === 0) {
         cont.innerHTML = `
           <div style="padding:40px 20px; text-align:center;">
@@ -1086,7 +1062,6 @@
       }
       document.getElementById('theme-page').classList.add('active');
     }
-
     async function startStudyAll(t) {
       state.theme = t;
       const data = await loadVocabulary(state.lang, t);
@@ -1099,7 +1074,6 @@
       document.getElementById('game-page').classList.add('active');
       renderGame();
     }
-
     async function openNumbers(t) {
       state.theme = t;
       const data = await loadVocabulary(state.lang, t);
@@ -1116,7 +1090,6 @@
       }).join('');
       document.getElementById('number-page').classList.add('active');
     }
-
     function handleLevelClick(levelNumber) {
       const unlocked = state.unlockedLevels[state.lang]?.[state.theme]?.[state.module] || [];
       if (!unlocked.includes(levelNumber)) {
@@ -1125,7 +1098,6 @@
       }
       startGame(levelNumber);
     }
-
     async function startGame(n) {
       stopTimer();
       state.number = n;
@@ -1144,7 +1116,6 @@
       document.getElementById('game-page').classList.add('active');
       renderGame();
     }
-
     function openFooter(type) {
       const config = footerConfig[type];
       if (!config) return;
@@ -1154,12 +1125,10 @@
       fc.innerHTML = config.render();
       document.getElementById('footer-modal').classList.add('active');
     }
-
     function closePage(id) {
       if (id === 'game-page') stopTimer();
       document.getElementById(id).classList.remove('active');
     }
-
     function showEndGame() {
       stopTimer();
       const currentLevel = parseInt(state.number);
@@ -1187,7 +1156,6 @@
         </div>
       `;
     }
-
     function renderGame() {
       stopTimer();
       document.getElementById('game-score').style.display = 'none';
@@ -1195,21 +1163,33 @@
       if (state.module === 'study') headerInfo.style.display = 'none';
       else headerInfo.style.display = 'flex';
       const cont = document.getElementById('game-cont');
+      if (!state.queue || state.queue.length === 0) {
+        cont.innerHTML = `
+        <div style="text-align:center; margin-top:40px;">
+          <div style="font-size:3rem; margin-bottom:16px;">⚠️</div>
+          <h3>Tidak Ada Data</h3>
+          <p style="color:var(--text-sub);">Kosakata untuk level ini kosong</p>
+          <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="closePage('game-page')">
+            Kembali
+          </div>
+        </div>`;
+        return;
+      }
       if (state.module !== 'study' && state.index >= state.queue.length) {
         showEndGame();
         return;
       }
       const data = state.queue;
-      const item = state.module !== 'match' ? data[state.index] : null;
-
+      const item = state.module !== 'match' ? standardizeVocabItem(data[state.index]) : null;
       if (state.module === 'study') {
         cont.innerHTML = data.map(i => {
-          const romajiHtml = (state.lang === 'Jepang' && i.r) ? `<span class="romaji-text">(${i.r})</span>` : '';
+          const std = standardizeVocabItem(i);
+          const romajiHtml = (state.lang === 'Jepang' && std.r) ? `<span class="romaji-text">(${std.r})</span>` : '';
           return `
             <div class="neo-box list-item" style="margin-bottom:16px; background:var(--color-white)">
-              <b style="font-size:1.2rem">${i.id} ${romajiHtml}</b>
+              <b style="font-size:1.2rem">${std.id} ${romajiHtml}</b>
               <span style="font-size:1.2rem; color:var(--text-sub)">=</span>
-              <span style="font-size:1.2rem; font-weight:800; color:var(--text-main)">${i.t}</span>
+              <span style="font-size:1.2rem; font-weight:800; color:var(--text-main)">${std.t}</span>
             </div>
           `;
         }).join('');
@@ -1220,16 +1200,17 @@
         cont.innerHTML = `
           <div class="big-word" style="background:${currentModuleColor}">${item.t} ${romajiHint}</div>
           <div id="quiz-options">
-            ${data.map(o => `
-              <div class="neo-box opt-btn" style="background:${currentModuleColor}" onclick="cekQuiz(this, '${o.id}', '${item.id}')">${o.id}</div>
-            `).join('')}
+            ${data.map(o => {
+              const stdOpt = standardizeVocabItem(o);
+              return `<div class="neo-box opt-btn" style="background:${currentModuleColor}" onclick="cekQuiz(this, '${stdOpt.id}', '${item.id}')">${stdOpt.id}</div>`;
+            }).join('')}
           </div>
         `;
       }
       else if (state.module === 'tf') {
         startTimer();
         const isCorrect = Math.random() > 0.5;
-        const wrongItem = data.find(x => x.id !== item.id) || item;
+        const wrongItem = standardizeVocabItem(data.find(x => x.id !== item.id) || item);
         const displayId = isCorrect ? item.id : wrongItem.id;
         cont.innerHTML = `
           <div class="big-word" style="font-size:2rem; background:${currentModuleColor}">
@@ -1247,18 +1228,16 @@
         const d2 = [...data].sort(() => 0.5 - Math.random());
         document.getElementById('match-grid').innerHTML = `
           <div class="match-col">
-            ${d1.map(x => `
-              <div class="neo-box match-box" style="--color-main:var(--color-2)" onclick="handleMatch(this,'id','${x.t}')">
-                ${x.id}
-              </div>
-            `).join('')}
+            ${d1.map(x => {
+              const std = standardizeVocabItem(x);
+              return `<div class="neo-box match-box" style="--color-main:var(--color-2)" onclick="handleMatch(this,'id','${std.t}')">${std.id}</div>`;
+            }).join('')}
           </div>
           <div class="match-col">
-            ${d2.map(x => `
-              <div class="neo-box match-box" style="--color-main:var(--color-4)" onclick="handleMatch(this,'t','${x.t}')">
-                ${x.t}
-              </div>
-            `).join('')}
+            ${d2.map(x => {
+              const std = standardizeVocabItem(x);
+              return `<div class="neo-box match-box" style="--color-main:var(--color-4)" onclick="handleMatch(this,'t','${std.t}')">${std.t}</div>`;
+            }).join('')}
           </div>
         `;
       }
@@ -1275,7 +1254,6 @@
         document.getElementById('guess-input').focus();
       }
     }
-
     function cekQuiz(btn, userChoice, correctId) {
       stopTimer();
       if (userChoice === correctId) {
@@ -1293,7 +1271,6 @@
         showMsg(false, "Coba lagi");
       }
     }
-
     function cekTF(isCorrect, userChoice) {
       stopTimer();
       const totalSoal = state.queue.length;
@@ -1309,7 +1286,6 @@
       state.index++;
       setTimeout(renderGame, 800);
     }
-
     function cekGuess() {
       stopTimer();
       const inputEl = document.getElementById('guess-input');
@@ -1318,19 +1294,15 @@
       const item = state.queue[state.index];
       const correctId = item.id;
       const correctRomaji = (state.lang === 'Jepang' && item.r) ? item.r : null;
-
       if (val.length < 2) {
         showMsg(false, "Minimal 2 karakter");
         inputEl.focus();
         return;
       }
-
       inputEl.disabled = true;
       btnEl.classList.add('disabled');
-
       const isIdMatch = val.toLowerCase() === correctId.toLowerCase();
       const isRomajiMatch = correctRomaji ? val.toLowerCase() === correctRomaji.toLowerCase() : false;
-
       if (isIdMatch || isRomajiMatch) {
         const L = 3;
         const MAX_TIME = 15;
@@ -1339,7 +1311,6 @@
         const errorFactor = Math.max(0, 1 - (Math.min(S, L) / L));
         const timeFactor = state.timeLeft / MAX_TIME;
         const poinPerSoal = baseScore * errorFactor * timeFactor;
-
         state.score += poinPerSoal;
         showMsg(true, `Luar Biasa!`);
         state.wrongAttempts = 0;
@@ -1348,7 +1319,6 @@
       } else {
         const remaining = 2 - state.wrongAttempts;
         state.wrongAttempts++;
-
         if (state.wrongAttempts >= 3) {
           showMsg(false, `Batas salah. Jawaban: ${correctId}${correctRomaji ? ' / ' + correctRomaji : ''}`);
           inputEl.disabled = true;
@@ -1364,7 +1334,6 @@
         }
       }
     }
-
     function handleMatch(el, type, val) {
       if (!m1) {
         m1 = { el, type, val };
@@ -1401,12 +1370,10 @@
         }
       }
     }
-
     function showMsg(isSuccess, text) {
       const toast = document.getElementById('toast');
       const icon = document.getElementById('toast-icon');
       const msg = document.getElementById('toast-msg');
-
       if (isSuccess) {
         toast.style.background = "var(--color-2)";
         toast.style.color = "#111";
@@ -1420,7 +1387,6 @@
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2000);
     }
-
     async function handleShare() {
       const shareData = {
         title: 'VOCERA',
@@ -1432,7 +1398,6 @@
         else { await navigator.clipboard.writeText(window.location.href); showMsg(true, "Link disalin ke clipboard!"); }
       } catch (err) { showMsg(false, "Gagal membagikan."); }
     }
-
     function setLang(l) {
       state.lang = l;
       localStorage.setItem('vocera_pref_lang', l);
@@ -1440,24 +1405,20 @@
       closePage('footer-modal');
       showMsg(true, "Bahasa diganti ke " + l);
     }
-
     function switchAuthMode(mode) {
       state.authMode = mode;
       state.loginError = ''; state.regUserError = ''; state.regPassError = '';
       openFooter('profil');
     }
-
     function togglePasswordVisibility(inputId) {
       const input = document.getElementById(inputId);
       if (!input) return;
       input.type = (input.type === "password") ? "text" : "password";
     }
-
     function validatePasswordStrength() { return true; }
     function checkPasswordMatch() {}
     function validateRegisterPasswordStrength() { return true; }
     function checkRegisterPasswordMatch() {}
-
     async function submitLogin() {
       const userField = document.getElementById('login-user');
       const passField = document.getElementById('login-pass');
@@ -1480,7 +1441,6 @@
         openFooter('profil');
       }
     }
-
     async function submitRegister() {
       const userField = document.getElementById('reg-user');
       const passField = document.getElementById('reg-pass');
@@ -1489,11 +1449,9 @@
       const password = passField?.value.trim() || '';
       const confirm = confirmField?.value.trim() || '';
       state.regUserError = ''; state.regPassError = '';
-
       if (username.length < 3) { state.regUserError = '❌ Username min 3 karakter!'; openFooter('profil'); return; }
       if (password.length < 3) { state.regPassError = '❌ Password terlalu pendek'; openFooter('profil'); return; }
       if (password !== confirm) { state.regPassError = '❌ Konfirmasi tidak cocok!'; openFooter('profil'); return; }
-
       try {
         const user = new Parse.User();
         user.set("username", username);
@@ -1506,9 +1464,7 @@
         openFooter('profil');
       }
     }
-
     function submitChangePassword() { showMsg(false, "Fitur ubah password via Parse dikembangkan"); }
-
     async function handleLogout() {
       await Parse.User.logOut();
       state.isLoggedIn = false; state.currentUser = null;
@@ -1516,7 +1472,6 @@
       openFooter('profil');
       init();
     }
-
     async function kirimSaranParse() {
       const inputEl = document.getElementById('saran-input');
       const val = inputEl.value.trim();
@@ -1536,33 +1491,6 @@
       } catch (e) { showMsg(false, "Gagal mengirim"); }
       btn.innerText = "KIRIM SARAN"; btn.classList.remove('disabled');
     }
-
-    async function loadVocabulary(lang, theme) {
-      const Vocab = Parse.Object.extend("Vocabulary");
-      const query = new Parse.Query(Vocab);
-      query.equalTo("language", lang);
-      query.equalTo("category", theme);
-      query.equalTo("isActive", true);
-
-      const results = await query.find();
-
-      if (results.length === 0) {
-        return { "1": [] };
-      }
-
-      const grouped = {};
-      for (let item of results) {
-        const level = String(item.get('level') || "1");
-        if (!grouped[level]) grouped[level] = [];
-        grouped[level].push({
-          id: item.get('word'),
-          t: item.get('translation'),
-          r: item.get('romaji') || ''
-        });
-      }
-      return grouped;
-    }
-
     init();
   </script>
 </body>

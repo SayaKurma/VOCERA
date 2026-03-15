@@ -465,76 +465,76 @@ body {
         --radius-main: 12px;
         --radius-sm: 10px;
     }
-    
+
     .sidebar { width: 85vw; max-width: 300px; }
-    
+
     .main-content { 
         padding: 65px 12px 20px;
     }
-    
+
     .admin-header {
         padding: 12px;
         top: 55px;
     }
-    
+
     .admin-title { 
         font-size: 1.1rem;
     }
-    
+
     .bento-grid { 
         grid-template-columns: 1fr; 
         gap: 12px;
     }
-    
+
     .stat-card {
         min-height: 100px;
         padding: 16px;
     }
-    
+
     .stat-card h3 { 
         font-size: 1.8rem;
     }
-    
+
     .neo-box {
         padding: 16px;
         margin-bottom: 16px;
     }
-    
+
     .form-grid {
         grid-template-columns: 1fr;
         gap: 12px;
     }
-    
+
     .neo-input, .neo-select, .neo-textarea {
         padding: 12px 14px;
         font-size: 0.95rem;
     }
-    
+
     .neo-btn {
         width: 100%;
         justify-content: center;
         padding: 14px 20px;
     }
-    
+
     .neo-btn-group {
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .admin-table th, .admin-table td {
         padding: 12px 10px;
         font-size: 0.85rem;
     }
-    
+
     .action-btns {
         flex-direction: column;
     }
-    
+
     .action-btns .neo-btn {
         width: 100%;
     }
-    
+
     .sidebar-header h1 {
         font-size: 1.3rem;
     }    
@@ -542,7 +542,7 @@ body {
         font-size: 0.85rem;
         padding: 12px 14px;
     }
-    
+
     .avatar {
         width: 36px;
         height: 36px;
@@ -598,23 +598,23 @@ body {
         <div class="sidebar-menu">
             <div class="menu-category">Utama</div>
             <div class="menu-item active" onclick="showSection('dashboard', this)" role="button" tabindex="0">📊 1. Dashboard</div>
-            
+
             <div class="menu-category">Konten & Belajar</div>
             <div class="menu-item" onclick="showSection('users', this)" role="button" tabindex="0">👥 2. Pengguna</div>
             <div class="menu-item" onclick="showSection('languages', this)" role="button" tabindex="0">🌐 3. Bahasa</div>
             <div class="menu-item" onclick="showSection('vocabulary', this)" role="button" tabindex="0">📚 4. Kosakata</div>
             <div class="menu-item" onclick="showSection('question-bank', this)" role="button" tabindex="0">📝 5. Bank Soal</div>
             <div class="menu-item" onclick="showSection('learning-structure', this)" role="button" tabindex="0">🏗️ 6. Level</div>
-            
+
             <div class="menu-category">Konfigurasi Game</div>
             <div class="menu-item" onclick="showSection('game-modules', this)" role="button" tabindex="0">🎮 7. Modul Game</div>
             <div class="menu-item" onclick="showSection('ui-settings', this)" role="button" tabindex="0">🎨 8. UI Settings</div>
-            
+
             <div class="menu-category">Data & Analitik</div>
             <div class="menu-item" onclick="showSection('analytics', this)" role="button" tabindex="0">📈 9. Analitik</div>
             <div class="menu-item" onclick="showSection('leaderboard', this)" role="button" tabindex="0">🏆 10. Leaderboard</div>
             <div class="menu-item" onclick="showSection('feedback', this)" role="button" tabindex="0">💬 11. Feedback</div>
-            
+
             <div class="menu-category">Sistem & Keamanan</div>
             <div class="menu-item" onclick="showSection('authentication', this)" role="button" tabindex="0">🔐 12. Autentikasi</div>
             <div class="menu-item" onclick="showSection('security', this)" role="button" tabindex="0">🛡️ 13. Keamanan</div>
@@ -676,11 +676,34 @@ body {
 
         <div id="languages" class="section">
             <div class="neo-box">
-                <h3>Daftar Bahasa Aktif</h3>
-                <div class="bento-grid" style="margin-top:20px;" id="lang-grid">
-                    <div class="neo-box" style="margin:0; background:var(--color-1);"><h4>🇯🇵 Jepang</h4><p>Status: Aktif</p><button class="neo-btn" style="margin-top:10px; width:100%;" onclick="alert('kelola jepang')">Kelola</button></div>
-                    <div class="neo-box" style="margin:0; background:var(--color-2);"><h4>🇬🇧 Inggris</h4><p>Status: Aktif</p><button class="neo-btn" style="margin-top:10px; width:100%;" onclick="alert('kelola inggris')">Kelola</button></div>
-                    <div class="neo-box" style="margin:0; border-style:dashed; display:flex; align-items:center; justify-content:center; cursor:pointer; min-height:120px;" onclick="alert('Tambah bahasa')"><h4>+ Tambah</h4></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3>Manajemen Bahasa</h3>
+                    <button class="neo-btn" onclick="showAddLanguageForm()">+ Tambah Bahasa</button>
+                </div>
+                <div id="add-lang-form" style="display:none; margin-bottom:20px; padding:16px; background:var(--color-1); border:var(--border-thick); border-radius:var(--radius-sm);">
+                    <h4>Form Bahasa</h4>
+                    <input type="hidden" id="lang-id">
+                    <div class="form-grid">
+                        <input type="text" class="neo-input" id="lang-name" placeholder="Nama Bahasa (ex: Inggris)">
+                        <input type="text" class="neo-input" id="lang-code" placeholder="Kode (ex: en)">
+                        <input type="text" class="neo-input" id="lang-icon" placeholder="Icon (ex: 🇬🇧)">
+                        <input type="color" class="neo-input" id="lang-color" value="#FFE66D" style="height:50px;">
+                    </div>
+                    <div style="margin-top:10px;">
+                        <label><input type="checkbox" id="lang-active" checked> Aktif</label>
+                    </div>
+                    <div style="margin-top:16px; display:flex; gap:10px;">
+                        <button class="neo-btn" onclick="saveLanguage()">Simpan</button>
+                        <button class="neo-btn secondary" onclick="document.getElementById('add-lang-form').style.display='none'">Batal</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead><tr><th>Icon</th><th>Nama</th><th>Kode</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody id="lang-table-body">
+                            <tr><td colspan="5">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -697,11 +720,7 @@ body {
                         <input type="text" class="neo-input" id="word-trans" placeholder="Terjemahan">
                         <input type="text" class="neo-input" id="word-romaji" placeholder="Romaji (opsional)">
                         <select class="neo-select" id="word-lang">
-                            <option>Inggris</option>
-                            <option>Jepang</option>
-                            <option>Spanyol</option>
-                            <option>Italia</option>
-                            <option>Esperanto</option>
+                            <option value="" disabled>Pilih Bahasa...</option>
                         </select>
                         <input type="text" class="neo-input" id="word-category" placeholder="Kategori (contoh: Animals)">
                         <input type="text" class="neo-input" id="word-level" placeholder="Level (1/2/3)">
@@ -919,6 +938,7 @@ Parse.initialize("j2ARdnYDMO2xGHZG9y1fcakwIfdEsGBEZZUjFPif", "OaN4WU4KlVV0iYz108
 Parse.serverURL = 'https://parseapi.back4app.com/';
 
 let currentUser = null;
+let allLanguages = [];
 
 function showMsg(isSuccess, text) {
   const toast = document.getElementById('toast');
@@ -938,249 +958,370 @@ function showMsg(isSuccess, text) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-async function checkAdmin() {
-    const user = Parse.User.current();
-    if (!user) {
-        window.location.href = 'index.html';
-        return;
-    }
-    const isAdmin = user.get('isAdmin');
-    if (!isAdmin) {
-        showMsg(false, "Akses Ditolak: Anda tidak memiliki hak akses administrator.");
-        await Parse.User.logOut();
-        window.location.href = 'index.html';
-        return;
-    }
-    currentUser = user;
-    document.getElementById('admin-username').innerText = user.getUsername();
-    document.getElementById('admin-avatar').innerText = user.getUsername()[0].toUpperCase();
+async function loadLanguages() {
+  const Language = Parse.Object.extend('Language');
+  const query = new Parse.Query(Language);
+  query.descending('createdAt');
+  try {
+    const results = await query.find();
+    allLanguages = results;
+    renderLanguageTable();
+    populateLanguageDropdowns();
+  } catch (e) {
+    console.error("Gagal load bahasa", e);
+    document.getElementById('lang-table-body').innerHTML = '<tr><td colspan="5">Gagal memuat data</td></tr>';
+  }
+}
+
+function renderLanguageTable() {
+  const tbody = document.getElementById('lang-table-body');
+  if (allLanguages.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">Belum ada bahasa</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allLanguages.map(lang => {
+    const status = lang.get('isActive') ? '<span class="badge success">Aktif</span>' : '<span class="badge danger">Nonaktif</span>';
+    return `
+    <tr>
+      <td>${lang.get('icon') || '🌐'}</td>
+      <td>${lang.get('name')}</td>
+      <td>${lang.get('code')}</td>
+      <td>${status}</td>
+      <td>
+        <div class="action-btns">
+          <button class="neo-btn warning" style="padding:8px 12px; font-size:0.8rem;" onclick="editLanguage('${lang.id}')">Edit</button>
+          <button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteLanguage('${lang.id}')">Hapus</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function populateLanguageDropdowns() {
+  const select = document.getElementById('word-lang');
+  if(select) {
+    select.innerHTML = '<option value="" disabled selected>Pilih Bahasa...</option>';
+    allLanguages.forEach(lang => {
+      if(lang.get('isActive')) {
+        const opt = document.createElement('option');
+        opt.value = lang.get('name');
+        opt.innerText = `${lang.get('icon')} ${lang.get('name')}`;
+        select.appendChild(opt);
+      }
+    });
+  }
+}
+
+function showAddLanguageForm() {
+  document.getElementById('add-lang-form').style.display = 'block';
+  document.getElementById('lang-id').value = '';
+  document.getElementById('lang-name').value = '';
+  document.getElementById('lang-code').value = '';
+  document.getElementById('lang-icon').value = '';
+  document.getElementById('lang-active').checked = true;
+}
+
+function editLanguage(id) {
+  const lang = allLanguages.find(l => l.id === id);
+  if (!lang) return;
+  document.getElementById('add-lang-form').style.display = 'block';
+  document.getElementById('lang-id').value = lang.id;
+  document.getElementById('lang-name').value = lang.get('name');
+  document.getElementById('lang-code').value = lang.get('code');
+  document.getElementById('lang-icon').value = lang.get('icon') || '';
+  document.getElementById('lang-color').value = lang.get('color') || '#FFE66D';
+  document.getElementById('lang-active').checked = lang.get('isActive');
+}
+
+async function saveLanguage() {
+  const id = document.getElementById('lang-id').value;
+  const name = document.getElementById('lang-name').value.trim();
+  const code = document.getElementById('lang-code').value.trim();
+  const icon = document.getElementById('lang-icon').value.trim();
+  const color = document.getElementById('lang-color').value;
+  const isActive = document.getElementById('lang-active').checked;
+
+  if (!name || !code) { alert('Nama dan Kode wajib diisi'); return; }
+
+  const Language = Parse.Object.extend('Language');
+  const langObj = id ? new Language() : new Language();
+  if (id) langObj.id = id;
+
+  langObj.set('name', name);
+  langObj.set('code', code);
+  langObj.set('icon', icon);
+  langObj.set('color', color);
+  langObj.set('isActive', isActive);
+
+  try {
+    await langObj.save();
+    showMsg(true, "Bahasa berhasil disimpan");
+    document.getElementById('add-lang-form').style.display = 'none';
+    loadLanguages();
     loadDashboardStats();
-    loadFeedback();
-    loadUsers();
-    loadVocabulary();
+  } catch (e) {
+    showMsg(false, "Gagal menyimpan: " + e.message);
+  }
+}
+
+async function deleteLanguage(id) {
+  if (!confirm('Hapus bahasa ini? Data kosakata terkait mungkin terdampak.')) return;
+  const Language = Parse.Object.extend('Language');
+  const langObj = new Language();
+  langObj.id = id;
+  try {
+    await langObj.destroy();
+    showMsg(true, "Bahasa dihapus");
+    loadLanguages();
+  } catch (e) {
+    showMsg(false, "Gagal menghapus");
+  }
+}
+
+async function checkAdmin() {
+  const user = Parse.User.current();
+  if (!user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  const isAdmin = user.get('isAdmin');
+  if (!isAdmin) {
+    showMsg(false, "Akses Ditolak: Anda tidak memiliki hak akses administrator.");
+    await Parse.User.logOut();
+    window.location.href = 'index.html';
+    return;
+  }
+  currentUser = user;
+  document.getElementById('admin-username').innerText = user.getUsername();
+  document.getElementById('admin-avatar').innerText = user.getUsername()[0].toUpperCase();
+  loadDashboardStats();
+  loadFeedback();
+  loadUsers();
+  loadVocabulary();
+  loadLanguages();
 }
 
 function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('active');
-    if (window.innerWidth <= 1024) {
-        if (sidebar.classList.contains('open')) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-        }
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('active');
+  if (window.innerWidth <= 1024) {
+    if (sidebar.classList.contains('open')) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
+  }
 }
 
 function showSection(sectionId, element) {
-    document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
-    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-    element.classList.add('active');
-    const titleText = element.innerText.split('. ')[1] || element.innerText;
-    document.getElementById('page-title').innerText = titleText;
-    if (window.innerWidth <= 1024) toggleSidebar();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(sectionId).classList.add('active');
+  document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+  element.classList.add('active');
+  const titleText = element.innerText.split('. ')[1] || element.innerText;
+  document.getElementById('page-title').innerText = titleText;
+  if (window.innerWidth <= 1024) toggleSidebar();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 document.querySelectorAll('.menu-item').forEach(item => {
-    item.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            item.click();
-        }
-    });
+  item.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      item.click();
+    }
+  });
 });
 
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar.classList.contains('open')) toggleSidebar();
-    }
+  if (e.key === 'Escape') {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar.classList.contains('open')) toggleSidebar();
+  }
 });
 
 let resizeTimer;
 window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        if (window.innerWidth > 1024) {
-            document.body.style.overflow = '';
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        }
-    }, 250);
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    if (window.innerWidth > 1024) {
+      document.body.style.overflow = '';
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    }
+  }, 250);
 });
 
 document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
 
 async function loadDashboardStats() {
-    const userQuery = new Parse.Query(Parse.User);
-    const userCount = await userQuery.count();
-    document.getElementById('total-users').innerText = userCount;
+  const userQuery = new Parse.Query(Parse.User);
+  const userCount = await userQuery.count();
+  document.getElementById('total-users').innerText = userCount;
 
-    const vocabQuery = new Parse.Query('Vocabulary');
-    const vocabCount = await vocabQuery.count();
-    document.getElementById('total-vocab').innerText = vocabCount;
+  const vocabQuery = new Parse.Query('Vocabulary');
+  const vocabCount = await vocabQuery.count();
+  document.getElementById('total-vocab').innerText = vocabCount;
 
-    const fbQuery = new Parse.Query('Feedback');
-    fbQuery.equalTo('status', 'baru');
-    const fbCount = await fbQuery.count();
-    document.getElementById('feedback-new').innerText = fbCount;
+  const fbQuery = new Parse.Query('Feedback');
+  fbQuery.equalTo('status', 'baru');
+  const fbCount = await fbQuery.count();
+  document.getElementById('feedback-new').innerText = fbCount;
 }
 
 async function loadFeedback() {
-    const Feedback = Parse.Object.extend('Feedback');
-    const query = new Parse.Query(Feedback);
-    query.include('user');
-    query.descending('createdAt');
-    query.limit(5);
-    const results = await query.find();
-    const tbody = document.getElementById('feedback-dash-body');
-    const listDiv = document.getElementById('feedback-list');
-    if (tbody) {
-        if (results.length === 0) tbody.innerHTML = '<tr><td colspan="4">Belum ada feedback</td></tr>';
-        else {
-            tbody.innerHTML = results.map(fb => {
-                const user = fb.get('user') ? fb.get('user').getUsername() : 'Anonymous';
-                const time = fb.get('createdAt') ? new Date(fb.get('createdAt')).toLocaleString() : '-';
-                const status = fb.get('status') || 'baru';
-                const badge = status === 'baru' ? '<span class="badge danger">Baru</span>' : '<span class="badge success">Dibaca</span>';
-                return `<tr><td>${user}</td><td>${fb.get('message')}</td><td>${time}</td><td>${badge}</td></tr>`;
-            }).join('');
-        }
+  const Feedback = Parse.Object.extend('Feedback');
+  const query = new Parse.Query(Feedback);
+  query.include('user');
+  query.descending('createdAt');
+  query.limit(5);
+  const results = await query.find();
+  const tbody = document.getElementById('feedback-dash-body');
+  const listDiv = document.getElementById('feedback-list');
+  if (tbody) {
+    if (results.length === 0) tbody.innerHTML = '<tr><td colspan="4">Belum ada feedback</td></tr>';
+    else {
+      tbody.innerHTML = results.map(fb => {
+        const user = fb.get('user') ? fb.get('user').getUsername() : 'Anonymous';
+        const time = fb.get('createdAt') ? new Date(fb.get('createdAt')).toLocaleString() : '-';
+        const status = fb.get('status') || 'baru';
+        const badge = status === 'baru' ? '<span class="badge danger">Baru</span>' : '<span class="badge success">Dibaca</span>';
+        return `<tr><td>${user}</td><td>${fb.get('message')}</td><td>${time}</td><td>${badge}</td></tr>`;
+      }).join('');
     }
-    if (listDiv) {
-        if (results.length === 0) listDiv.innerHTML = '<p>Belum ada feedback</p>';
-        else {
-            listDiv.innerHTML = results.map(fb => {
-                const user = fb.get('user') ? fb.get('user').getUsername() : 'Anonymous';
-                return `<div style="border:2px solid #111; padding:16px; border-radius:12px; background:white;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-                        <b>${user}</b><span style="font-size:0.8rem; color:var(--text-sub);">${new Date(fb.get('createdAt')).toLocaleString()}</span>
-                    </div>
-                    <p style="margin-bottom:12px;">"${fb.get('message')}"</p>
-                    <div class="neo-btn-group" style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button class="neo-btn" style="padding:10px 16px; font-size:0.85rem;" onclick="markFeedbackRead('${fb.id}')">Tandai Dibaca</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
+  }
+  if (listDiv) {
+    if (results.length === 0) listDiv.innerHTML = '<p>Belum ada feedback</p>';
+    else {
+      listDiv.innerHTML = results.map(fb => {
+        const user = fb.get('user') ? fb.get('user').getUsername() : 'Anonymous';
+        return `<div style="border:2px solid #111; padding:16px; border-radius:12px; background:white;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+            <b>${user}</b><span style="font-size:0.8rem; color:var(--text-sub);">${new Date(fb.get('createdAt')).toLocaleString()}</span>
+          </div>
+          <p style="margin-bottom:12px;">"${fb.get('message')}"</p>
+          <div class="neo-btn-group" style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="neo-btn" style="padding:10px 16px; font-size:0.85rem;" onclick="markFeedbackRead('${fb.id}')">Tandai Dibaca</button>
+          </div>
+        </div>`;
+      }).join('');
     }
+  }
 }
 
 async function markFeedbackRead(id) {
-    const fb = new Parse.Object('Feedback');
-    fb.id = id;
-    fb.set('status', 'dibaca');
-    await fb.save();
-    loadFeedback();
+  const fb = new Parse.Object('Feedback');
+  fb.id = id;
+  fb.set('status', 'dibaca');
+  await fb.save();
+  loadFeedback();
 }
 
 async function loadUsers() {
-    const query = new Parse.Query(Parse.User);
-    query.descending('createdAt');
-    const users = await query.find();
-    const tbody = document.getElementById('users-table-body');
-    if (users.length === 0) tbody.innerHTML = '<tr><td colspan="5">Tidak ada pengguna</td></tr>';
-    else {
-        tbody.innerHTML = users.map(u => {
-            const created = u.get('createdAt') ? new Date(u.get('createdAt')).toLocaleDateString() : '-';
-            return `<tr>
-                <td>${u.getUsername()}</td>
-                <td>${u.getEmail() || '-'}</td>
-                <td>User</td>
-                <td>${created}</td>
-                <td><div class="action-btns"><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteUser('${u.id}')">Hapus</button></div></td>
-            </tr>`;
-        }).join('');
-    }
+  const query = new Parse.Query(Parse.User);
+  query.descending('createdAt');
+  const users = await query.find();
+  const tbody = document.getElementById('users-table-body');
+  if (users.length === 0) tbody.innerHTML = '<tr><td colspan="5">Tidak ada pengguna</td></tr>';
+  else {
+    tbody.innerHTML = users.map(u => {
+      const created = u.get('createdAt') ? new Date(u.get('createdAt')).toLocaleDateString() : '-';
+      return `<tr>
+        <td>${u.getUsername()}</td>
+        <td>${u.getEmail() || '-'}</td>
+        <td>User</td>
+        <td>${created}</td>
+        <td><div class="action-btns"><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteUser('${u.id}')">Hapus</button></div></td>
+      </tr>`;
+    }).join('');
+  }
 }
 
 async function deleteUser(id) {
-    if (!confirm('Hapus pengguna ini?')) return;
-    const user = new Parse.User();
-    user.id = id;
-    await user.destroy();
-    loadUsers();
-    loadDashboardStats();
+  if (!confirm('Hapus pengguna ini?')) return;
+  const user = new Parse.User();
+  user.id = id;
+  await user.destroy();
+  loadUsers();
+  loadDashboardStats();
 }
 
 async function loadVocabulary() {
-    const Vocab = Parse.Object.extend('Vocabulary');
-    const query = new Parse.Query(Vocab);
-    query.descending('createdAt');
-    const items = await query.find();
-    const tbody = document.getElementById('vocab-table-body');
-    if (items.length === 0) tbody.innerHTML = '<tr><td colspan="7">Belum ada kosakata</td></tr>';
-    else {
-        tbody.innerHTML = items.map(v => {
-            return `<tr>
-                <td>${v.get('word') || '-'}</td>
-                <td>${v.get('translation') || '-'}</td>
-                <td>${v.get('romaji') || '-'}</td>
-                <td>${v.get('language') || '-'}</td>
-                <td>${v.get('category') || '-'}</td>
-                <td>${v.get('level') || '1'}</td>
-                <td><div class="action-btns"><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteVocab('${v.id}')">Hapus</button></div></td>
-            </tr>`;
-        }).join('');
-    }
+  const Vocab = Parse.Object.extend('Vocabulary');
+  const query = new Parse.Query(Vocab);
+  query.descending('createdAt');
+  const items = await query.find();
+  const tbody = document.getElementById('vocab-table-body');
+  if (items.length === 0) tbody.innerHTML = '<tr><td colspan="7">Belum ada kosakata</td></tr>';
+  else {
+    tbody.innerHTML = items.map(v => {
+      return `<tr>
+        <td>${v.get('word') || '-'}</td>
+        <td>${v.get('translation') || '-'}</td>
+        <td>${v.get('romaji') || '-'}</td>
+        <td>${v.get('language') || '-'}</td>
+        <td>${v.get('category') || '-'}</td>
+        <td>${v.get('level') || '1'}</td>
+        <td><div class="action-btns"><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteVocab('${v.id}')">Hapus</button></div></td>
+      </tr>`;
+    }).join('');
+  }
 }
 
 async function deleteVocab(id) {
-    if (!confirm('Hapus kosakata ini?')) return;
-    const v = new Parse.Object('Vocabulary');
-    v.id = id;
-    await v.destroy();
-    loadVocabulary();
-    loadDashboardStats();
+  if (!confirm('Hapus kosakata ini?')) return;
+  const v = new Parse.Object('Vocabulary');
+  v.id = id;
+  await v.destroy();
+  loadVocabulary();
+  loadDashboardStats();
 }
 
 function showAddWordForm() {
-    const form = document.getElementById('add-word-form');
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  const form = document.getElementById('add-word-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
 }
 
 async function saveVocabulary() {
-    const word = document.getElementById('word-id').value.trim();
-    const trans = document.getElementById('word-trans').value.trim();
-    const romaji = document.getElementById('word-romaji').value.trim();
-    const lang = document.getElementById('word-lang').value;
-    const cat = document.getElementById('word-category').value.trim();
-    const level = document.getElementById('word-level').value.trim() || '1';
-    if (!word || !trans || !lang || !cat) {
-        alert('Isi field yang wajib (kata asal, terjemahan, bahasa, kategori)');
-        return;
-    }
-    const Vocab = Parse.Object.extend('Vocabulary');
-    const v = new Vocab();
-    v.set('word', word);
-    v.set('translation', trans);
-    if (romaji) v.set('romaji', romaji);
-    v.set('language', lang);
-    v.set('category', cat);
-    v.set('level', level);
-    await v.save();
-    alert('Tersimpan');
-    document.getElementById('add-word-form').style.display = 'none';
-    document.getElementById('word-id').value = '';
-    document.getElementById('word-trans').value = '';
-    document.getElementById('word-romaji').value = '';
-    document.getElementById('word-category').value = '';
-    document.getElementById('word-level').value = '1';
-    loadVocabulary();
-    loadDashboardStats();
+  const word = document.getElementById('word-id').value.trim();
+  const trans = document.getElementById('word-trans').value.trim();
+  const romaji = document.getElementById('word-romaji').value.trim();
+  const lang = document.getElementById('word-lang').value;
+  const cat = document.getElementById('word-category').value.trim();
+  const level = document.getElementById('word-level').value.trim() || '1';
+  if (!word || !trans || !lang || !cat) {
+    alert('Isi field yang wajib (kata asal, terjemahan, bahasa, kategori)');
+    return;
+  }
+  const Vocab = Parse.Object.extend('Vocabulary');
+  const v = new Vocab();
+  v.set('word', word);
+  v.set('translation', trans);
+  if (romaji) v.set('romaji', romaji);
+  v.set('language', lang);
+  v.set('category', cat);
+  v.set('level', level);
+  await v.save();
+  alert('Tersimpan');
+  document.getElementById('add-word-form').style.display = 'none';
+  document.getElementById('word-id').value = '';
+  document.getElementById('word-trans').value = '';
+  document.getElementById('word-romaji').value = '';
+  document.getElementById('word-category').value = '';
+  document.getElementById('word-level').value = '1';
+  loadVocabulary();
+  loadDashboardStats();
 }
 
 async function handleLogout() {
-    await Parse.User.logOut();
-    currentUser = null;
-    showMsg(true, "Berhasil Logout");
-    window.location.href = 'index.html';
+  await Parse.User.logOut();
+  currentUser = null;
+  showMsg(true, "Berhasil Logout");
+  window.location.href = 'index.html';
 }
 
 checkAdmin();

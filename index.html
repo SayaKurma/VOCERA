@@ -1339,6 +1339,11 @@
       const username = userField?.value.trim() || '';
       const password = passField?.value.trim() || '';
       state.loginError = '';
+      if (!username || !password) {
+        state.loginError = '❌ Username dan Password wajib diisi!';
+        openFooter('profil');
+        return;
+      }
       try {
         const user = await Parse.User.logIn(username, password);
         state.isLoggedIn = true; state.currentUser = user.getUsername();

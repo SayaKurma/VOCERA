@@ -603,25 +603,24 @@ body {
             <div class="menu-item" onclick="showSection('users', this)" role="button" tabindex="0">👥 2. Pengguna</div>
             <div class="menu-item" onclick="showSection('languages', this)" role="button" tabindex="0">🌐 3. Bahasa</div>
             <div class="menu-item" onclick="showSection('vocabulary', this)" role="button" tabindex="0">📚 4. Kosakata</div>
-            <div class="menu-item" onclick="showSection('question-bank', this)" role="button" tabindex="0">📝 5. Bank Soal</div>
-            <div class="menu-item" onclick="showSection('learning-structure', this)" role="button" tabindex="0">🏗️ 6. Level</div>
+            <div class="menu-item" onclick="showSection('categories', this)" role="button" tabindex="0">📁 5. Kategori</div>
 
             <div class="menu-category">Konfigurasi Game</div>
-            <div class="menu-item" onclick="showSection('game-modules', this)" role="button" tabindex="0">🎮 7. Modul Game</div>
-            <div class="menu-item" onclick="showSection('ui-settings', this)" role="button" tabindex="0">🎨 8. UI Settings</div>
+            <div class="menu-item" onclick="showSection('game-modules', this)" role="button" tabindex="0">🎮 6. Modul Game</div>
+            <div class="menu-item" onclick="showSection('ui-settings', this)" role="button" tabindex="0">🎨 7. UI Settings</div>
 
             <div class="menu-category">Data & Analitik</div>
-            <div class="menu-item" onclick="showSection('analytics', this)" role="button" tabindex="0">📈 9. Analitik</div>
-            <div class="menu-item" onclick="showSection('leaderboard', this)" role="button" tabindex="0">🏆 10. Leaderboard</div>
-            <div class="menu-item" onclick="showSection('feedback', this)" role="button" tabindex="0">💬 11. Feedback</div>
+            <div class="menu-item" onclick="showSection('analytics', this)" role="button" tabindex="0">📈 8. Analitik</div>
+            <div class="menu-item" onclick="showSection('leaderboard', this)" role="button" tabindex="0">🏆 9. Leaderboard</div>
+            <div class="menu-item" onclick="showSection('feedback', this)" role="button" tabindex="0">💬 10. Feedback</div>
 
             <div class="menu-category">Sistem & Keamanan</div>
-            <div class="menu-item" onclick="showSection('authentication', this)" role="button" tabindex="0">🔐 12. Autentikasi</div>
-            <div class="menu-item" onclick="showSection('security', this)" role="button" tabindex="0">🛡️ 13. Keamanan</div>
-            <div class="menu-item" onclick="showSection('integrations', this)" role="button" tabindex="0">🔌 14. Integrasi</div>
-            <div class="menu-item" onclick="showSection('logs', this)" role="button" tabindex="0">📜 15. Logs</div>
-            <div class="menu-item" onclick="showSection('settings', this)" role="button" tabindex="0">⚙️ 16. Pengaturan</div>
-            <div class="menu-item" onclick="showSection('admin-management', this)" role="button" tabindex="0">👨‍💼 17. Admin</div>
+            <div class="menu-item" onclick="showSection('authentication', this)" role="button" tabindex="0">🔐 11. Autentikasi</div>
+            <div class="menu-item" onclick="showSection('security', this)" role="button" tabindex="0">🛡️ 12. Keamanan</div>
+            <div class="menu-item" onclick="showSection('integrations', this)" role="button" tabindex="0">🔌 13. Integrasi</div>
+            <div class="menu-item" onclick="showSection('logs', this)" role="button" tabindex="0">📜 14. Logs</div>
+            <div class="menu-item" onclick="showSection('settings', this)" role="button" tabindex="0">⚙️ 15. Pengaturan</div>
+            <div class="menu-item" onclick="showSection('admin-management', this)" role="button" tabindex="0">👨‍💼 16. Admin</div>
         </div>
         <div class="sidebar-footer">
             <div class="menu-item" style="background:var(--color-3); color:white;" onclick="handleLogout()" role="button" tabindex="0">🚪 Logout</div>
@@ -708,6 +707,45 @@ body {
             </div>
         </div>
 
+        <div id="categories" class="section">
+            <div class="neo-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3>Manajemen Kategori</h3>
+                    <button class="neo-btn" onclick="showAddCategoryForm()">+ Tambah Kategori</button>
+                </div>
+                <div id="add-category-form" style="display:none; margin-bottom:20px; padding:16px; background:var(--color-1); border:var(--border-thick); border-radius:var(--radius-sm);">
+                    <h4>Form Kategori</h4>
+                    <input type="hidden" id="cat-id">
+                    <div class="form-grid">
+                        <input type="text" class="neo-input" id="cat-name" placeholder="Nama Internal (ex: Animals)">
+                        <input type="text" class="neo-input" id="cat-display" placeholder="Tampilan (ex: Hewan)">
+                        <input type="text" class="neo-input" id="cat-icon" placeholder="Icon (ex: 🐾)">
+                        <input type="number" class="neo-input" id="cat-order" placeholder="Urutan" value="1">
+                        <select class="neo-select" id="cat-language">
+                            <option value="Inggris">Inggris</option>
+                            <option value="Jepang">Jepang</option>
+                            <option value="Spanyol">Spanyol</option>
+                        </select>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <label><input type="checkbox" id="cat-active" checked> Aktif</label>
+                    </div>
+                    <div style="margin-top:16px; display:flex; gap:10px;">
+                        <button class="neo-btn" onclick="saveCategory()">Simpan</button>
+                        <button class="neo-btn secondary" onclick="document.getElementById('add-category-form').style.display='none'">Batal</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead><tr><th>Icon</th><th>Nama</th><th>Tampilan</th><th>Bahasa</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody id="category-table-body">
+                            <tr><td colspan="6">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div id="vocabulary" class="section">
             <div class="neo-box">
                 <div class="neo-btn-group" style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
@@ -722,7 +760,9 @@ body {
                         <select class="neo-select" id="word-lang">
                             <option value="" disabled>Pilih Bahasa...</option>
                         </select>
-                        <input type="text" class="neo-input" id="word-category" placeholder="Kategori (contoh: Animals)">
+                        <select class="neo-select" id="word-category">
+                            <option value="" disabled selected>Pilih Kategori...</option>
+                        </select>
                         <input type="text" class="neo-input" id="word-level" placeholder="Level (1/2/3)">
                     </div>
                     <button class="neo-btn" onclick="saveVocabulary()">Simpan</button>
@@ -735,39 +775,6 @@ body {
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-
-        <div id="question-bank" class="section">
-            <div class="neo-box">
-                <h3>Bank Soal Quiz</h3>
-                <div class="form-grid" style="margin-top:20px;">
-                    <input type="text" class="neo-input" placeholder="Pertanyaan">
-                    <input type="text" class="neo-input" placeholder="Jawaban Benar">
-                </div>
-                <div class="form-grid">
-                    <input type="text" class="neo-input" placeholder="Pilihan A">
-                    <input type="text" class="neo-input" placeholder="Pilihan B">
-                </div>
-                <button class="neo-btn" style="width:100%;">Simpan Soal</button>
-            </div>
-        </div>
-
-        <div id="learning-structure" class="section">
-            <div class="neo-box">
-                <h3>Peta Pembelajaran</h3>
-                <p style="margin-bottom:16px; color:var(--text-sub);">Atur urutan level dan bab.</p>
-                <div class="form-grid">
-                    <div>
-                        <label style="font-weight:700; display:block; margin-bottom:8px;">Level</label>
-                        <select class="neo-select"><option>Level 1</option><option>Level 2</option></select>
-                    </div>
-                    <div>
-                        <label style="font-weight:700; display:block; margin-bottom:8px;">Bab</label>
-                        <input type="text" class="neo-input" value="Hiragana Dasar">
-                    </div>
-                </div>
-                <button class="neo-btn" style="width:100%;">Update Struktur</button>
             </div>
         </div>
 
@@ -790,17 +797,22 @@ body {
 
         <div id="ui-settings" class="section">
             <div class="neo-box">
-                <h3>Tampilan Aplikasi</h3>
+                <h3>Manajemen Label UI</h3>
+                <p style="margin-bottom:16px; color:var(--text-sub);">
+                    Edit teks tombol dan judul tanpa mengubah kode
+                </p>
                 <div class="form-grid" style="margin-top:20px;">
-                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Warna Utama</label><input type="color" class="neo-input" value="#FFE66D" style="height:50px; padding:4px;"></div>
-                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Font Size</label><select class="neo-select"><option>Normal</option><option>Besar</option></select></div>
+                    <select class="neo-select" id="ui-language" onchange="loadUISettingsForLang()">
+                        <option value="Inggris">Inggris</option>
+                        <option value="Jepang">Jepang</option>
+                        <option value="Spanyol">Spanyol</option>
+                    </select>
                 </div>
-                <div style="margin-top:16px;">
-                    <label style="display:flex; align-items:center; gap:10px; font-weight:700; min-height:48px;">
-                        <input type="checkbox" checked style="width:20px; height:20px;"> Aktifkan Efek Suara
-                    </label>
+                <div id="ui-settings-list" style="margin-top:20px;">
                 </div>
-                <button class="neo-btn" style="width:100%; margin-top:20px;">Simpan UI</button>
+                <button class="neo-btn" style="width:100%; margin-top:20px;" onclick="saveAllUISettings()">
+                    Simpan Semua Label
+                </button>
             </div>
         </div>
 
@@ -939,23 +951,27 @@ Parse.serverURL = 'https://parseapi.back4app.com/';
 
 let currentUser = null;
 let allLanguages = [];
+let allCategories = [];
+let uiSettingsData = [];
 
 function showMsg(isSuccess, text) {
-  const toast = document.getElementById('toast');
-  const icon = document.getElementById('toast-icon');
-  const msg = document.getElementById('toast-msg');
-  if (isSuccess) {
-    toast.style.background = "var(--color-2)";
-    toast.style.color = "#111";
-    icon.innerText = "✅";
-  } else {
-    toast.style.background = "var(--color-3)";
-    toast.style.color = "#111";
-    icon.innerText = "❌";
-  }
-  msg.innerText = text;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2000);
+  const toast = document.createElement('div');
+  toast.style.position = 'fixed';
+  toast.style.top = '30px';
+  toast.style.left = '50%';
+  toast.style.transform = 'translateX(-50%)';
+  toast.style.padding = '16px 32px';
+  toast.style.background = isSuccess ? 'var(--color-2)' : 'var(--color-3)';
+  toast.style.color = '#111';
+  toast.style.fontWeight = '800';
+  toast.style.borderRadius = '50px';
+  toast.style.zIndex = '9999';
+  toast.style.boxShadow = '4px 4px 0px #111';
+  toast.style.border = '3px solid #111';
+  toast.style.transition = 'opacity 0.3s';
+  toast.innerText = (isSuccess ? '✅ ' : '❌ ') + text;
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
 }
 
 async function loadLanguages() {
@@ -1078,6 +1094,219 @@ async function deleteLanguage(id) {
   }
 }
 
+async function loadCategories() {
+  const Category = Parse.Object.extend('Category');
+  const query = new Parse.Query(Category);
+  query.descending('order');
+  try {
+    const results = await query.find();
+    allCategories = results;
+    renderCategoryTable();
+    populateCategoryDropdown();
+  } catch (e) {
+    console.error("Gagal load kategori", e);
+    document.getElementById('category-table-body').innerHTML = '<tr><td colspan="6">Gagal memuat data</td></tr>';
+  }
+}
+
+function renderCategoryTable() {
+  const tbody = document.getElementById('category-table-body');
+  if (allCategories.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">📭 Belum ada kategori. Klik "+ Tambah Kategori" untuk memulai.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allCategories.map(cat => {
+    const status = cat.get('isActive') ? '<span class="badge success">Aktif</span>' : '<span class="badge danger">Nonaktif</span>';
+    return `
+    <tr>
+      <td>${cat.get('icon') || '📁'}</td>
+      <td>${cat.get('name')}</td>
+      <td>${cat.get('displayName')}</td>
+      <td>${cat.get('language')}</td>
+      <td>${status}</td>
+      <td>
+        <div class="action-btns">
+          <button class="neo-btn warning" style="padding:8px 12px; font-size:0.8rem;" onclick="editCategory('${cat.id}')">Edit</button>
+          <button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteCategory('${cat.id}')">Hapus</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function populateCategoryDropdown() {
+  const select = document.getElementById('word-category');
+  if(select) {
+    select.innerHTML = '<option value="" disabled selected>Pilih Kategori...</option>';
+    allCategories.forEach(cat => {
+      if(cat.get('isActive')) {
+        const opt = document.createElement('option');
+        opt.value = cat.get('name');
+        opt.innerText = `${cat.get('icon')} ${cat.get('displayName')}`;
+        select.appendChild(opt);
+      }
+    });
+  }
+}
+
+function showAddCategoryForm() {
+  document.getElementById('add-category-form').style.display = 'block';
+  document.getElementById('cat-id').value = '';
+  document.getElementById('cat-name').value = '';
+  document.getElementById('cat-display').value = '';
+  document.getElementById('cat-icon').value = '';
+  document.getElementById('cat-order').value = '1';
+  document.getElementById('cat-active').checked = true;
+}
+
+function editCategory(id) {
+  const cat = allCategories.find(c => c.id === id);
+  if (!cat) return;
+  document.getElementById('add-category-form').style.display = 'block';
+  document.getElementById('cat-id').value = cat.id;
+  document.getElementById('cat-name').value = cat.get('name');
+  document.getElementById('cat-display').value = cat.get('displayName');
+  document.getElementById('cat-icon').value = cat.get('icon') || '';
+  document.getElementById('cat-order').value = cat.get('order') || '1';
+  document.getElementById('cat-language').value = cat.get('language') || 'Inggris';
+  document.getElementById('cat-active').checked = cat.get('isActive');
+}
+
+async function saveCategory() {
+  const id = document.getElementById('cat-id').value;
+  const name = document.getElementById('cat-name').value.trim();
+  const displayName = document.getElementById('cat-display').value.trim();
+  const icon = document.getElementById('cat-icon').value.trim();
+  const order = parseInt(document.getElementById('cat-order').value) || 1;
+  const language = document.getElementById('cat-language').value;
+  const isActive = document.getElementById('cat-active').checked;
+
+  if (!name || !displayName) { 
+    alert('Nama dan Tampilan wajib diisi'); 
+    return; 
+  }
+
+  const Category = Parse.Object.extend('Category');
+  const catObj = id ? new Category() : new Category();
+  if (id) catObj.id = id;
+
+  catObj.set('name', name);
+  catObj.set('displayName', displayName);
+  catObj.set('icon', icon);
+  catObj.set('order', order);
+  catObj.set('language', language);
+  catObj.set('isActive', isActive);
+
+  try {
+    await catObj.save();
+    showMsg(true, "Kategori berhasil disimpan");
+    document.getElementById('add-category-form').style.display = 'none';
+    loadCategories();
+  } catch (e) {
+    showMsg(false, "Gagal menyimpan: " + e.message);
+  }
+}
+
+async function deleteCategory(id) {
+  if (!confirm('Hapus kategori ini? Kosakata terkait tidak akan terhapus tetapi mungkin tidak terlihat.')) return;
+  const Category = Parse.Object.extend('Category');
+  const catObj = new Category();
+  catObj.id = id;
+  try {
+    await catObj.destroy();
+    showMsg(true, "Kategori dihapus");
+    loadCategories();
+  } catch (e) {
+    showMsg(false, "Gagal menghapus");
+  }
+}
+
+async function loadUISettingsForLang() {
+  const lang = document.getElementById('ui-language').value;
+  const UISettings = Parse.Object.extend("LanguageSettings");
+  const query = new Parse.Query(UISettings);
+  query.equalTo("language", lang);
+  try {
+    const results = await query.find();
+    uiSettingsData = results;
+    renderUISettingsForm(lang);
+  } catch (e) {
+    console.error("Gagal load UI settings", e);
+  }
+}
+
+function renderUISettingsForm(lang) {
+  const defaults = [
+    { key: 'study', value: 'Study', icon: '📚' },
+    { key: 'quiz', value: 'Quiz', icon: '🎯' },
+    { key: 'tf', value: 'True/False', icon: '⚖️' },
+    { key: 'match', value: 'Match', icon: '🧩' },
+    { key: 'guess', value: 'Guess', icon: '🤔' }
+  ];
+
+  const container = document.getElementById('ui-settings-list');
+  container.innerHTML = defaults.map(def => {
+    const existing = uiSettingsData.find(u => u.get('key') === def.key);
+    const value = existing ? existing.get('value') : def.value;
+    const icon = existing ? existing.get('icon') : def.icon;
+
+    return `
+    <div style="margin-bottom:16px; padding:12px; background:#f9f9f9; border:2px solid #111; border-radius:12px;">
+      <label style="font-weight:700; display:block; margin-bottom:8px; text-transform:uppercase; font-size:0.8rem;">
+        ${def.key}
+      </label>
+      <div class="form-grid" style="margin-bottom:0;">
+        <input type="text" class="neo-input ui-setting-input" 
+          data-key="${def.key}" 
+          value="${value}" 
+          placeholder="Label" 
+          style="padding:10px;">
+        <input type="text" class="neo-input ui-setting-icon" 
+          data-key="${def.key}" 
+          value="${icon}" 
+          placeholder="Icon" 
+          style="padding:10px; max-width:100px;">
+      </div>
+    </div>
+    `;
+  }).join('');
+}
+
+async function saveAllUISettings() {
+  const lang = document.getElementById('ui-language').value;
+  const inputs = document.querySelectorAll('.ui-setting-input');
+  const icons = document.querySelectorAll('.ui-setting-icon');
+  const UISettings = Parse.Object.extend("LanguageSettings");
+
+  try {
+    for (let input of inputs) {
+      const key = input.getAttribute('data-key');
+      const value = input.value;
+      const iconEl = document.querySelector(`.ui-setting-icon[data-key="${key}"]`);
+      const icon = iconEl ? iconEl.value : '';
+
+      const query = new Parse.Query(UISettings);
+      query.equalTo("language", lang);
+      query.equalTo("key", key);
+      let uiObj = await query.first();
+
+      if (!uiObj) {
+        uiObj = new UISettings();
+        uiObj.set("language", lang);
+        uiObj.set("key", key);
+      }
+
+      uiObj.set("value", value);
+      uiObj.set("icon", icon);
+      await uiObj.save();
+    }
+
+    showMsg(true, "Label UI berhasil disimpan");
+  } catch (e) {
+    showMsg(false, "Gagal menyimpan: " + e.message);
+  }
+}
+
 async function checkAdmin() {
   const user = Parse.User.current();
   if (!user) {
@@ -1099,6 +1328,8 @@ async function checkAdmin() {
   loadUsers();
   loadVocabulary();
   loadLanguages();
+  loadCategories();
+  loadUISettingsForLang();
 }
 
 function toggleSidebar() {
@@ -1283,7 +1514,12 @@ async function deleteVocab(id) {
 
 function showAddWordForm() {
   const form = document.getElementById('add-word-form');
-  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  if (form.style.display === 'none' || form.style.display === '') {
+    form.style.display = 'block';
+    populateCategoryDropdown();
+  } else {
+    form.style.display = 'none';
+  }
 }
 
 async function saveVocabulary() {
@@ -1291,7 +1527,7 @@ async function saveVocabulary() {
   const trans = document.getElementById('word-trans').value.trim();
   const romaji = document.getElementById('word-romaji').value.trim();
   const lang = document.getElementById('word-lang').value;
-  const cat = document.getElementById('word-category').value.trim();
+  const cat = document.getElementById('word-category').value;
   const level = document.getElementById('word-level').value.trim() || '1';
   if (!word || !trans || !lang || !cat) {
     alert('Isi field yang wajib (kata asal, terjemahan, bahasa, kategori)');
@@ -1305,6 +1541,7 @@ async function saveVocabulary() {
   v.set('language', lang);
   v.set('category', cat);
   v.set('level', level);
+  v.set('isActive', true);
   await v.save();
   alert('Tersimpan');
   document.getElementById('add-word-form').style.display = 'none';

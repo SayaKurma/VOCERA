@@ -388,6 +388,31 @@ body {
     font-size: 0.8rem;
     min-height: 40px;
 }
+.tr-group-header {
+    background: #f0f0f0;
+    font-weight: 900;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+.tr-group-header:hover {
+    background: #e0e0e0;
+}
+.tr-group-header td {
+    border-bottom: 2px solid #111;
+    padding: 10px 12px;
+}
+.group-level-1 { background: var(--color-1); color: #111; }
+.group-level-2 { background: #fff; border-left: 4px solid var(--color-2); }
+.group-level-3 { background: #fff; border-left: 4px solid var(--color-4); }
+.indent-1 { padding-left: 20px !important; }
+.indent-2 { padding-left: 40px !important; }
+.indent-3 { padding-left: 60px !important; }
+.row-hidden { display: none; }
+.toggle-icon { display: inline-block; width: 20px; text-align: center; transition: transform 0.2s; }
+.toggle-icon.rotated { transform: rotate(90deg); }
+.tr-data-row:nth-child(even) { background: #fafafa; }
+.tr-data-row:hover { background: #f0f8ff; }
 @media (max-width: 1024px) {
     .sidebar { 
         transform: translateX(-100%); 
@@ -660,8 +685,13 @@ body {
         </div>
         <div id="vocabulary" class="section">
             <div class="neo-box">
-                <div class="neo-btn-group" style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
-                    <button class="neo-btn" onclick="showAddWordForm()">+ Tambah Kata</button>
+                <div class="neo-btn-group" style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; justify-content: space-between; align-items: center;">
+                    <div style="display:flex; gap:10px;">
+                        <button class="neo-btn" onclick="showAddWordForm()">+ Tambah Kata</button>
+                        <button class="neo-btn secondary" onclick="expandAllGroups()">📂 Buka Semua</button>
+                        <button class="neo-btn secondary" onclick="collapseAllGroups()">📁 Tutup Semua</button>
+                    </div>
+                    <div style="font-size:0.9rem; font-weight:700;" id="vocab-summary">Memuat...</div>
                 </div>
                 <div id="add-word-form" style="display:none; margin-bottom:20px; padding:16px; background:var(--color-1); border:var(--border-thick); border-radius:var(--radius-sm);">
                     <h4>Tambah Kosakata Baru</h4>
@@ -681,18 +711,22 @@ body {
                 </div>
                 <div class="table-responsive">
                     <table class="admin-table" role="table">
-                        <thead><tr><th scope="col">ID (Indo)</th><th scope="col">Translasi</th><th scope="col">Romaji</th><th scope="col">Bahasa</th><th scope="col">Kategori</th><th scope="col">Level</th><th scope="col">Aksi</th></tr></thead>
+                        <thead>
+                            <tr>
+                                <th scope="col" style="width: 50px;">🔽</th>
+                                <th scope="col">ID (Indo)</th>
+                                <th scope="col">Translasi</th>
+                                <th scope="col">Romaji</th>
+                                <th scope="col">Bahasa</th>
+                                <th scope="col">Kategori</th>
+                                <th scope="col">Level</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
                         <tbody id="vocab-table-body">
-                            <tr><td colspan="7">Memuat data...</td></tr>
+                            <tr><td colspan="8">Memuat data...</td></tr>
                         </tbody>
                     </table>
-                </div>
-                <div id="vocab-pagination" style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:10px;">
-                    <span id="vocab-page-info" style="font-weight:700; font-size:0.9rem;">Halaman 1</span>
-                    <div style="display:flex; gap:8px;">
-                        <button class="neo-btn secondary" id="vocab-prev-btn" onclick="changeVocabPage(-1)" disabled>← Sebelumnya</button>
-                        <button class="neo-btn secondary" id="vocab-next-btn" onclick="changeVocabPage(1)">Selanjutnya →</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -859,7 +893,7 @@ let allLanguages = [];
 let allCategories = [];
 let uiSettingsData = [];
 let vocabPage = 1;
-const VOCAB_PER_PAGE = 20;
+const VOCAB_PER_PAGE = 500;
 let vocabTotalCount = 0;
 function showMsg(isSuccess, text) {
   const toast = document.createElement('div');
@@ -1374,71 +1408,132 @@ async function loadVocabulary(page = 1) {
   vocabPage = page;
   const Vocab = Parse.Object.extend('Vocabulary');
   const query = new Parse.Query(Vocab);
-  query.descending('createdAt');
+  query.descending('level');
+  query.addAscending('language');
+  query.addAscending('category');
+  query.addAscending('word');
   query.limit(VOCAB_PER_PAGE);
-  query.skip((page - 1) * VOCAB_PER_PAGE);
-  query.select(['word', 'translation', 'romaji', 'language', 'category', 'level']);
+  query.select(['word', 'translation', 'romaji', 'language', 'category', 'level', 'isActive']);
   try {
-    const [items, count] = await Promise.all([
-      query.find(),
-      new Parse.Query(Vocab).count()
-    ]);
-    vocabTotalCount = count;
-    renderVocabularyTable(items);
-    renderVocabPagination();
+    const items = await query.find();
+    vocabTotalCount = items.length;
+    renderHierarchicalVocabulary(items);
+    updateVocabSummary(items.length);
   } catch (e) {
     console.error("Gagal load vocabulary", e);
-    document.getElementById('vocab-table-body').innerHTML = '<tr><td colspan="7">Gagal memuat data</td></tr>';
+    document.getElementById('vocab-table-body').innerHTML = '<tr><td colspan="8">Gagal memuat data</td></tr>';
   }
 }
-function renderVocabularyTable(items) {
+function updateVocabSummary(count) {
+  document.getElementById('vocab-summary').innerText = `Total: ${count} Kata`;
+}
+function groupVocabularyData(items) {
+  const groups = {};
+  items.forEach(item => {
+    const level = item.get('level') || 1;
+    const lang = item.get('language') || 'Umum';
+    const cat = item.get('category') || 'Umum';
+    if (!groups[level]) groups[level] = {};
+    if (!groups[level][lang]) groups[level][lang] = {};
+    if (!groups[level][lang][cat]) groups[level][lang][cat] = [];
+    groups[level][lang][cat].push(item);
+  });
+  return groups;
+}
+function renderHierarchicalVocabulary(items) {
   const tbody = document.getElementById('vocab-table-body');
   if (items.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">📭 Tidak ada kosakata</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">📭 Tidak ada kosakata</td></tr>';
     return;
   }
-  tbody.innerHTML = items.map(v => {
-    return `<tr>
-      <td>${v.get('word') || '-'}</td>
-      <td>${v.get('translation') || '-'}</td>
-      <td>${v.get('romaji') || '-'}</td>
-      <td>${v.get('language') || '-'}</td>
-      <td>${v.get('category') || '-'}</td>
-      <td><span class="badge warning">L${v.get('level') || '1'}</span></td>
-      <td>
-        <div class="action-btns">
-          <button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteVocab('${v.id}')">Hapus</button>
-        </div>
-      </td>
+  const groupedData = groupVocabularyData(items);
+  let html = '';
+  for (const [level, languages] of Object.entries(groupedData)) {
+    const levelId = `grp-lvl-${level}`;
+    const levelCount = Object.values(languages).reduce((acc, langs) => acc + Object.values(langs).reduce((a, c) => a + c.length, 0), 0);
+    html += `
+    <tr class="tr-group-header group-level-1" id="${levelId}" onclick="toggleGroup('${levelId}')">
+        <td><span class="toggle-icon" id="icon-${levelId}">▶</span></td>
+        <td colspan="7" class="indent-1">LEVEL ${level} <span style="font-weight:400; font-size:0.8em;">(${levelCount} Kata)</span></td>
     </tr>`;
-  }).join('');
+    for (const [lang, categories] of Object.entries(languages)) {
+      const langId = `${levelId}-lang-${lang.replace(/\s+/g, '-')}`;
+      const langCount = Object.values(categories).reduce((a, c) => a + c.length, 0);
+      html += `
+      <tr class="tr-group-header group-level-2 row-hidden" data-parent="${levelId}" id="${langId}" onclick="toggleGroup('${langId}')">
+          <td><span class="toggle-icon" id="icon-${langId}">▶</span></td>
+          <td colspan="7" class="indent-2">🌐 ${lang} <span style="font-weight:400; font-size:0.8em;">(${langCount} Kata)</span></td>
+      </tr>`;
+      for (const [cat, words] of Object.entries(categories)) {
+        const catId = `${langId}-cat-${cat.replace(/\s+/g, '-')}`;
+        html += `
+        <tr class="tr-group-header group-level-3 row-hidden" data-parent="${langId}" id="${catId}" onclick="toggleGroup('${catId}')">
+            <td><span class="toggle-icon" id="icon-${catId}">▶</span></td>
+            <td colspan="7" class="indent-3">📁 ${cat} <span style="font-weight:400; font-size:0.8em;">(${words.length} Kata)</span></td>
+        </tr>`;
+        words.forEach(v => {
+          html += `
+          <tr class="tr-data-row row-hidden" data-parent="${catId}">
+              <td></td>
+              <td class="indent-3">${v.get('word') || '-'}</td>
+              <td>${v.get('translation') || '-'}</td>
+              <td>${v.get('romaji') || '-'}</td>
+              <td>${v.get('language') || '-'}</td>
+              <td>${v.get('category') || '-'}</td>
+              <td><span class="badge warning">L${v.get('level') || '1'}</span></td>
+              <td>
+                  <div class="action-btns">
+                      <button class="neo-btn danger" style="padding:4px 8px; font-size:0.7rem;" onclick="deleteVocab('${v.id}')">Hapus</button>
+                  </div>
+              </td>
+          </tr>`;
+        });
+      }
+    }
+  }
+  tbody.innerHTML = html;
+  document.querySelectorAll('.group-level-1').forEach(el => toggleGroup(el.id, true));
 }
-function renderVocabPagination() {
-  const totalPages = Math.ceil(vocabTotalCount / VOCAB_PER_PAGE);
-  const infoEl = document.getElementById('vocab-page-info');
-  const prevBtn = document.getElementById('vocab-prev-btn');
-  const nextBtn = document.getElementById('vocab-next-btn');
-  if (infoEl) {
-    infoEl.innerText = `Halaman ${vocabPage} dari ${totalPages} (${vocabTotalCount} data)`;
+function toggleGroup(groupId, forceOpen = false) {
+  const row = document.getElementById(groupId);
+  const icon = document.getElementById(`icon-${groupId}`);
+  const children = document.querySelectorAll(`[data-parent="${groupId}"]`);
+  const isHidden = children.length > 0 && children[0].classList.contains('row-hidden');
+  const shouldOpen = forceOpen || isHidden;
+  if (icon) {
+    icon.classList.toggle('rotated', shouldOpen);
+    icon.innerText = shouldOpen ? '▼' : '▶';
   }
-  if (prevBtn) {
-    prevBtn.disabled = vocabPage <= 1;
-  }
-  if (nextBtn) {
-    nextBtn.disabled = vocabPage >= totalPages;
-  }
+  children.forEach(child => {
+    if (shouldOpen) {
+      child.classList.remove('row-hidden');
+    } else {
+      child.classList.add('row-hidden');
+      const childIcon = document.getElementById(`icon-${child.id}`);
+      if (childIcon) {
+        childIcon.classList.remove('rotated');
+        childIcon.innerText = '▶';
+      }
+      const grandchildren = document.querySelectorAll(`[data-parent="${child.id}"]`);
+      grandchildren.forEach(gc => gc.classList.add('row-hidden'));
+    }
+  });
 }
-function changeVocabPage(direction) {
-  const newPage = vocabPage + direction;
-  if (newPage < 1) return;
-  loadVocabulary(newPage);
+function expandAllGroups() {
+  const allGroups = document.querySelectorAll('.tr-group-header');
+  allGroups.forEach(grp => toggleGroup(grp.id, true));
+}
+function collapseAllGroups() {
+  const allGroups = document.querySelectorAll('.tr-group-header');
+  allGroups.forEach(grp => toggleGroup(grp.id, false));
+  document.querySelectorAll('.group-level-1').forEach(el => toggleGroup(el.id, true));
 }
 async function deleteVocab(id) {
   if (!confirm('Hapus kosakata ini?')) return;
   const v = new Parse.Object('Vocabulary');
   v.id = id;
   await v.destroy();
-  loadVocabulary(vocabPage);
+  loadVocabulary(1);
   loadDashboardStats();
 }
 function showAddWordForm() {

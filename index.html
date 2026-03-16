@@ -463,6 +463,23 @@
       margin-bottom: 8px;
       min-height: 18px;
     }
+    .skeleton-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .skeleton-card {
+      background: #e0e0e0;
+      border-radius: 16px;
+      height: 140px;
+      animation: pulse 1.5s infinite ease-in-out;
+      border: 3px solid #111;
+    }
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
   </style>
 </head>
 <body>
@@ -529,15 +546,75 @@
         <span style="font-size:1.2rem">🔗</span>
         <span>Share</span>
       </button>
-      <button class="footer-btn" onclick="openFooter('refresh')">
-        <span style="font-size:1.2rem">🔄</span>
-        <span>Refresh</span>
-      </button>
     </div>
   </footer>
   <script>
     Parse.initialize("j2ARdnYDMO2xGHZG9y1fcakwIfdEsGBEZZUjFPif", "OaN4WU4KlVV0iYz108BfeGVmiZbyNc5azZ5EVNDO");
     Parse.serverURL = 'https://parseapi.back4app.com/';
+    const DataController = {
+      cache: {
+        categories: null,
+        uiSettings: null,
+        vocab: {}
+      },
+      cacheTime: {
+        categories: 0,
+        uiSettings: 0
+      },
+      CACHE_DURATION: 300000,
+      async fetchLanguages() {
+        const Language = Parse.Object.extend("Language");
+        const query = new Parse.Query(Language);
+        query.equalTo("isActive", true);
+        query.select(['name', 'code', 'icon', 'color']);
+        return await query.find();
+      },
+      async fetchCategories(lang) {
+        const cached = localStorage.getItem('vocera_categories_' + lang);
+        const time = localStorage.getItem('vocera_categories_time');
+        const now = Date.now();
+        if (cached && time && (now - parseInt(time)) < this.CACHE_DURATION) {
+          return JSON.parse(cached);
+        }
+        const Category = Parse.Object.extend("Category");
+        const query = new Parse.Query(Category);
+        query.equalTo("isActive", true);
+        query.equalTo("language", lang);
+        query.ascending("order");
+        query.select(['name', 'displayName', 'icon', 'order']);
+        const results = await query.find();
+        const data = results.map(c => ({
+          name: c.get('name'),
+          displayName: c.get('displayName'),
+          icon: c.get('icon'),
+          order: c.get('order')
+        }));
+        localStorage.setItem('vocera_categories_' + lang, JSON.stringify(data));
+        localStorage.setItem('vocera_categories_time', now.toString());
+        return data;
+      },
+      async fetchVocabulary(lang, category, level) {
+        const cacheKey = `${lang}_${category}_${level || 'all'}`;
+        if (this.cache.vocab[cacheKey]) {
+          return this.cache.vocab[cacheKey];
+        }
+        const Vocab = Parse.Object.extend("Vocabulary");
+        const query = new Parse.Query(Vocab);
+        query.equalTo("language", lang);
+        query.equalTo("category", category);
+        query.equalTo("isActive", true);
+        query.select(['word', 'translation', 'romaji', 'level']);
+        const results = await query.find();
+        const data = results.map(v => ({
+          id: v.get('word'),
+          t: v.get('translation'),
+          r: v.get('romaji'),
+          level: String(v.get('level') || 1)
+        }));
+        this.cache.vocab[cacheKey] = data;
+        return data;
+      }
+    };
     const moduleConfig = {
       'study': { color: 'var(--color-1)', icon: '📚' },
       'quiz': { color: 'var(--color-2)', icon: '🎯' },
@@ -574,14 +651,7 @@
       regPassError: '',
       availableLanguages: [],
       availableCategories: [],
-      localUI: {},
-      localVersions: {
-        vocab: 0,
-        category: 0,
-        language: 0
-      },
-      lastMetadataCheck: 0,
-      metadataPollingInterval: null
+      localUI: {}
     };
     let timerInterval = null;
     let currentModuleColor = '#FFF';
@@ -612,16 +682,6 @@
         return '';
     }
     const footerConfig = {
-      'refresh': {
-        title: "Sinkronisasi Data",
-        render: () => `
-          <div class="neo-box list-item" style="flex-direction:column; text-align:center;" onclick="forceSync()">
-            <span style="font-size:2rem">🔄</span>
-            <span class="main-t">Refresh Data</span>
-            <span class="sub-t">Tarik data terbaru dari server</span>
-          </div>
-        `
-      },
       'profil': {
         title: "Profil Pengguna",
         render: () => {
@@ -801,7 +861,6 @@
         if (!state.unlockedLevels[state.lang]) state.unlockedLevels[state.lang] = {};
         user.set('progress', JSON.parse(JSON.stringify(state.unlockedLevels)));
         await user.save();
-        console.log("✅ Progres berhasil disinkronisasi");
         localStorage.setItem('lingoflow_unlocked', JSON.stringify(state.unlockedLevels));
       } catch (e) {
         console.error("❌ Gagal menyimpan progres ke cloud", e);
@@ -851,167 +910,9 @@
         </div>
       `;
     }
-    async function fetchMetadataVersion() {
-      try {
-        const AppMetadata = Parse.Object.extend('AppMetadata');
-        const query = new Parse.Query(AppMetadata);
-        const metadata = await query.first();
-        if (metadata) {
-          return {
-            vocab: metadata.get('vocabVersion') || 1,
-            category: metadata.get('categoryVersion') || 1,
-            language: metadata.get('languageVersion') || 1,
-            lastUpdate: metadata.get('lastGlobalUpdate')
-          };
-        }
-      } catch (e) {
-        console.warn('⚠️ Gagal fetch metadata:', e.message);
-      }
-      return null;
-    }
-    async function checkForUpdates() {
-      if (document.hidden) return;
-      const serverVer = await fetchMetadataVersion();
-      if (!serverVer) return;
-      const localVer = state.localVersions;
-      let needsRefresh = false;
-      if (serverVer.vocab > localVer.vocab) {
-        console.log('🔄 Vocabulary update tersedia');
-        needsRefresh = true;
-      }
-      if (serverVer.category > localVer.category) {
-        console.log('🔄 Category update tersedia');
-        needsRefresh = true;
-      }
-      if (serverVer.language > localVer.language) {
-        console.log('🔄 Language update tersedia');
-        needsRefresh = true;
-      }
-      if (needsRefresh) {
-        console.log('🚀 Memulai sync data...');
-        state.localVersions = {
-          vocab: serverVer.vocab,
-          category: serverVer.category,
-          language: serverVer.language
-        };
-        localStorage.setItem('vocera_versions', JSON.stringify(state.localVersions));
-        await loadPublicCategories();
-        await loadPublicUISettings();
-        renderMainMenu();
-        showMsg(true, 'Data diperbarui 🔄');
-      }
-    }
-    async function forceSync() {
-      showMsg(true, "Memulai sinkronisasi...");
-      state.localVersions = { vocab: 0, category: 0, language: 0 };
-      await loadPublicLanguages();
-      await loadPublicCategories();
-      await loadPublicUISettings();
-      renderMainMenu();
-      closePage('footer-modal');
-    }
-    function startMetadataPolling(intervalMs = 30000) {
-      if (state.metadataPollingInterval) {
-        clearInterval(state.metadataPollingInterval);
-      }
-      checkForUpdates();
-      state.metadataPollingInterval = setInterval(() => {
-        if (!document.hidden) {
-          checkForUpdates();
-        }
-      }, intervalMs);
-      console.log(`📡 Metadata polling started: ${intervalMs}ms`);
-    }
-    function stopMetadataPolling() {
-      if (state.metadataPollingInterval) {
-        clearInterval(state.metadataPollingInterval);
-        state.metadataPollingInterval = null;
-        console.log('⏹️ Metadata polling stopped');
-      }
-    }
-    function initVisibilityListener() {
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          stopMetadataPolling();
-        } else {
-          startMetadataPolling(45000);
-        }
-      });
-      window.addEventListener('focus', () => {
-        console.log('👁️ Tab focused, checking for updates...');
-        checkForUpdates();
-      });
-    }
-    async function loadPublicLanguages() {
-      const Language = Parse.Object.extend("Language");
-      const query = new Parse.Query(Language);
-      query.equalTo("isActive", true);
-      try {
-        const results = await query.find();
-        state.availableLanguages = results.map(l => ({
-          name: l.get('name'),
-          code: l.get('code'),
-          icon: l.get('icon'),
-          color: l.get('color')
-        }));
-        const currentLangExists = state.availableLanguages.find(l => l.name === state.lang);
-        if (!currentLangExists && state.availableLanguages.length > 0) {
-          state.lang = state.availableLanguages[0].name;
-        }
-        const serverVer = await fetchMetadataVersion();
-        if (serverVer) {
-          state.localVersions.language = serverVer.language;
-          localStorage.setItem('vocera_versions', JSON.stringify(state.localVersions));
-        }
-      } catch (e) {
-        console.error("Gagal load bahasa publik", e);
-        state.availableLanguages = [{name:"Inggris", icon:"🇬🇧", color:"#FFE66D"}];
-      }
-    }
     function normalizeString(str) {
       if (!str) return '';
       return str.toString().trim().toLowerCase();
-    }
-    async function loadPublicCategories() {
-      state.availableCategories = [];
-      const cached = localStorage.getItem('vocera_categories');
-      const cacheTime = localStorage.getItem('vocera_categories_time');
-      const now = Date.now();
-      if (cached && cacheTime && (now - parseInt(cacheTime)) < 300000) {
-        try {
-          state.availableCategories = JSON.parse(cached);
-          console.log('📦 Categories from cache:', state.availableCategories.length);
-          return;
-        } catch {
-          localStorage.removeItem('vocera_categories');
-        }
-      }
-      const Category = Parse.Object.extend("Category");
-      const query = new Parse.Query(Category);
-      query.equalTo("isActive", true);
-      query.equalTo("language", state.lang.trim());
-      query.ascending("order");
-      try {
-        const results = await query.find();
-        console.log('📦 Categories from server:', results.length);
-        state.availableCategories = results.map(c => ({
-          name: c.get('name') || '',
-          displayName: c.get('displayName') || c.get('name') || '',
-          icon: c.get('icon') || '📁',
-          order: c.get('order') || 1
-        })).filter(c => c.name);
-        localStorage.setItem('vocera_categories', JSON.stringify(state.availableCategories));
-        localStorage.setItem('vocera_categories_time', now.toString());
-        const serverVer = await fetchMetadataVersion();
-        if (serverVer) {
-          state.localVersions.category = serverVer.category;
-          localStorage.setItem('vocera_versions', JSON.stringify(state.localVersions));
-        }
-      } catch (e) {
-        console.error("Gagal load kategori publik", e);
-        state.availableCategories = [];
-        showMsg(false, "Gagal memuat kategori");
-      }
     }
     async function loadPublicUISettings() {
       const cached = localStorage.getItem('vocera_ui_settings_' + state.lang);
@@ -1044,11 +945,6 @@
         state.localUI[state.lang] = { ...defaults, ...uiData };
         localStorage.setItem('vocera_ui_settings_' + state.lang, JSON.stringify(state.localUI[state.lang]));
         localStorage.setItem('vocera_ui_settings_time', now.toString());
-        const serverVer = await fetchMetadataVersion();
-        if (serverVer) {
-          state.localVersions.language = serverVer.language;
-          localStorage.setItem('vocera_versions', JSON.stringify(state.localVersions));
-        }
       } catch (e) {
         console.error("Gagal load UI settings", e);
       }
@@ -1098,35 +994,12 @@
     async function loadVocabulary(lang, theme) {
       const grouped = {};
       try {
-        console.log('🔍 Loading vocabulary:', { lang, theme });
-        const Vocab = Parse.Object.extend("Vocabulary");
-        const query = new Parse.Query(Vocab);
-        query.equalTo("language", lang.trim());
-        query.equalTo("category", theme.trim());
-        query.equalTo("isActive", true);
-        const results = await query.find();
-        console.log('📦 Results received:', results.length, 'items');
-        for (let item of results) {
-          let level = item.get('level');
-          if (level === null || level === undefined || isNaN(level)) {
-            level = 1;
-            console.warn('⚠️ Level invalid, defaulting to 1 for item:', item.get('word'));
-          }
-          level = String(parseInt(level));
-          if (!grouped[level]) { grouped[level] = []; }
-          const standardizedItem = {
-            id: item.get('word') || '',
-            t: item.get('translation') || '',
-            r: item.get('romaji') || '',
-            level: level
-          };
-          if (standardizedItem.id && standardizedItem.t) {
-            grouped[level].push(standardizedItem);
-          } else {
-            console.warn('⚠️ Data korup skipped:', item.id);
-          }
-        }
-        console.log('✅ Grouped data:', grouped);
+        const allData = await DataController.fetchVocabulary(lang, theme);
+        allData.forEach(item => {
+          const level = item.level || "1";
+          if (!grouped[level]) grouped[level] = [];
+          grouped[level].push(item);
+        });
         return grouped;
       } catch (e) {
         console.error('❌ Error loadVocabulary:', e);
@@ -1137,58 +1010,40 @@
     async function init() {
       const menuContainer = document.getElementById('main-menu');
       menuContainer.innerHTML = `
-        <div style="padding:40px 20px; text-align:center;">
-          <div style="font-size:3rem; margin-bottom:16px;">⏳</div>
-          <div style="font-weight:700;">Memuat data...</div>
-          <div style="font-size:0.85rem; color:var(--text-sub); margin-top:8px;">
-            Sinkronisasi dengan server
-          </div>
+        <div class="skeleton-grid">
+          <div class="skeleton-card"></div><div class="skeleton-card"></div>
+          <div class="skeleton-card"></div><div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
         </div>`;
-      loadingTimeout = setTimeout(() => {
-        menuContainer.innerHTML = `
-        <div style="padding:40px 20px; text-align:center; grid-column: span 2;">
-          <div style="font-size:3rem; margin-bottom:16px;">⚠️</div>
-          <div style="font-weight:700; margin-bottom:8px;">Koneksi Timeout</div>
-          <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="init()">
-            🔄 Coba Lagi
-          </div>
-        </div>`;
-      }, 10000);
       try {
         const current = Parse.User.current();
-        if (current) {
-          state.isLoggedIn = true;
-          state.currentUser = current.getUsername();
-        } else {
-          state.isLoggedIn = false;
-          state.currentUser = null;
-        }
-        try {
-          const cachedVersions = localStorage.getItem('vocera_versions');
-          if (cachedVersions) {
-            state.localVersions = JSON.parse(cachedVersions);
-            console.log('📦 Loaded versions from cache:', state.localVersions);
-          }
-        } catch (e) {
-          console.warn('⚠️ Gagal load cached versions');
-        }
+        state.isLoggedIn = !!current;
+        state.currentUser = current ? current.getUsername() : null;
         await loadProgress();
-        await loadPublicLanguages();
-        await loadPublicCategories();
+        const [langs, cats] = await Promise.all([
+          DataController.fetchLanguages(),
+          DataController.fetchCategories(state.lang)
+        ]);
+        state.availableLanguages = langs.map(l => ({
+          name: l.get('name'), code: l.get('code'), icon: l.get('icon'), color: l.get('color')
+        }));
+        state.availableCategories = cats;
+        if (!state.availableLanguages.find(l => l.name === state.lang) && state.availableLanguages.length > 0) {
+          state.lang = state.availableLanguages[0].name;
+        }
         await loadPublicUISettings();
-        clearTimeout(loadingTimeout);
         document.getElementById('lang-indicator').innerText = state.lang;
         renderMainMenu();
         document.getElementById('h-theme').innerHTML = getPageTitle({t: "Pilih Tema"});
         document.getElementById('h-num').innerHTML = getPageTitle({t: "Pilih Level"});
-        setTimeout(() => {
-          initVisibilityListener();
-          startMetadataPolling(45000);
-        }, 2000);
       } catch (e) {
-        clearTimeout(loadingTimeout);
         console.error('Init error:', e);
-        showMsg(false, "Gagal inisialisasi aplikasi");
+        menuContainer.innerHTML = `
+          <div style="padding:40px 20px; text-align:center; grid-column: span 2;">
+            <div style="font-size:3rem; margin-bottom:16px;">⚠️</div>
+            <div style="font-weight:700;">Gagal Memuat Data</div>
+            <div class="neo-box opt-btn" style="background:var(--color-2)" onclick="init()">🔄 Coba Lagi</div>
+          </div>`;
       }
     }
     function openThemes(m, color) {
@@ -1654,7 +1509,10 @@
       const val = inputEl.value.trim();
       if (val.length < 10) { showMsg(false, "Saran terlalu pendek (Min. 10 karakter)"); inputEl.focus(); return; }
       const btn = document.querySelector('#f-cont .opt-btn');
-      btn.innerText = "MENGIRIM..."; btn.classList.add('disabled');
+      const originalText = btn.innerText;
+      btn.innerText = "MENGIRIM...";
+      btn.classList.add('disabled');
+      inputEl.disabled = true;
       try {
         const Feedback = Parse.Object.extend("Feedback");
         const fb = new Feedback();
@@ -1665,8 +1523,12 @@
         inputEl.value = "";
         showMsg(true, "Terima kasih atas saran Anda!");
         setTimeout(() => closePage('footer-modal'), 1000);
-      } catch (e) { showMsg(false, "Gagal mengirim"); }
-      btn.innerText = "KIRIM SARAN"; btn.classList.remove('disabled');
+      } catch (e) {
+        showMsg(false, "Gagal mengirim. Silakan coba lagi.");
+        btn.innerText = originalText;
+        btn.classList.remove('disabled');
+        inputEl.disabled = false;
+      }
     }
     init();
   </script>

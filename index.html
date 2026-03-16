@@ -922,7 +922,7 @@
     }
     async function loadPublicUISettings() {
       const cached = localStorage.getItem('vocera_ui_settings_' + state.lang);
-      const cacheTime = localStorage.getItem('vocera_ui_settings_time');
+      const cacheTime = localStorage.getItem('vocera_ui_settings_time_' + state.lang);
       const now = Date.now();
       if (cached && cacheTime && (now - parseInt(cacheTime)) < 300000) {
         try {
@@ -950,7 +950,7 @@
         };
         state.localUI[state.lang] = { ...defaults, ...uiData };
         localStorage.setItem('vocera_ui_settings_' + state.lang, JSON.stringify(state.localUI[state.lang]));
-        localStorage.setItem('vocera_ui_settings_time', now.toString());
+        localStorage.setItem('vocera_ui_settings_time_' + state.lang, now.toString());
       } catch (e) {
         console.error("Gagal load UI settings", e);
       }

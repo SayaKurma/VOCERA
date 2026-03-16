@@ -413,6 +413,23 @@ body {
 .toggle-icon.rotated { transform: rotate(90deg); }
 .tr-data-row:nth-child(even) { background: #fafafa; }
 .tr-data-row:hover { background: #f0f8ff; }
+.vocab-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.vocab-controls .btn-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.vocab-controls .summary {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-left: auto;
+    white-space: nowrap;
+}
 @media (max-width: 1024px) {
     .sidebar { 
         transform: translateX(-100%); 
@@ -476,11 +493,6 @@ body {
         justify-content: center;
         padding: 14px 20px;
     }
-    .neo-btn-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
     .admin-table th, .admin-table td {
         padding: 12px 10px;
         font-size: 0.85rem;
@@ -503,12 +515,33 @@ body {
         height: 36px;
         font-size: 1rem;
     }
+    .vocab-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .vocab-controls .btn-group {
+        justify-content: space-between;
+    }
+    .vocab-controls .btn-group .neo-btn {
+        flex: 1;
+        min-width: 0;
+        padding: 12px 8px;
+        font-size: 0.85rem;
+    }
+    .vocab-controls .summary {
+        margin-left: 0;
+        text-align: center;
+    }
 }
 @media (max-width: 400px) {
     .stat-card h3 { font-size: 1.5rem; }
     .admin-title { font-size: 1rem; }
     .sidebar { width: 90vw; }
     .menu-category { font-size: 0.65rem; }
+    .vocab-controls .btn-group .neo-btn {
+        font-size: 0.75rem;
+        padding: 10px 4px;
+    }
 }
 @media (max-height: 500px) and (orientation: landscape) {
     .sidebar { height: 100vh; }
@@ -685,13 +718,13 @@ body {
         </div>
         <div id="vocabulary" class="section">
             <div class="neo-box">
-                <div class="neo-btn-group" style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; justify-content: space-between; align-items: center;">
-                    <div style="display:flex; gap:10px;">
+                <div class="vocab-controls">
+                    <div class="btn-group">
                         <button class="neo-btn" onclick="showAddWordForm()">+ Tambah Kata</button>
                         <button class="neo-btn secondary" onclick="expandAllGroups()">📂 Buka Semua</button>
                         <button class="neo-btn secondary" onclick="collapseAllGroups()">📁 Tutup Semua</button>
                     </div>
-                    <div style="font-size:0.9rem; font-weight:700;" id="vocab-summary">Memuat...</div>
+                    <div class="summary" id="vocab-summary">Memuat...</div>
                 </div>
                 <div id="add-word-form" style="display:none; margin-bottom:20px; padding:16px; background:var(--color-1); border:var(--border-thick); border-radius:var(--radius-sm);">
                     <h4>Tambah Kosakata Baru</h4>

@@ -637,9 +637,7 @@ body {
                         <input type="text" class="neo-input" id="cat-icon" placeholder="Icon (ex: 🐾)">
                         <input type="number" class="neo-input" id="cat-order" placeholder="Urutan" value="1">
                         <select class="neo-select" id="cat-language">
-                            <option value="Inggris">Inggris</option>
-                            <option value="Jepang">Jepang</option>
-                            <option value="Spanyol">Spanyol</option>
+                            <option value="" disabled selected>Memuat bahasa...</option>
                         </select>
                     </div>
                     <div style="margin-top:10px;">
@@ -662,11 +660,6 @@ body {
         </div>
         <div id="vocabulary" class="section">
             <div class="neo-box">
-                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
-                    <input type="text" class="neo-input" placeholder="Cari kosakata..." style="flex:1; min-width:200px; margin:0;" id="search-vocab" onkeyup="handleVocabSearch(event)">
-                    <button class="neo-btn" onclick="loadVocabulary(1, document.getElementById('search-vocab').value)">Cari</button>
-                    <button class="neo-btn secondary" onclick="resetVocabSearch()">Reset</button>
-                </div>
                 <div class="neo-btn-group" style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap;">
                     <button class="neo-btn" onclick="showAddWordForm()">+ Tambah Kata</button>
                 </div>
@@ -866,7 +859,7 @@ let allLanguages = [];
 let allCategories = [];
 let uiSettingsData = [];
 let vocabPage = 1;
-const vocabLimit = 50;
+const VOCAB_PER_PAGE = 20;
 let vocabTotalCount = 0;
 function showMsg(isSuccess, text) {
   const toast = document.createElement('div');
@@ -895,7 +888,8 @@ async function loadLanguages() {
     const results = await query.find();
     allLanguages = results;
     renderLanguageTable();
-    loadLanguageOptions();
+    populateLanguageDropdowns();
+    populateCategoryLanguageDropdown();
   } catch (e) {
     console.error("Gagal load bahasa", e);
     document.getElementById('lang-table-body').innerHTML = '<tr><td colspan="5">Gagal memuat data</td></tr>';
@@ -924,33 +918,35 @@ function renderLanguageTable() {
     </tr>`;
   }).join('');
 }
-async function loadLanguageOptions(targetSelectId = 'word-lang') {
-  const Language = Parse.Object.extend("Language");
-  const query = new Parse.Query(Language);
-  query.equalTo("isActive", true);
-  query.ascending("order");
-  try {
-    const results = await query.find();
-    const selectEl = document.getElementById(targetSelectId);
-    if (!selectEl) return;
-    const currentValue = selectEl.value;
-    selectEl.innerHTML = '<option value="" disabled selected>Pilih Bahasa...</option>';
-    results.forEach((lang) => {
-      const name = lang.get("name");
-      const code = lang.get("code");
-      const icon = lang.get('icon') || '🌐';
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = `${icon} ${name}`;
-      option.dataset.code = code;
-      selectEl.appendChild(option);
+function populateLanguageDropdowns() {
+  const select = document.getElementById('word-lang');
+  if(select) {
+    select.innerHTML = '<option value="" disabled selected>Pilih Bahasa...</option>';
+    allLanguages.forEach(lang => {
+      if(lang.get('isActive')) {
+        const opt = document.createElement('option');
+        opt.value = lang.get('name');
+        opt.innerText = `${lang.get('icon')} ${lang.get('name')}`;
+        select.appendChild(opt);
+      }
     });
-    if (currentValue) {
-      selectEl.value = currentValue;
+  }
+}
+function populateCategoryLanguageDropdown() {
+  const select = document.getElementById('cat-language');
+  if (!select) return;
+  const currentValue = select.value;
+  select.innerHTML = '<option value="" disabled selected>Pilih Bahasa...</option>';
+  allLanguages.forEach(lang => {
+    if (lang.get('isActive')) {
+      const opt = document.createElement('option');
+      opt.value = lang.get('name');
+      opt.innerText = `${lang.get('icon') || '🌐'} ${lang.get('name')}`;
+      select.appendChild(opt);
     }
-  } catch (error) {
-    console.error("❌ Gagal memuat daftar bahasa:", error);
-    showMsg(false, "Gagal memuat daftar bahasa");
+  });
+  if (currentValue && allLanguages.some(l => l.get('name') === currentValue)) {
+    select.value = currentValue;
   }
 }
 function showAddLanguageForm() {
@@ -1020,6 +1016,7 @@ async function loadCategories() {
     allCategories = results;
     renderCategoryTable();
     populateCategoryDropdown();
+    populateCategoryLanguageDropdown();
   } catch (e) {
     console.error("Gagal load kategori", e);
     document.getElementById('category-table-body').innerHTML = '<tr><td colspan="6">Gagal memuat data</td></tr>';
@@ -1071,6 +1068,7 @@ function showAddCategoryForm() {
   document.getElementById('cat-icon').value = '';
   document.getElementById('cat-order').value = '1';
   document.getElementById('cat-active').checked = true;
+  populateCategoryLanguageDropdown();
 }
 function editCategory(id) {
   const cat = allCategories.find(c => c.id === id);
@@ -1081,8 +1079,12 @@ function editCategory(id) {
   document.getElementById('cat-display').value = cat.get('displayName');
   document.getElementById('cat-icon').value = cat.get('icon') || '';
   document.getElementById('cat-order').value = cat.get('order') || '1';
-  document.getElementById('cat-language').value = cat.get('language') || 'Inggris';
   document.getElementById('cat-active').checked = cat.get('isActive');
+  populateCategoryLanguageDropdown();
+  const langSelect = document.getElementById('cat-language');
+  if (langSelect && cat.get('language')) {
+    langSelect.value = cat.get('language');
+  }
 }
 async function saveCategory() {
   const id = document.getElementById('cat-id').value;
@@ -1219,13 +1221,12 @@ async function checkAdmin() {
   currentUser = user;
   document.getElementById('admin-username').innerText = user.getUsername();
   document.getElementById('admin-avatar').innerText = user.getUsername()[0].toUpperCase();
-  await loadLanguageOptions();
+  await loadLanguages();
   await loadCategories();
   loadDashboardStats();
   loadFeedback();
   loadUsers();
-  loadVocabulary();
-  loadLanguages();
+  loadVocabulary(1);
   loadUISettingsForLang();
 }
 function toggleSidebar() {
@@ -1364,25 +1365,19 @@ async function deleteUser(id) {
   loadUsers();
   loadDashboardStats();
 }
-async function loadVocabulary(page = 1, searchQuery = '') {
+async function loadVocabulary(page = 1) {
   vocabPage = page;
   const Vocab = Parse.Object.extend('Vocabulary');
   const query = new Parse.Query(Vocab);
-  if (searchQuery) {
-    query.matches('word', new RegExp(searchQuery, 'i'));
-  }
   query.descending('createdAt');
-  query.limit(vocabLimit);
-  query.skip((page - 1) * vocabLimit);
+  query.limit(VOCAB_PER_PAGE);
+  query.skip((page - 1) * VOCAB_PER_PAGE);
   try {
     const items = await query.find();
     const countQuery = new Parse.Query(Vocab);
-    if (searchQuery) {
-      countQuery.matches('word', new RegExp(searchQuery, 'i'));
-    }
     vocabTotalCount = await countQuery.count();
     renderVocabularyTable(items);
-    renderPaginationControls();
+    renderVocabPagination();
   } catch (e) {
     console.error("Gagal load vocabulary", e);
     document.getElementById('vocab-table-body').innerHTML = '<tr><td colspan="7">Gagal memuat data</td></tr>';
@@ -1391,7 +1386,7 @@ async function loadVocabulary(page = 1, searchQuery = '') {
 function renderVocabularyTable(items) {
   const tbody = document.getElementById('vocab-table-body');
   if (items.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">📭 Tidak ada kosakata ditemukan</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px;">📭 Tidak ada kosakata</td></tr>';
     return;
   }
   tbody.innerHTML = items.map(v => {
@@ -1401,18 +1396,17 @@ function renderVocabularyTable(items) {
       <td>${v.get('romaji') || '-'}</td>
       <td>${v.get('language') || '-'}</td>
       <td>${v.get('category') || '-'}</td>
-      <td><span class="badge warning">Level ${v.get('level') || '1'}</span></td>
+      <td><span class="badge warning">L${v.get('level') || '1'}</span></td>
       <td>
         <div class="action-btns">
-          <button class="neo-btn warning" style="padding:8px 12px; font-size:0.8rem;" onclick="editVocabulary('${v.id}')">Edit</button>
           <button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteVocab('${v.id}')">Hapus</button>
         </div>
       </td>
     </tr>`;
   }).join('');
 }
-function renderPaginationControls() {
-  const totalPages = Math.ceil(vocabTotalCount / vocabLimit);
+function renderVocabPagination() {
+  const totalPages = Math.ceil(vocabTotalCount / VOCAB_PER_PAGE);
   const infoEl = document.getElementById('vocab-page-info');
   const prevBtn = document.getElementById('vocab-prev-btn');
   const nextBtn = document.getElementById('vocab-next-btn');
@@ -1429,15 +1423,14 @@ function renderPaginationControls() {
 function changeVocabPage(direction) {
   const newPage = vocabPage + direction;
   if (newPage < 1) return;
-  const searchQuery = document.getElementById('search-vocab')?.value || '';
-  loadVocabulary(newPage, searchQuery);
+  loadVocabulary(newPage);
 }
 async function deleteVocab(id) {
   if (!confirm('Hapus kosakata ini?')) return;
   const v = new Parse.Object('Vocabulary');
   v.id = id;
   await v.destroy();
-  loadVocabulary(vocabPage, document.getElementById('search-vocab')?.value || '');
+  loadVocabulary(vocabPage);
   loadDashboardStats();
 }
 function showAddWordForm() {
@@ -1449,15 +1442,10 @@ function showAddWordForm() {
     form.style.display = 'none';
   }
 }
-function handleVocabSearch(event) {
-  if (event.key === 'Enter') {
-    loadVocabulary(1, event.target.value);
-  }
-}
-function resetVocabSearch() {
-  document.getElementById('search-vocab').value = '';
-  loadVocabulary(1, '');
-}
+document.getElementById('word-lang')?.addEventListener('change', function(e) {
+  const selectedLang = e.target.value;
+  populateCategoryDropdown(selectedLang);
+});
 async function saveVocabulary() {
   const word = document.getElementById('word-id').value.trim();
   const trans = document.getElementById('word-trans').value.trim();
@@ -1491,17 +1479,13 @@ async function saveVocabulary() {
     document.getElementById('word-romaji').value = '';
     document.getElementById('word-category').value = '';
     document.getElementById('word-level').value = '1';
-    loadVocabulary(1, document.getElementById('search-vocab')?.value || '');
+    loadVocabulary(1);
     loadDashboardStats();
   } catch (e) {
     console.error('❌ Save error:', e);
     showMsg(false, 'Gagal menyimpan kosakata: ' + e.message);
   }
 }
-document.getElementById('word-lang')?.addEventListener('change', function(e) {
-  const selectedLang = e.target.value;
-  populateCategoryDropdown(selectedLang);
-});
 async function handleLogout() {
   await Parse.User.logOut();
   currentUser = null;

@@ -752,29 +752,38 @@
       const user = Parse.User.current();
       if (user) {
         try {
+          await user.fetch({ useMasterKey: false });
           const savedProgress = user.get('progress');
-          if (savedProgress) {
+          if (savedProgress && typeof savedProgress === 'object') {
             state.unlockedLevels = savedProgress;
           } else {
-            state.unlockedLevels = defaultProgress;
+            state.unlockedLevels = { ...defaultProgress };
           }
         } catch (e) {
           console.error("Gagal memuat progres dari cloud", e);
-          state.unlockedLevels = defaultProgress;
+          const local = localStorage.getItem('lingoflow_unlocked');
+          if (local) {
+            try { state.unlockedLevels = JSON.parse(local); } 
+            catch { state.unlockedLevels = {}; }
+          } else {
+            state.unlockedLevels = {};
+          }
         }
       } else {
-        state.unlockedLevels = defaultProgress;
+        state.unlockedLevels = { ...defaultProgress };
       }
     }
     async function saveProgress() {
       const user = Parse.User.current();
       if (!user) return;
       try {
-        user.set('progress', state.unlockedLevels);
+        if (!state.unlockedLevels[state.lang]) state.unlockedLevels[state.lang] = {};
+        user.set('progress', JSON.parse(JSON.stringify(state.unlockedLevels)));
         await user.save();
-        console.log("Progres berhasil disinkronisasi");
+        console.log("✅ Progres berhasil disinkronisasi");
+        localStorage.setItem('lingoflow_unlocked', JSON.stringify(state.unlockedLevels));
       } catch (e) {
-        console.error("Gagal menyimpan progres ke cloud", e);
+        console.error("❌ Gagal menyimpan progres ke cloud", e);
         showMsg(false, "Gagal menyimpan progres. Periksa koneksi.");
         localStorage.setItem('lingoflow_unlocked', JSON.stringify(state.unlockedLevels));
       }
@@ -1100,7 +1109,12 @@
     async function openNumbers(t) {
       state.theme = t;
       const data = await loadVocabulary(state.lang, t);
-      const unlocked = state.unlockedLevels[state.lang]?.[t]?.[state.module] || [];
+      if (!state.unlockedLevels[state.lang]) state.unlockedLevels[state.lang] = {};
+      if (!state.unlockedLevels[state.lang][t]) state.unlockedLevels[state.lang][t] = {};
+      if (!state.unlockedLevels[state.lang][t][state.module]) {
+        state.unlockedLevels[state.lang][t][state.module] = ["1"];
+      }
+      const unlocked = state.unlockedLevels[state.lang]?.[t]?.[state.module] || ["1"];
       document.getElementById('number-cont').innerHTML = Object.keys(data).map(n => {
         const isUnlocked = unlocked.includes(n);
         const lockIcon = isUnlocked ? '' : '<span class="lock-icon">🔒</span>';
@@ -1152,7 +1166,7 @@
       if (id === 'game-page') stopTimer();
       document.getElementById(id).classList.remove('active');
     }
-    function showEndGame() {
+    async function showEndGame() {
       stopTimer();
       const currentLevel = parseInt(state.number);
       const nextLevel = (currentLevel + 1).toString();
@@ -1162,11 +1176,9 @@
         state.unlockedLevels[state.lang][state.theme][state.module] = ["1"];
       }
       const currentUnlocked = state.unlockedLevels[state.lang][state.theme][state.module];
-      if (!currentUnlocked.includes(nextLevel)) {
-        if (currentUnlocked.includes(state.number)) {
-             state.unlockedLevels[state.lang][state.theme][state.module].push(nextLevel);
-             saveProgress();
-        }
+      if (!currentUnlocked.includes(nextLevel) && currentUnlocked.includes(state.number)) {
+        currentUnlocked.push(nextLevel);
+        await saveProgress();
       }
       const finalScore = Math.round(state.score);
       const cont = document.getElementById('game-cont');

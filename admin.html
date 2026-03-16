@@ -643,7 +643,7 @@ body {
                     <div style="margin-top:10px;">
                         <label><input type="checkbox" id="cat-active" checked> Aktif</label>
                     </div>
-                    <div style="margin-top:16px; display:flex; gap-10px;">
+                    <div style="margin-top:16px; display:flex; gap:10px;">
                         <button class="neo-btn" onclick="saveCategory()">Simpan</button>
                         <button class="neo-btn secondary" onclick="document.getElementById('add-category-form').style.display='none'">Batal</button>
                     </div>
@@ -880,24 +880,6 @@ function showMsg(isSuccess, text) {
   document.body.appendChild(toast);
   setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
 }
-async function incrementMetadataVersion(field, updatedBy = 'Super Admin') {
-  const AppMetadata = Parse.Object.extend('AppMetadata');
-  const query = new Parse.Query(AppMetadata);
-  try {
-    const metadata = await query.first({ useMasterKey: true });
-    if (metadata) {
-      metadata.increment(field, 1);
-      metadata.set('lastGlobalUpdate', new Date());
-      metadata.set('updatedBy', updatedBy);
-      await metadata.save(null, { useMasterKey: true });
-      console.log(`✅ ${field} incremented to: ${metadata.get(field)}`);
-      return metadata.get(field);
-    }
-  } catch (e) {
-    console.error('❌ Gagal update metadata:', e);
-  }
-  return null;
-}
 async function loadLanguages() {
   const Language = Parse.Object.extend('Language');
   const query = new Parse.Query(Language);
@@ -1004,7 +986,6 @@ async function saveLanguage() {
   langObj.set('isActive', isActive);
   try {
     await langObj.save();
-    await incrementMetadataVersion('languageVersion', currentUser?.getUsername() || 'Admin');
     showMsg(true, "Bahasa berhasil disimpan");
     document.getElementById('add-lang-form').style.display = 'none';
     loadLanguages();
@@ -1020,7 +1001,6 @@ async function deleteLanguage(id) {
   langObj.id = id;
   try {
     await langObj.destroy();
-    await incrementMetadataVersion('languageVersion', currentUser?.getUsername() || 'Admin');
     showMsg(true, "Bahasa dihapus");
     loadLanguages();
   } catch (e) {
@@ -1129,7 +1109,6 @@ async function saveCategory() {
   catObj.set('isActive', isActive);
   try {
     await catObj.save();
-    await incrementMetadataVersion('categoryVersion', currentUser?.getUsername() || 'Admin');
     showMsg(true, "Kategori berhasil disimpan");
     document.getElementById('add-category-form').style.display = 'none';
     loadCategories();
@@ -1144,7 +1123,6 @@ async function deleteCategory(id) {
   catObj.id = id;
   try {
     await catObj.destroy();
-    await incrementMetadataVersion('categoryVersion', currentUser?.getUsername() || 'Admin');
     showMsg(true, "Kategori dihapus");
     loadCategories();
   } catch (e) {
@@ -1222,7 +1200,6 @@ async function saveAllUISettings() {
       uiObj.set("icon", icon);
       await uiObj.save();
     }
-    await incrementMetadataVersion('languageVersion', currentUser?.getUsername() || 'Admin');
     showMsg(true, "Label UI berhasil disimpan");
   } catch (e) {
     showMsg(false, "Gagal menyimpan: " + e.message);
@@ -1364,6 +1341,8 @@ async function markFeedbackRead(id) {
 async function loadUsers() {
   const query = new Parse.Query(Parse.User);
   query.descending('createdAt');
+  query.limit(50);
+  query.select(['username', 'email', 'createdAt']);
   const users = await query.find();
   const tbody = document.getElementById('users-table-body');
   if (users.length === 0) tbody.innerHTML = '<tr><td colspan="5">Tidak ada pengguna</td></tr>';
@@ -1395,10 +1374,13 @@ async function loadVocabulary(page = 1) {
   query.descending('createdAt');
   query.limit(VOCAB_PER_PAGE);
   query.skip((page - 1) * VOCAB_PER_PAGE);
+  query.select(['word', 'translation', 'romaji', 'language', 'category', 'level']);
   try {
-    const items = await query.find();
-    const countQuery = new Parse.Query(Vocab);
-    vocabTotalCount = await countQuery.count();
+    const [items, count] = await Promise.all([
+      query.find(),
+      new Parse.Query(Vocab).count()
+    ]);
+    vocabTotalCount = count;
     renderVocabularyTable(items);
     renderVocabPagination();
   } catch (e) {
@@ -1453,7 +1435,6 @@ async function deleteVocab(id) {
   const v = new Parse.Object('Vocabulary');
   v.id = id;
   await v.destroy();
-  await incrementMetadataVersion('vocabVersion', currentUser?.getUsername() || 'Admin');
   loadVocabulary(vocabPage);
   loadDashboardStats();
 }
@@ -1497,7 +1478,6 @@ async function saveVocabulary() {
   v.set('isActive', true);
   try {
     await v.save();
-    await incrementMetadataVersion('vocabVersion', currentUser?.getUsername() || 'Admin');
     showMsg(true, 'Kosakata berhasil disimpan');
     document.getElementById('word-id').value = '';
     document.getElementById('word-trans').value = '';

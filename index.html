@@ -529,6 +529,10 @@
         <span style="font-size:1.2rem">🔗</span>
         <span>Share</span>
       </button>
+      <button class="footer-btn" onclick="openFooter('refresh')">
+        <span style="font-size:1.2rem">🔄</span>
+        <span>Refresh</span>
+      </button>
     </div>
   </footer>
   <script>
@@ -570,7 +574,14 @@
       regPassError: '',
       availableLanguages: [],
       availableCategories: [],
-      localUI: {}
+      localUI: {},
+      localVersions: {
+        vocab: 0,
+        category: 0,
+        language: 0
+      },
+      lastMetadataCheck: 0,
+      metadataPollingInterval: null
     };
     let timerInterval = null;
     let currentModuleColor = '#FFF';
@@ -601,6 +612,16 @@
         return '';
     }
     const footerConfig = {
+      'refresh': {
+        title: "Sinkronisasi Data",
+        render: () => `
+          <div class="neo-box list-item" style="flex-direction:column; text-align:center;" onclick="forceSync()">
+            <span style="font-size:2rem">🔄</span>
+            <span class="main-t">Refresh Data</span>
+            <span class="sub-t">Tarik data terbaru dari server</span>
+          </div>
+        `
+      },
       'profil': {
         title: "Profil Pengguna",
         render: () => {
@@ -830,6 +851,97 @@
         </div>
       `;
     }
+    async function fetchMetadataVersion() {
+      try {
+        const AppMetadata = Parse.Object.extend('AppMetadata');
+        const query = new Parse.Query(AppMetadata);
+        const metadata = await query.first();
+        if (metadata) {
+          return {
+            vocab: metadata.get('vocabVersion') || 1,
+            category: metadata.get('categoryVersion') || 1,
+            language: metadata.get('languageVersion') || 1,
+            lastUpdate: metadata.get('lastGlobalUpdate')
+          };
+        }
+      } catch (e) {
+        console.warn('⚠️ Gagal fetch metadata:', e.message);
+      }
+      return null;
+    }
+    async function checkForUpdates() {
+      if (document.hidden) return;
+      const serverVer = await fetchMetadataVersion();
+      if (!serverVer) return;
+      const localVer = state.localVersions;
+      let needsRefresh = false;
+      if (serverVer.vocab > localVer.vocab) {
+        console.log('🔄 Vocabulary update tersedia');
+        needsRefresh = true;
+      }
+      if (serverVer.category > localVer.category) {
+        console.log('🔄 Category update tersedia');
+        needsRefresh = true;
+      }
+      if (serverVer.language > localVer.language) {
+        console.log('🔄 Language update tersedia');
+        needsRefresh = true;
+      }
+      if (needsRefresh) {
+        console.log('🚀 Memulai sync data...');
+        state.localVersions = {
+          vocab: serverVer.vocab,
+          category: serverVer.category,
+          language: serverVer.language
+        };
+        localStorage.setItem('vocera_versions', JSON.stringify(state.localVersions));
+        await loadPublicCategories();
+        await loadPublicUISettings();
+        renderMainMenu();
+        showMsg(true, 'Data diperbarui 🔄');
+      }
+    }
+    async function forceSync() {
+      showMsg(true, "Memulai sinkronisasi...");
+      state.localVersions = { vocab: 0, category: 0, language: 0 };
+      await loadPublicLanguages();
+      await loadPublicCategories();
+      await loadPublicUISettings();
+      renderMainMenu();
+      closePage('footer-modal');
+    }
+    function startMetadataPolling(intervalMs = 30000) {
+      if (state.metadataPollingInterval) {
+        clearInterval(state.metadataPollingInterval);
+      }
+      checkForUpdates();
+      state.metadataPollingInterval = setInterval(() => {
+        if (!document.hidden) {
+          checkForUpdates();
+        }
+      }, intervalMs);
+      console.log(`📡 Metadata polling started: ${intervalMs}ms`);
+    }
+    function stopMetadataPolling() {
+      if (state.metadataPollingInterval) {
+        clearInterval(state.metadataPollingInterval);
+        state.metadataPollingInterval = null;
+        console.log('⏹️ Metadata polling stopped');
+      }
+    }
+    function initVisibilityListener() {
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopMetadataPolling();
+        } else {
+          startMetadataPolling(45000);
+        }
+      });
+      window.addEventListener('focus', () => {
+        console.log('👁️ Tab focused, checking for updates...');
+        checkForUpdates();
+      });
+    }
     async function loadPublicLanguages() {
       const Language = Parse.Object.extend("Language");
       const query = new Parse.Query(Language);
@@ -845,6 +957,11 @@
         const currentLangExists = state.availableLanguages.find(l => l.name === state.lang);
         if (!currentLangExists && state.availableLanguages.length > 0) {
           state.lang = state.availableLanguages[0].name;
+        }
+        const serverVer = await fetchMetadataVersion();
+        if (serverVer) {
+          state.localVersions.language = serverVer.language;
+          localStorage.setItem('vocera_versions', JSON.stringify(state.localVersions));
         }
       } catch (e) {
         console.error("Gagal load bahasa publik", e);
@@ -885,6 +1002,11 @@
         })).filter(c => c.name);
         localStorage.setItem('vocera_categories', JSON.stringify(state.availableCategories));
         localStorage.setItem('vocera_categories_time', now.toString());
+        const serverVer = await fetchMetadataVersion();
+        if (serverVer) {
+          state.localVersions.category = serverVer.category;
+          localStorage.setItem('vocera_versions', JSON.stringify(state.localVersions));
+        }
       } catch (e) {
         console.error("Gagal load kategori publik", e);
         state.availableCategories = [];
@@ -922,6 +1044,11 @@
         state.localUI[state.lang] = { ...defaults, ...uiData };
         localStorage.setItem('vocera_ui_settings_' + state.lang, JSON.stringify(state.localUI[state.lang]));
         localStorage.setItem('vocera_ui_settings_time', now.toString());
+        const serverVer = await fetchMetadataVersion();
+        if (serverVer) {
+          state.localVersions.language = serverVer.language;
+          localStorage.setItem('vocera_versions', JSON.stringify(state.localVersions));
+        }
       } catch (e) {
         console.error("Gagal load UI settings", e);
       }
@@ -979,7 +1106,6 @@
         query.equalTo("isActive", true);
         const results = await query.find();
         console.log('📦 Results received:', results.length, 'items');
-        console.log('📦 Sample data:', results.slice(0, 2).map(r => r.attributes));
         for (let item of results) {
           let level = item.get('level');
           if (level === null || level === undefined || isNaN(level)) {
@@ -1037,6 +1163,15 @@
           state.isLoggedIn = false;
           state.currentUser = null;
         }
+        try {
+          const cachedVersions = localStorage.getItem('vocera_versions');
+          if (cachedVersions) {
+            state.localVersions = JSON.parse(cachedVersions);
+            console.log('📦 Loaded versions from cache:', state.localVersions);
+          }
+        } catch (e) {
+          console.warn('⚠️ Gagal load cached versions');
+        }
         await loadProgress();
         await loadPublicLanguages();
         await loadPublicCategories();
@@ -1046,6 +1181,10 @@
         renderMainMenu();
         document.getElementById('h-theme').innerHTML = getPageTitle({t: "Pilih Tema"});
         document.getElementById('h-num').innerHTML = getPageTitle({t: "Pilih Level"});
+        setTimeout(() => {
+          initVisibilityListener();
+          startMetadataPolling(45000);
+        }, 2000);
       } catch (e) {
         clearTimeout(loadingTimeout);
         console.error('Init error:', e);

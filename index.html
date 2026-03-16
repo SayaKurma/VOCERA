@@ -747,14 +747,37 @@
         }
       }
     };
-    function loadProgress() {
-      const saved = localStorage.getItem('lingoflow_unlocked');
-      if (saved) {
-        try { state.unlockedLevels = JSON.parse(saved); } catch { state.unlockedLevels = {}; }
-      } else state.unlockedLevels = {};
+    async function loadProgress() {
+      const defaultProgress = {};
+      const user = Parse.User.current();
+      if (user) {
+        try {
+          const savedProgress = user.get('progress');
+          if (savedProgress) {
+            state.unlockedLevels = savedProgress;
+          } else {
+            state.unlockedLevels = defaultProgress;
+          }
+        } catch (e) {
+          console.error("Gagal memuat progres dari cloud", e);
+          state.unlockedLevels = defaultProgress;
+        }
+      } else {
+        state.unlockedLevels = defaultProgress;
+      }
     }
-    function saveProgress() {
-      localStorage.setItem('lingoflow_unlocked', JSON.stringify(state.unlockedLevels));
+    async function saveProgress() {
+      const user = Parse.User.current();
+      if (!user) return;
+      try {
+        user.set('progress', state.unlockedLevels);
+        await user.save();
+        console.log("Progres berhasil disinkronisasi");
+      } catch (e) {
+        console.error("Gagal menyimpan progres ke cloud", e);
+        showMsg(false, "Gagal menyimpan progres. Periksa koneksi.");
+        localStorage.setItem('lingoflow_unlocked', JSON.stringify(state.unlockedLevels));
+      }
     }
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
@@ -1005,7 +1028,7 @@
           state.isLoggedIn = false;
           state.currentUser = null;
         }
-        loadProgress();
+        await loadProgress();
         await loadPublicLanguages();
         await loadPublicCategories();
         await loadPublicUISettings();
@@ -1136,11 +1159,14 @@
       if (!state.unlockedLevels[state.lang]) state.unlockedLevels[state.lang] = {};
       if (!state.unlockedLevels[state.lang][state.theme]) state.unlockedLevels[state.lang][state.theme] = {};
       if (!state.unlockedLevels[state.lang][state.theme][state.module]) {
-        state.unlockedLevels[state.lang][state.theme][state.module] = [];
+        state.unlockedLevels[state.lang][state.theme][state.module] = ["1"];
       }
-      if (!state.unlockedLevels[state.lang][state.theme][state.module].includes(nextLevel)) {
-        state.unlockedLevels[state.lang][state.theme][state.module].push(nextLevel);
-        saveProgress();
+      const currentUnlocked = state.unlockedLevels[state.lang][state.theme][state.module];
+      if (!currentUnlocked.includes(nextLevel)) {
+        if (currentUnlocked.includes(state.number)) {
+             state.unlockedLevels[state.lang][state.theme][state.module].push(nextLevel);
+             saveProgress();
+        }
       }
       const finalScore = Math.round(state.score);
       const cont = document.getElementById('game-cont');

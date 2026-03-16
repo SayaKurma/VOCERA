@@ -430,6 +430,116 @@ body {
     margin-left: auto;
     white-space: nowrap;
 }
+
+.lang-tabs {
+    margin-top: 10px;
+    width: 100%;
+}
+.lang-tab {
+    padding: 10px 16px;
+    background: var(--color-white);
+    border: var(--border-thick);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px #111;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+.lang-tab:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px #111;
+}
+.lang-tab.active {
+    background: var(--color-2);
+    color: white;
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #111;
+}
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+.category-card {
+    background: var(--color-white);
+    border: var(--border-thick);
+    border-radius: var(--radius-main);
+    box-shadow: var(--shadow-hard);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s;
+    position: relative;
+}
+.category-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-hard-hover);
+}
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid #111;
+    padding-bottom: 12px;
+}
+.card-icon {
+    font-size: 2rem;
+    background: var(--color-1);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #111;
+    border-radius: 50%;
+}
+.card-title {
+    font-weight: 900;
+    font-size: 1.1rem;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+.card-sub {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-sub);
+    text-transform: uppercase;
+}
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.card-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.card-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+}
+.card-actions .neo-btn {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.8rem;
+}
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid #111;
+    margin-right: 6px;
+}
+.status-active { background: var(--color-2); }
+.status-inactive { background: var(--color-3); }
+
 @media (max-width: 1024px) {
     .sidebar { 
         transform: translateX(-100%); 
@@ -706,13 +816,13 @@ body {
                         <button class="neo-btn secondary" onclick="document.getElementById('add-category-form').style.display='none'">Batal</button>
                     </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="admin-table">
-                        <thead><tr><th>Icon</th><th>Nama</th><th>Tampilan</th><th>Bahasa</th><th>Status</th><th>Aksi</th></tr></thead>
-                        <tbody id="category-table-body">
-                            <tr><td colspan="6">Memuat data...</td></tr>
-                        </tbody>
-                    </table>
+                <div class="vocab-controls" style="margin-bottom: 20px;">
+                    <input type="text" class="neo-input" id="search-category" placeholder="🔍 Cari kategori..." style="flex: 1; min-width: 200px;" onkeyup="filterCategories()">
+                    <div id="lang-tabs" class="lang-tabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    </div>
+                </div>
+                <div id="category-grid" class="category-grid">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-sub);">Memuat data...</div>
                 </div>
             </div>
         </div>
@@ -928,6 +1038,7 @@ let uiSettingsData = [];
 let vocabPage = 1;
 const VOCAB_PER_PAGE = 500;
 let vocabTotalCount = 0;
+let activeLanguageFilter = 'All';
 function showMsg(isSuccess, text) {
   const toast = document.createElement('div');
   toast.style.position = 'fixed';
@@ -1083,37 +1194,78 @@ async function loadCategories() {
   try {
     const results = await query.find();
     allCategories = results;
-    renderCategoryTable();
+    renderCategoryCards();
     populateCategoryDropdown();
     populateCategoryLanguageDropdown();
   } catch (e) {
     console.error("Gagal load kategori", e);
-    document.getElementById('category-table-body').innerHTML = '<tr><td colspan="6">Gagal memuat data</td></tr>';
+    document.getElementById('category-grid').innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">Gagal memuat data</div>';
   }
 }
-function renderCategoryTable() {
-  const tbody = document.getElementById('category-table-body');
-  if (allCategories.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">📭 Belum ada kategori. Klik "+ Tambah Kategori" untuk memulai.</td></tr>';
+function renderCategoryCards() {
+  const grid = document.getElementById('category-grid');
+  const tabContainer = document.getElementById('lang-tabs');
+  const searchQuery = document.getElementById('search-category').value.toLowerCase();
+  const languages = ['All', ...new Set(allCategories.map(c => c.get('language')).filter(Boolean))];
+  tabContainer.innerHTML = languages.map(lang => {
+    const isActive = lang === activeLanguageFilter ? 'active' : '';
+    const label = lang === 'All' ? '🌐 Semua' : lang;
+    return `<div class="lang-tab ${isActive}" onclick="switchLanguageTab('${lang}')">${label}</div>`;
+  }).join('');
+  const filtered = allCategories.filter(cat => {
+    const matchLang = activeLanguageFilter === 'All' || cat.get('language') === activeLanguageFilter;
+    const matchSearch = cat.get('displayName').toLowerCase().includes(searchQuery) || 
+                        cat.get('name').toLowerCase().includes(searchQuery);
+    return matchLang && matchSearch;
+  });
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px;">📭 Tidak ada kategori ditemukan</div>`;
     return;
   }
-  tbody.innerHTML = allCategories.map(cat => {
-    const status = cat.get('isActive') ? '<span class="badge success">Aktif</span>' : '<span class="badge danger">Nonaktif</span>';
+  grid.innerHTML = filtered.map(cat => {
+    const isActive = cat.get('isActive');
+    const statusClass = isActive ? 'status-active' : 'status-inactive';
+    const statusText = isActive ? 'Aktif' : 'Nonaktif';
+    const icon = cat.get('icon') || '📁';
+    const display = cat.get('displayName') || cat.get('name');
+    const internal = cat.get('name');
+    const order = cat.get('order') || '-';
     return `
-    <tr>
-      <td>${cat.get('icon') || '📁'}</td>
-      <td>${cat.get('name')}</td>
-      <td>${cat.get('displayName')}</td>
-      <td>${cat.get('language')}</td>
-      <td>${status}</td>
-      <td>
-        <div class="action-btns">
-          <button class="neo-btn warning" style="padding:8px 12px; font-size:0.8rem;" onclick="editCategory('${cat.id}')">Edit</button>
-          <button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteCategory('${cat.id}')">Hapus</button>
+    <div class="category-card">
+      <div class="card-header">
+        <div class="card-icon">${icon}</div>
+        <div>
+          <div class="card-title">${display}</div>
+          <div class="card-sub">${cat.get('language') || 'Umum'}</div>
         </div>
-      </td>
-    </tr>`;
+      </div>
+      <div class="card-body">
+        <div class="card-row">
+          <span>Internal:</span>
+          <span style="font-family:monospace;">${internal}</span>
+        </div>
+        <div class="card-row">
+          <span>Urutan:</span>
+          <span>${order}</span>
+        </div>
+        <div class="card-row" style="margin-top:4px;">
+          <span><span class="status-dot ${statusClass}"></span>${statusText}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="neo-btn warning" onclick="editCategory('${cat.id}')">Edit</button>
+        <button class="neo-btn danger" onclick="deleteCategory('${cat.id}')">Hapus</button>
+      </div>
+    </div>
+    `;
   }).join('');
+}
+function switchLanguageTab(lang) {
+  activeLanguageFilter = lang;
+  renderCategoryCards();
+}
+function filterCategories() {
+  renderCategoryCards();
 }
 function populateCategoryDropdown(languageFilter = null) {
   const select = document.getElementById('word-category');

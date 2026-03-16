@@ -1,3 +1,4 @@
+[file name]: VOCERA (public).txt
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -570,8 +571,10 @@
         return await query.find();
       },
       async fetchCategories(lang) {
-        const cached = localStorage.getItem('vocera_categories_' + lang);
-        const time = localStorage.getItem('vocera_categories_time');
+        const cacheKey = 'vocera_categories_' + lang;
+        const timeKey = 'vocera_categories_time_' + lang;
+        const cached = localStorage.getItem(cacheKey);
+        const time = localStorage.getItem(timeKey);
         const now = Date.now();
         if (cached && time && (now - parseInt(time)) < this.CACHE_DURATION) {
           return JSON.parse(cached);
@@ -589,14 +592,18 @@
           icon: c.get('icon'),
           order: c.get('order')
         }));
-        localStorage.setItem('vocera_categories_' + lang, JSON.stringify(data));
-        localStorage.setItem('vocera_categories_time', now.toString());
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+        localStorage.setItem(timeKey, now.toString());
         return data;
       },
       async fetchVocabulary(lang, category, level) {
         const cacheKey = `${lang}_${category}_${level || 'all'}`;
         if (this.cache.vocab[cacheKey]) {
           return this.cache.vocab[cacheKey];
+        }
+        const cacheKeys = Object.keys(this.cache.vocab);
+        if (cacheKeys.length > 20) {
+          delete this.cache.vocab[cacheKeys[0]];
         }
         const Vocab = Parse.Object.extend("Vocabulary");
         const query = new Parse.Query(Vocab);

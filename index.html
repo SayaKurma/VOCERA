@@ -931,7 +931,11 @@
     function startTimer() {
       if (state.module === 'study') return;
       stopTimer();
-      state.timeLeft = 15;
+      if (state.module === 'match') {
+        state.timeLeft = 60;
+      } else {
+        state.timeLeft = 15;
+      }
       state.isProcessing = false;
       updateTimerDisplay();
       timerInterval = setInterval(() => {
@@ -1180,7 +1184,11 @@
       stopTimer();
       state.number = n;
       state.score = 0;
-      state.timeLeft = 15;
+      if (state.module === 'match') {
+        state.timeLeft = 60;
+      } else {
+        state.timeLeft = 15;
+      }
       state.wrongAttempts = 0;
       state.correctCount = 0;
       state.wrongCount = 0;
@@ -1408,7 +1416,7 @@
       const isRomajiMatch = correctRomaji ? val.toLowerCase() === correctRomaji.toLowerCase() : false;
       if (isIdMatch || isRomajiMatch) {
         const L = 3;
-        const MAX_TIME = 15;
+        const MAX_TIME = state.module === 'match' ? 60 : 15;
         const baseScore = 100 / state.queue.length;
         const S = state.wrongAttempts;
         const errorFactor = Math.max(0, 1 - (Math.min(S, L) / L));

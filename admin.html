@@ -884,6 +884,7 @@ async function loadLanguages() {
   const Language = Parse.Object.extend('Language');
   const query = new Parse.Query(Language);
   query.descending('createdAt');
+  query.select(['name', 'code', 'icon', 'color', 'isActive']);
   try {
     const results = await query.find();
     allLanguages = results;
@@ -1011,6 +1012,7 @@ async function loadCategories() {
   const Category = Parse.Object.extend('Category');
   const query = new Parse.Query(Category);
   query.descending('order');
+  query.select(['name', 'displayName', 'icon', 'order', 'language', 'isActive']);
   try {
     const results = await query.find();
     allCategories = results;
@@ -1298,6 +1300,7 @@ async function loadFeedback() {
   query.include('user');
   query.descending('createdAt');
   query.limit(5);
+  query.select(['message', 'status', 'createdAt']);
   const results = await query.find();
   const tbody = document.getElementById('feedback-dash-body');
   const listDiv = document.getElementById('feedback-list');

@@ -657,7 +657,10 @@
       regPassError: '',
       availableLanguages: [],
       availableCategories: [],
-      localUI: {}
+      localUI: {},
+      isProcessing: false,
+      quizOptionCount: 5,
+      matchLocked: false
     };
     let timerInterval = null;
     let currentModuleColor = '#FFF';
@@ -890,17 +893,55 @@
     function stopTimer() {
       if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
     }
+    function handleTimeout() {
+      stopTimer();
+      if (state.isProcessing) return;
+      state.isProcessing = true;
+      if (state.module === 'quiz') {
+        showMsg(false, "Waktu Habis!");
+        state.wrongAttempts++;
+        state.index++;
+        setTimeout(() => {
+          state.isProcessing = false;
+          renderGame();
+        }, 1000);
+      } else if (state.module === 'tf') {
+        showMsg(false, "Waktu Habis!");
+        state.wrongCount++;
+        state.index++;
+        setTimeout(() => {
+          state.isProcessing = false;
+          renderGame();
+        }, 1000);
+      } else if (state.module === 'guess') {
+        const item = state.queue[state.index];
+        showMsg(false, `Waktu Habis! Jawaban: ${item.id}${item.r ? ' / ' + item.r : ''}`);
+        state.wrongAttempts = 3;
+        cekGuess();
+      } else if (state.module === 'match') {
+        state.matchLocked = true;
+        showMsg(false, "Waktu Habis!");
+        document.querySelectorAll('.match-box').forEach(el => {
+          el.style.pointerEvents = 'none';
+          el.style.opacity = '0.5';
+        });
+        setTimeout(showEndGame, 1500);
+      }
+    }
     function startTimer() {
       if (state.module === 'study') return;
       stopTimer();
       state.timeLeft = 15;
+      state.isProcessing = false;
       updateTimerDisplay();
       timerInterval = setInterval(() => {
         state.timeLeft -= 1;
         updateTimerDisplay();
+        const timerBadge = document.getElementById('game-timer');
+        if (state.timeLeft <= 5) timerBadge.style.background = 'var(--color-3)';
+        else timerBadge.style.background = 'var(--color-white)';
         if (state.timeLeft <= 0) {
-          stopTimer();
-          if (state.module === 'match') return;
+          handleTimeout();
         }
       }, 1000);
     }
@@ -1144,6 +1185,7 @@
       state.correctCount = 0;
       state.wrongCount = 0;
       state.matchErrors = {};
+      state.matchLocked = false;
       updateScoreDisplay();
       updateTimerDisplay();
       const data = await loadVocabulary(state.lang, state.theme);
@@ -1163,7 +1205,9 @@
       document.getElementById('footer-modal').classList.add('active');
     }
     function closePage(id) {
-      if (id === 'game-page') stopTimer();
+      stopTimer();
+      state.isProcessing = false;
+      state.matchLocked = false;
       document.getElementById(id).classList.remove('active');
     }
     async function showEndGame() {
@@ -1235,14 +1279,21 @@
       else if (state.module === 'quiz') {
         const romajiHint = (state.lang === 'Jepang' && item.r) ? `<span class="romaji-text">${item.r}</span>` : '';
         startTimer();
+        let options = [...data];
+        options = shuffle(options);
+        const limitedOptions = options.slice(0, state.quizOptionCount);
+        const correctOption = options.find(o => o.id === item.id);
+        if (!limitedOptions.find(o => o.id === item.id) && correctOption) {
+          limitedOptions[limitedOptions.length - 1] = correctOption;
+        }
         cont.innerHTML = `
-          <div class="big-word" style="background:${currentModuleColor}">${item.t} ${romajiHint}</div>
-          <div id="quiz-options">
-            ${data.map(o => {
-              const stdOpt = standardizeVocabItem(o);
-              return `<div class="neo-box opt-btn" style="background:${currentModuleColor}" onclick="cekQuiz(this, '${stdOpt.id}', '${item.id}')">${stdOpt.id}</div>`;
-            }).join('')}
-          </div>
+        <div class="big-word" style="background:${currentModuleColor}">${item.t} ${romajiHint}</div>
+        <div id="quiz-options">
+          ${limitedOptions.map(o => {
+            const stdOpt = standardizeVocabItem(o);
+            return `<div class="neo-box opt-btn" style="background:${currentModuleColor}" onclick="cekQuiz(this, '${stdOpt.id}', '${item.id}')">${stdOpt.id}</div>`;
+          }).join('')}
+        </div>
         `;
       }
       else if (state.module === 'tf') {
@@ -1278,6 +1329,7 @@
             }).join('')}
           </div>
         `;
+        startTimer();
       }
       else if (state.module === 'guess') {
         const romajiHint = (state.lang === 'Jepang' && item.r) ? `<span class="romaji-text">${item.r}</span>` : '';
@@ -1294,6 +1346,8 @@
     }
     function cekQuiz(btn, userChoice, correctId) {
       stopTimer();
+      if (state.isProcessing) return;
+      state.isProcessing = true;
       if (userChoice === correctId) {
         const N = state.queue.length;
         const S = state.wrongAttempts;
@@ -1302,15 +1356,21 @@
         state.wrongAttempts = 0;
         showMsg(true, `Tepat Sekali!`);
         state.index++;
-        setTimeout(renderGame, 800);
+        setTimeout(() => {
+          state.isProcessing = false;
+          renderGame();
+        }, 800);
       } else {
         btn.classList.add('disabled');
         state.wrongAttempts++;
         showMsg(false, "Coba lagi");
+        state.isProcessing = false;
       }
     }
     function cekTF(isCorrect, userChoice) {
       stopTimer();
+      if (state.isProcessing) return;
+      state.isProcessing = true;
       const totalSoal = state.queue.length;
       const poinPerSoal = 100 / totalSoal;
       if ((isCorrect && userChoice) || (!isCorrect && !userChoice)) {
@@ -1322,10 +1382,14 @@
         showMsg(false, "Oops, Salah!");
       }
       state.index++;
-      setTimeout(renderGame, 800);
+      setTimeout(() => {
+        state.isProcessing = false;
+        renderGame();
+      }, 800);
     }
     function cekGuess() {
       stopTimer();
+      if (state.isProcessing) return;
       const inputEl = document.getElementById('guess-input');
       const btnEl = document.getElementById('guess-btn');
       const val = inputEl.value.trim();
@@ -1337,6 +1401,7 @@
         inputEl.focus();
         return;
       }
+      state.isProcessing = true;
       inputEl.disabled = true;
       btnEl.classList.add('disabled');
       const isIdMatch = val.toLowerCase() === correctId.toLowerCase();
@@ -1353,7 +1418,10 @@
         showMsg(true, `Luar Biasa!`);
         state.wrongAttempts = 0;
         state.index++;
-        setTimeout(renderGame, 1500);
+        setTimeout(() => {
+          state.isProcessing = false;
+          renderGame();
+        }, 1500);
       } else {
         const remaining = 2 - state.wrongAttempts;
         state.wrongAttempts++;
@@ -1363,21 +1431,27 @@
           btnEl.classList.add('disabled');
           state.wrongAttempts = 0;
           state.index++;
-          setTimeout(renderGame, 2000);
+          setTimeout(() => {
+            state.isProcessing = false;
+            renderGame();
+          }, 2000);
         } else {
           showMsg(false, `Salah. Sisa kesempatan: ${remaining}`);
           inputEl.disabled = false;
           btnEl.classList.remove('disabled');
+          state.isProcessing = false;
           setTimeout(() => inputEl.focus(), 100);
         }
       }
     }
     function handleMatch(el, type, val) {
+      if (state.matchLocked || state.isProcessing) return;
       if (!m1) {
         m1 = { el, type, val };
         el.classList.add('selected');
       } else {
         if (m1.type !== type && m1.val === val) {
+          state.isProcessing = true;
           el.classList.add('selected');
           const K = state.queue.length;
           const S = state.matchErrors[val] || 0;
@@ -1396,6 +1470,7 @@
               state.index = state.queue.length;
               setTimeout(renderGame, 500);
             }
+            state.isProcessing = false;
           }, 300);
         } else {
           state.matchErrors[val] = (state.matchErrors[val] || 0) + 1;

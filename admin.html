@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VOCERA - Admin Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <script src="https://npmcdn.com/parse@3.5.1/dist/parse.min.js"></script>
 <style>
 :root {
@@ -39,6 +40,11 @@ body {
     color: var(--text-main);
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
+}
+.material-symbols-outlined {
+    font-size: 1.3rem;
+    vertical-align: middle;
+    user-select: none;
 }
 .admin-wrapper {
     display: flex;
@@ -109,7 +115,7 @@ body {
     background: var(--color-white);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
     box-shadow: 2px 2px 0px #111;
     text-decoration: none;
     color: var(--text-main);
@@ -133,7 +139,6 @@ body {
     box-shadow: 0px 0px 0px #111;
     border-color: #111;
 }
-.menu-item i { margin-right: 10px; font-style: normal; font-size: 1.1rem; }
 .sidebar-footer {
     padding: 12px;
     border-top: var(--border-thick);
@@ -430,7 +435,6 @@ body {
     margin-left: auto;
     white-space: nowrap;
 }
-
 .lang-tabs {
     margin-top: 10px;
     width: 100%;
@@ -680,7 +684,7 @@ body {
 </style>
 </head>
 <body>
-<div class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle Menu">☰</div>
+<div class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle Menu"><span class="material-symbols-outlined">menu</span></div>
 <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 <div class="admin-wrapper">
     <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
@@ -689,31 +693,31 @@ body {
         </div>
         <div class="sidebar-menu">
             <div class="menu-category">Utama</div>
-            <div class="menu-item active" onclick="showSection('dashboard', this)" role="button" tabindex="0">📊 1. Dashboard</div>
+            <div class="menu-item active" onclick="showSection('dashboard', this)" role="button" tabindex="0"><span class="material-symbols-outlined">dashboard</span> 1. Dashboard</div>
             <div class="menu-category">Konten & Belajar</div>
-            <div class="menu-item" onclick="showSection('users', this)" role="button" tabindex="0">👥 2. Pengguna</div>
-            <div class="menu-item" onclick="showSection('languages', this)" role="button" tabindex="0">🌐 3. Bahasa</div>
-            <div class="menu-item" onclick="showSection('vocabulary', this)" role="button" tabindex="0">📚 4. Kosakata</div>
-            <div class="menu-item" onclick="showSection('categories', this)" role="button" tabindex="0">📁 5. Kategori</div>
-            <div class="menu-item" onclick="showSection('ui-settings', this)" role="button" tabindex="0">🎨 6. UI Settings</div>
+            <div class="menu-item" onclick="showSection('users', this)" role="button" tabindex="0"><span class="material-symbols-outlined">group</span> 2. Pengguna</div>
+            <div class="menu-item" onclick="showSection('languages', this)" role="button" tabindex="0"><span class="material-symbols-outlined">language</span> 3. Bahasa</div>
+            <div class="menu-item" onclick="showSection('vocabulary', this)" role="button" tabindex="0"><span class="material-symbols-outlined">menu_book</span> 4. Kosakata</div>
+            <div class="menu-item" onclick="showSection('categories', this)" role="button" tabindex="0"><span class="material-symbols-outlined">category</span> 5. Kategori</div>
+            <div class="menu-item" onclick="showSection('ui-settings', this)" role="button" tabindex="0"><span class="material-symbols-outlined">palette</span> 6. UI Settings</div>
             <div class="menu-category">Data & Analitik</div>
-            <div class="menu-item" onclick="showSection('analytics', this)" role="button" tabindex="0">📈 7. Analitik</div>
-            <div class="menu-item" onclick="showSection('leaderboard', this)" role="button" tabindex="0">🏆 8. Leaderboard</div>
-            <div class="menu-item" onclick="showSection('feedback', this)" role="button" tabindex="0">💬 9. Feedback</div>
+            <div class="menu-item" onclick="showSection('analytics', this)" role="button" tabindex="0"><span class="material-symbols-outlined">monitoring</span> 7. Analitik</div>
+            <div class="menu-item" onclick="showSection('leaderboard', this)" role="button" tabindex="0"><span class="material-symbols-outlined">leaderboard</span> 8. Leaderboard</div>
+            <div class="menu-item" onclick="showSection('feedback', this)" role="button" tabindex="0"><span class="material-symbols-outlined">feedback</span> 9. Feedback</div>
             <div class="menu-category">Sistem & Keamanan</div>
-            <div class="menu-item" onclick="showSection('security', this)" role="button" tabindex="0">🛡️ 10. Keamanan</div>
-            <div class="menu-item" onclick="showSection('integrations', this)" role="button" tabindex="0">🔌 11. Integrasi</div>
-            <div class="menu-item" onclick="showSection('logs', this)" role="button" tabindex="0">📜 12. Logs</div>
-            <div class="menu-item" onclick="showSection('settings', this)" role="button" tabindex="0">⚙️ 13. Pengaturan</div>
-            <div class="menu-item" onclick="showSection('admin-management', this)" role="button" tabindex="0">👨‍💼 14. Admin</div>
+            <div class="menu-item" onclick="showSection('security', this)" role="button" tabindex="0"><span class="material-symbols-outlined">security</span> 10. Keamanan</div>
+            <div class="menu-item" onclick="showSection('integrations', this)" role="button" tabindex="0"><span class="material-symbols-outlined">integration_instructions</span> 11. Integrasi</div>
+            <div class="menu-item" onclick="showSection('logs', this)" role="button" tabindex="0"><span class="material-symbols-outlined">list_alt</span> 12. Logs</div>
+            <div class="menu-item" onclick="showSection('settings', this)" role="button" tabindex="0"><span class="material-symbols-outlined">settings</span> 13. Pengaturan</div>
+            <div class="menu-item" onclick="showSection('admin-management', this)" role="button" tabindex="0"><span class="material-symbols-outlined">admin_panel_settings</span> 14. Admin</div>
         </div>
         <div class="sidebar-footer">
-            <div class="menu-item" style="background:var(--color-3); color:white;" onclick="handleLogout()" role="button" tabindex="0">🚪 Logout</div>
+            <div class="menu-item" style="background:var(--color-3); color:white;" onclick="handleLogout()" role="button" tabindex="0"><span class="material-symbols-outlined" style="color:white;">logout</span> Logout</div>
         </div>
     </nav>
     <main class="main-content">
         <header class="admin-header">
-            <h2 class="admin-title" id="page-title">Dashboard</h2>
+            <h2 class="admin-title" id="page-title"><span class="material-symbols-outlined">dashboard</span> Dashboard</h2>
             <div class="user-profile">
                 <span id="admin-username">Super Admin</span>
                 <div class="avatar" aria-hidden="true" id="admin-avatar">A</div>
@@ -721,16 +725,16 @@ body {
         </header>
         <div id="dashboard" class="section active">
             <div class="bento-grid">
-                <div class="stat-card c1"><h3 id="total-users">0</h3><p>Total Pengguna</p></div>
-                <div class="stat-card c2"><h3 id="feedback-new">0</h3><p>Feedback Baru</p></div>
-                <div class="stat-card c3"><h3 id="total-vocab">0</h3><p>Total Kosakata</p></div>
-                <div class="stat-card c4"><h3 id="total-langs">5</h3><p>Bahasa Aktif</p></div>
+                <div class="stat-card c1"><h3 id="total-users">0</h3><p><span class="material-symbols-outlined">person</span> Total Pengguna</p></div>
+                <div class="stat-card c2"><h3 id="feedback-new">0</h3><p><span class="material-symbols-outlined">chat</span> Feedback Baru</p></div>
+                <div class="stat-card c3"><h3 id="total-vocab">0</h3><p><span class="material-symbols-outlined">abc</span> Total Kosakata</p></div>
+                <div class="stat-card c4"><h3 id="total-langs">5</h3><p><span class="material-symbols-outlined">translate</span> Bahasa Aktif</p></div>
             </div>
             <div class="neo-box">
-                <h3 style="margin-bottom:16px;">🔥 Feedback Terbaru</h3>
+                <h3 style="margin-bottom:16px;"><span class="material-symbols-outlined">new_releases</span> Feedback Terbaru</h3>
                 <div class="table-responsive">
                     <table class="admin-table" role="table" id="feedback-table-dash">
-                        <thead><tr><th scope="col">User</th><th scope="col">Pesan</th><th scope="col">Waktu</th><th scope="col">Status</th></tr></thead>
+                        <thead><tr><th scope="col"><span class="material-symbols-outlined">person</span> User</th><th scope="col"><span class="material-symbols-outlined">message</span> Pesan</th><th scope="col"><span class="material-symbols-outlined">schedule</span> Waktu</th><th scope="col"><span class="material-symbols-outlined">info</span> Status</th></tr></thead>
                         <tbody id="feedback-dash-body">
                             <tr><td colspan="4">Memuat data...</td></tr>
                         </tbody>
@@ -741,12 +745,13 @@ body {
         <div id="users" class="section">
             <div class="neo-box">
                 <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+                    <span class="material-symbols-outlined">search</span>
                     <input type="text" class="neo-input" placeholder="Cari pengguna..." style="flex:1; min-width:200px; margin:0;" id="search-user">
-                    <button class="neo-btn" onclick="loadUsers()">Refresh</button>
+                    <button class="neo-btn" onclick="loadUsers()"><span class="material-symbols-outlined">refresh</span> Refresh</button>
                 </div>
                 <div class="table-responsive">
                     <table class="admin-table" role="table">
-                        <thead><tr><th scope="col">Username</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col">Terdaftar</th><th scope="col">Aksi</th></tr></thead>
+                        <thead><tr><th scope="col"><span class="material-symbols-outlined">badge</span> Username</th><th scope="col"><span class="material-symbols-outlined">email</span> Email</th><th scope="col"><span class="material-symbols-outlined">admin_panel_settings</span> Role</th><th scope="col"><span class="material-symbols-outlined">calendar_month</span> Terdaftar</th><th scope="col"><span class="material-symbols-outlined">settings</span> Aksi</th></tr></thead>
                         <tbody id="users-table-body">
                             <tr><td colspan="5">Memuat data...</td></tr>
                         </tbody>
@@ -757,8 +762,8 @@ body {
         <div id="languages" class="section">
             <div class="neo-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                    <h3>Manajemen Bahasa</h3>
-                    <button class="neo-btn" onclick="showAddLanguageForm()">+ Tambah Bahasa</button>
+                    <h3><span class="material-symbols-outlined">translate</span> Manajemen Bahasa</h3>
+                    <button class="neo-btn" onclick="showAddLanguageForm()"><span class="material-symbols-outlined">add</span> Tambah Bahasa</button>
                 </div>
                 <div id="add-lang-form" style="display:none; margin-bottom:20px; padding:16px; background:var(--color-1); border:var(--border-thick); border-radius:var(--radius-sm);">
                     <h4>Form Bahasa</h4>
@@ -770,11 +775,11 @@ body {
                         <input type="color" class="neo-input" id="lang-color" value="#FFE66D" style="height:50px;">
                     </div>
                     <div style="margin-top:10px;">
-                        <label><input type="checkbox" id="lang-active" checked> Aktif</label>
+                        <label><span class="material-symbols-outlined">check_box</span> <input type="checkbox" id="lang-active" checked> Aktif</label>
                     </div>
                     <div style="margin-top:16px; display:flex; gap:10px;">
-                        <button class="neo-btn" onclick="saveLanguage()">Simpan</button>
-                        <button class="neo-btn secondary" onclick="document.getElementById('add-lang-form').style.display='none'">Batal</button>
+                        <button class="neo-btn" onclick="saveLanguage()"><span class="material-symbols-outlined">save</span> Simpan</button>
+                        <button class="neo-btn secondary" onclick="document.getElementById('add-lang-form').style.display='none'"><span class="material-symbols-outlined">close</span> Batal</button>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -790,8 +795,8 @@ body {
         <div id="categories" class="section">
             <div class="neo-box">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                    <h3>Manajemen Kategori</h3>
-                    <button class="neo-btn" onclick="showAddCategoryForm()">+ Tambah Kategori</button>
+                    <h3><span class="material-symbols-outlined">category</span> Manajemen Kategori</h3>
+                    <button class="neo-btn" onclick="showAddCategoryForm()"><span class="material-symbols-outlined">add</span> Tambah Kategori</button>
                 </div>
                 <div id="add-category-form" style="display:none; margin-bottom:20px; padding:16px; background:var(--color-1); border:var(--border-thick); border-radius:var(--radius-sm);">
                     <h4>Form Kategori</h4>
@@ -806,15 +811,16 @@ body {
                         </select>
                     </div>
                     <div style="margin-top:10px;">
-                        <label><input type="checkbox" id="cat-active" checked> Aktif</label>
+                        <label><span class="material-symbols-outlined">check_box</span> <input type="checkbox" id="cat-active" checked> Aktif</label>
                     </div>
                     <div style="margin-top:16px; display:flex; gap:10px;">
-                        <button class="neo-btn" onclick="saveCategory()">Simpan</button>
-                        <button class="neo-btn secondary" onclick="document.getElementById('add-category-form').style.display='none'">Batal</button>
+                        <button class="neo-btn" onclick="saveCategory()"><span class="material-symbols-outlined">save</span> Simpan</button>
+                        <button class="neo-btn secondary" onclick="document.getElementById('add-category-form').style.display='none'"><span class="material-symbols-outlined">close</span> Batal</button>
                     </div>
                 </div>
                 <div class="vocab-controls" style="margin-bottom: 20px;">
-                    <input type="text" class="neo-input" id="search-category" placeholder="🔍 Cari kategori..." style="flex: 1; min-width: 200px;" onkeyup="filterCategories()">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" class="neo-input" id="search-category" placeholder="Cari kategori..." style="flex: 1; min-width: 200px;" onkeyup="filterCategories()">
                     <div id="lang-tabs" class="lang-tabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
                     </div>
                 </div>
@@ -827,14 +833,14 @@ body {
             <div class="neo-box">
                 <div class="vocab-controls">
                     <div class="btn-group">
-                        <button class="neo-btn" onclick="showAddWordForm()">+ Tambah Kata</button>
-                        <button class="neo-btn secondary" onclick="expandAllGroups()">📂 Buka Semua</button>
-                        <button class="neo-btn secondary" onclick="collapseAllGroups()">📁 Tutup Semua</button>
+                        <button class="neo-btn" onclick="showAddWordForm()"><span class="material-symbols-outlined">add</span> Tambah Kata</button>
+                        <button class="neo-btn secondary" onclick="expandAllGroups()"><span class="material-symbols-outlined">unfold_more</span> Buka Semua</button>
+                        <button class="neo-btn secondary" onclick="collapseAllGroups()"><span class="material-symbols-outlined">unfold_less</span> Tutup Semua</button>
                     </div>
                     <div class="summary" id="vocab-summary">Memuat...</div>
                 </div>
                 <div id="add-word-form" style="display:none; margin-bottom:20px; padding:16px; background:var(--color-1); border:var(--border-thick); border-radius:var(--radius-sm);">
-                    <h4>Tambah Kosakata Baru</h4>
+                    <h4><span class="material-symbols-outlined">note_add</span> Tambah Kosakata Baru</h4>
                     <div class="form-grid">
                         <input type="text" class="neo-input" id="word-id" placeholder="Kata asal (id)">
                         <input type="text" class="neo-input" id="word-trans" placeholder="Terjemahan">
@@ -847,20 +853,20 @@ body {
                         </select>
                         <input type="number" class="neo-input" id="word-level" placeholder="Level (1/2/3)" min="1" max="10">
                     </div>
-                    <button class="neo-btn" onclick="saveVocabulary()">Simpan</button>
+                    <button class="neo-btn" onclick="saveVocabulary()"><span class="material-symbols-outlined">save</span> Simpan</button>
                 </div>
                 <div class="table-responsive">
                     <table class="admin-table" role="table">
                         <thead>
                             <tr>
-                                <th scope="col" style="width: 50px;">🔽</th>
-                                <th scope="col">ID (Indo)</th>
-                                <th scope="col">Translasi</th>
-                                <th scope="col">Romaji</th>
-                                <th scope="col">Bahasa</th>
-                                <th scope="col">Kategori</th>
-                                <th scope="col">Level</th>
-                                <th scope="col">Aksi</th>
+                                <th scope="col" style="width: 50px;"><span class="material-symbols-outlined">chevron_right</span></th>
+                                <th scope="col"><span class="material-symbols-outlined">translate</span> ID (Indo)</th>
+                                <th scope="col"><span class="material-symbols-outlined">swap_horiz</span> Translasi</th>
+                                <th scope="col"><span class="material-symbols-outlined">abc</span> Romaji</th>
+                                <th scope="col"><span class="material-symbols-outlined">language</span> Bahasa</th>
+                                <th scope="col"><span class="material-symbols-outlined">folder</span> Kategori</th>
+                                <th scope="col"><span class="material-symbols-outlined">signal_cellular_alt</span> Level</th>
+                                <th scope="col"><span class="material-symbols-outlined">settings</span> Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="vocab-table-body">
@@ -872,7 +878,7 @@ body {
         </div>
         <div id="ui-settings" class="section">
             <div class="neo-box">
-                <h3>Manajemen Label UI</h3>
+                <h3><span class="material-symbols-outlined">palette</span> Manajemen Label UI</h3>
                 <p style="margin-bottom:16px; color:var(--text-sub);">
                     Edit teks tombol dan judul tanpa mengubah kode
                 </p>
@@ -886,32 +892,32 @@ body {
                 <div id="ui-settings-list" style="margin-top:20px;">
                 </div>
                 <button class="neo-btn" style="width:100%; margin-top:20px;" onclick="saveAllUISettings()">
-                    Simpan Semua Label
+                    <span class="material-symbols-outlined">save</span> Simpan Semua Label
                 </button>
             </div>
         </div>
         <div id="analytics" class="section">
             <div class="neo-box">
-                <h3>Grafik Pembelajaran</h3>
+                <h3><span class="material-symbols-outlined">monitoring</span> Grafik Pembelajaran</h3>
                 <div style="height:250px; background:#f0f0f0; border:2px solid #111; display:flex; align-items:center; justify-content:center; margin-top:20px; border-radius:12px;">
-                    <span style="color:var(--text-sub); font-weight:700;">[Area Grafik Chart.js]</span>
+                    <span style="color:var(--text-sub); font-weight:700;"><span class="material-symbols-outlined">bar_chart</span> [Area Grafik Chart.js]</span>
                 </div>
                 <div class="bento-grid" style="margin-top:20px;">
-                    <div class="neo-box"><h4>Soal Tersulit</h4><p style="color:var(--text-sub);">Kata: "Elephant"</p></div>
-                    <div class="neo-box"><h4>Waktu Rata-rata</h4><p style="color:var(--text-sub);">12 detik/soal</p></div>
+                    <div class="neo-box"><h4><span class="material-symbols-outlined">quiz</span> Soal Tersulit</h4><p style="color:var(--text-sub);">Kata: "Elephant"</p></div>
+                    <div class="neo-box"><h4><span class="material-symbols-outlined">timer</span> Waktu Rata-rata</h4><p style="color:var(--text-sub);">12 detik/soal</p></div>
                 </div>
             </div>
         </div>
         <div id="leaderboard" class="section">
             <div class="neo-box">
-                <h3>Peringkat Global</h3>
+                <h3><span class="material-symbols-outlined">leaderboard</span> Peringkat Global</h3>
                 <div class="table-responsive">
                     <table class="admin-table" role="table">
-                        <thead><tr><th scope="col">Rank</th><th scope="col">User</th><th scope="col">Skor Total</th><th scope="col">Level</th></tr></thead>
+                        <thead><tr><th scope="col"><span class="material-symbols-outlined">emoji_events</span> Rank</th><th scope="col"><span class="material-symbols-outlined">person</span> User</th><th scope="col"><span class="material-symbols-outlined">star</span> Skor Total</th><th scope="col"><span class="material-symbols-outlined">signal_cellular_alt</span> Level</th></tr></thead>
                         <tbody>
-                            <tr><td>🥇 1</td><td>master_jepang</td><td>50,000</td><td>15</td></tr>
-                            <tr><td>🥈 2</td><td>lingo_fan</td><td>45,200</td><td>14</td></tr>
-                            <tr><td>🥉 3</td><td>newbie_1</td><td>30,100</td><td>10</td></tr>
+                            <tr><td><span class="material-symbols-outlined">military_tech</span> 1</td><td>master_jepang</td><td>50,000</td><td>15</td></tr>
+                            <tr><td><span class="material-symbols-outlined">military_tech</span> 2</td><td>lingo_fan</td><td>45,200</td><td>14</td></tr>
+                            <tr><td><span class="material-symbols-outlined">military_tech</span> 3</td><td>newbie_1</td><td>30,100</td><td>10</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -919,7 +925,7 @@ body {
         </div>
         <div id="feedback" class="section">
             <div class="neo-box">
-                <h3>Kotak Masuk Saran</h3>
+                <h3><span class="material-symbols-outlined">feedback</span> Kotak Masuk Saran</h3>
                 <div style="display:flex; flex-direction:column; gap:16px; margin-top:16px;" id="feedback-list">
                     <p>Memuat feedback...</p>
                 </div>
@@ -927,41 +933,41 @@ body {
         </div>
         <div id="security" class="section">
             <div class="neo-box">
-                <h3>Keamanan Sistem</h3>
+                <h3><span class="material-symbols-outlined">security</span> Keamanan Sistem</h3>
                 <div style="margin:16px 0;">
                     <label style="display:flex; align-items:center; gap:10px; font-weight:700; min-height:48px;">
-                        <input type="checkbox" checked style="width:20px; height:20px;"> Aktifkan 2FA untuk Admin
+                        <input type="checkbox" checked style="width:20px; height:20px;"> <span class="material-symbols-outlined">verified_user</span> Aktifkan 2FA untuk Admin
                     </label>
                 </div>
                 <div style="margin:16px 0;">
                     <label style="display:flex; align-items:center; gap:10px; font-weight:700; min-height:48px;">
-                        <input type="checkbox" style="width:20px; height:20px;"> Blokir IP Mencurigakan
+                        <input type="checkbox" style="width:20px; height:20px;"> <span class="material-symbols-outlined">block</span> Blokir IP Mencurigakan
                     </label>
                 </div>
-                <button class="neo-btn danger" style="width:100%;">Flush Session Cache</button>
+                <button class="neo-btn danger" style="width:100%;"><span class="material-symbols-outlined">cleaning_services</span> Flush Session Cache</button>
             </div>
         </div>
         <div id="integrations" class="section">
             <div class="neo-box">
-                <h3>API Keys</h3>
+                <h3><span class="material-symbols-outlined">key</span> API Keys</h3>
                 <div class="form-grid" style="margin-top:16px;">
                     <input type="text" class="neo-input" value="pk_live_..." readonly style="background:#f5f5f5;">
-                    <button class="neo-btn secondary">Generate</button>
+                    <button class="neo-btn secondary"><span class="material-symbols-outlined">autorenew</span> Generate</button>
                 </div>
-                <h3 style="margin-top:24px;">Webhooks</h3>
+                <h3 style="margin-top:24px;"><span class="material-symbols-outlined">webhook</span> Webhooks</h3>
                 <input type="text" class="neo-input" placeholder="URL Webhook Endpoint" style="margin-top:12px;">
-                <button class="neo-btn" style="width:100%; margin-top:16px;">Simpan Webhook</button>
+                <button class="neo-btn" style="width:100%; margin-top:16px;"><span class="material-symbols-outlined">save</span> Simpan Webhook</button>
             </div>
         </div>
         <div id="logs" class="section">
             <div class="neo-box">
-                <h3>System Logs</h3>
+                <h3><span class="material-symbols-outlined">list_alt</span> System Logs</h3>
                 <div class="table-responsive">
                     <table class="admin-table" role="table">
-                        <thead><tr><th scope="col">Waktu</th><th scope="col">Level</th><th scope="col">Pesan</th></tr></thead>
+                        <thead><tr><th scope="col"><span class="material-symbols-outlined">schedule</span> Waktu</th><th scope="col"><span class="material-symbols-outlined">info</span> Level</th><th scope="col"><span class="material-symbols-outlined">message</span> Pesan</th></tr></thead>
                         <tbody>
-                            <tr><td>10:00:01</td><td><span class="badge success">INFO</span></td><td>Backup berhasil</td></tr>
-                            <tr><td>09:45:20</td><td><span class="badge danger">ERROR</span></td><td>Gagal koneksi API</td></tr>
+                            <tr><td>10:00:01</td><td><span class="badge success"><span class="material-symbols-outlined">check_circle</span> INFO</span></td><td>Backup berhasil</td></tr>
+                            <tr><td>09:45:20</td><td><span class="badge danger"><span class="material-symbols-outlined">error</span> ERROR</span></td><td>Gagal koneksi API</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -969,32 +975,32 @@ body {
         </div>
         <div id="settings" class="section">
             <div class="neo-box">
-                <h3>Pengaturan Umum</h3>
+                <h3><span class="material-symbols-outlined">settings</span> Pengaturan Umum</h3>
                 <div class="form-grid" style="margin-top:20px;">
-                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Nama Aplikasi</label><input type="text" class="neo-input" value="KUBIS"></div>
-                    <div><label style="font-weight:700; display:block; margin-bottom:8px;">Versi</label><input type="text" class="neo-input" value="1.0.0"></div>
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;"><span class="material-symbols-outlined">app_registration</span> Nama Aplikasi</label><input type="text" class="neo-input" value="KUBIS"></div>
+                    <div><label style="font-weight:700; display:block; margin-bottom:8px;"><span class="material-symbols-outlined">info</span> Versi</label><input type="text" class="neo-input" value="1.0.0"></div>
                 </div>
                 <div style="margin-top:16px;">
                     <label style="display:flex; align-items:center; gap:10px; font-weight:700; min-height:48px;">
-                        <input type="checkbox" style="width:20px; height:20px;"> Mode Maintenance
+                        <input type="checkbox" style="width:20px; height:20px;"> <span class="material-symbols-outlined">construction</span> Mode Maintenance
                     </label>
                 </div>
-                <button class="neo-btn" style="width:100%; margin-top:20px;">Simpan Pengaturan</button>
+                <button class="neo-btn" style="width:100%; margin-top:20px;"><span class="material-symbols-outlined">save</span> Simpan Pengaturan</button>
             </div>
         </div>
         <div id="admin-management" class="section">
             <div class="neo-box">
-                <h3>Manajemen Admin</h3>
+                <h3><span class="material-symbols-outlined">admin_panel_settings</span> Manajemen Admin</h3>
                 <div class="table-responsive">
                     <table class="admin-table" role="table">
-                        <thead><tr><th scope="col">Admin</th><th scope="col">Role</th><th scope="col">Last Login</th><th scope="col">Aksi</th></tr></thead>
+                        <thead><tr><th scope="col"><span class="material-symbols-outlined">badge</span> Admin</th><th scope="col"><span class="material-symbols-outlined">assignment_ind</span> Role</th><th scope="col"><span class="material-symbols-outlined">login</span> Last Login</th><th scope="col"><span class="material-symbols-outlined">settings</span> Aksi</th></tr></thead>
                         <tbody>
                             <tr><td>Super Admin</td><td>Owner</td><td>Sekarang</td><td>-</td></tr>
-                            <tr><td>Editor 1</td><td>Editor</td><td>1 hari lalu</td><td><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;">Hapus</button></td></tr>
+                            <tr><td>Editor 1</td><td>Editor</td><td>1 hari lalu</td><td><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;"><span class="material-symbols-outlined">delete</span> Hapus</button></td></tr>
                         </tbody>
                     </table>
                 </div>
-                <button class="neo-btn" style="width:100%; margin-top:16px;">+ Tambah Admin</button>
+                <button class="neo-btn" style="width:100%; margin-top:16px;"><span class="material-symbols-outlined">add</span> Tambah Admin</button>
             </div>
         </div>
     </main>
@@ -1025,7 +1031,14 @@ function showMsg(isSuccess, text) {
   toast.style.boxShadow = '4px 4px 0px #111';
   toast.style.border = '3px solid #111';
   toast.style.transition = 'opacity 0.3s';
-  toast.innerText = (isSuccess ? '✅ ' : '❌ ') + text;
+  toast.style.display = 'flex';
+  toast.style.alignItems = 'center';
+  toast.style.gap = '8px';
+  const icon = document.createElement('span');
+  icon.className = 'material-symbols-outlined';
+  icon.innerText = isSuccess ? 'check_circle' : 'error';
+  toast.appendChild(icon);
+  toast.appendChild(document.createTextNode(text));
   document.body.appendChild(toast);
   setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
 }
@@ -1052,17 +1065,17 @@ function renderLanguageTable() {
     return;
   }
   tbody.innerHTML = allLanguages.map(lang => {
-    const status = lang.get('isActive') ? '<span class="badge success">Aktif</span>' : '<span class="badge danger">Nonaktif</span>';
+    const status = lang.get('isActive') ? '<span class="badge success"><span class="material-symbols-outlined">check_circle</span> Aktif</span>' : '<span class="badge danger"><span class="material-symbols-outlined">cancel</span> Nonaktif</span>';
     return `
     <tr>
-      <td>${lang.get('icon') || '🌐'}</td>
+      <td>${lang.get('icon') || '<span class="material-symbols-outlined">language</span>'}</td>
       <td>${lang.get('name')}</td>
       <td>${lang.get('code')}</td>
       <td>${status}</td>
       <td>
         <div class="action-btns">
-          <button class="neo-btn warning" style="padding:8px 12px; font-size:0.8rem;" onclick="editLanguage('${lang.id}')">Edit</button>
-          <button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteLanguage('${lang.id}')">Hapus</button>
+          <button class="neo-btn warning" style="padding:8px 12px; font-size:0.8rem;" onclick="editLanguage('${lang.id}')"><span class="material-symbols-outlined">edit</span> Edit</button>
+          <button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteLanguage('${lang.id}')"><span class="material-symbols-outlined">delete</span> Hapus</button>
         </div>
       </td>
     </tr>`;
@@ -1076,7 +1089,7 @@ function populateLanguageDropdowns() {
       if(lang.get('isActive')) {
         const opt = document.createElement('option');
         opt.value = lang.get('name');
-        opt.innerText = `${lang.get('icon')} ${lang.get('name')}`;
+        opt.innerText = `${lang.get('icon') || '🌐'} ${lang.get('name')}`;
         select.appendChild(opt);
       }
     });
@@ -1180,7 +1193,7 @@ function renderCategoryCards() {
   const languages = ['All', ...new Set(allCategories.map(c => c.get('language')).filter(Boolean))];
   tabContainer.innerHTML = languages.map(lang => {
     const isActive = lang === activeLanguageFilter ? 'active' : '';
-    const label = lang === 'All' ? '🌐 Semua' : lang;
+    const label = lang === 'All' ? '<span class="material-symbols-outlined">language</span> Semua' : lang;
     return `<div class="lang-tab ${isActive}" onclick="switchLanguageTab('${lang}')">${label}</div>`;
   }).join('');
   const filtered = allCategories.filter(cat => {
@@ -1190,14 +1203,14 @@ function renderCategoryCards() {
     return matchLang && matchSearch;
   });
   if (filtered.length === 0) {
-    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px;">📭 Tidak ada kategori ditemukan</div>`;
+    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><span class="material-symbols-outlined">folder_off</span> Tidak ada kategori ditemukan</div>`;
     return;
   }
   grid.innerHTML = filtered.map(cat => {
     const isActive = cat.get('isActive');
     const statusClass = isActive ? 'status-active' : 'status-inactive';
     const statusText = isActive ? 'Aktif' : 'Nonaktif';
-    const icon = cat.get('icon') || '📁';
+    const icon = cat.get('icon') || '<span class="material-symbols-outlined">folder</span>';
     const display = cat.get('displayName') || cat.get('name');
     const internal = cat.get('name');
     const order = cat.get('order') || '-';
@@ -1212,11 +1225,11 @@ function renderCategoryCards() {
       </div>
       <div class="card-body">
         <div class="card-row">
-          <span>Internal:</span>
+          <span><span class="material-symbols-outlined">tag</span> Internal:</span>
           <span style="font-family:monospace;">${internal}</span>
         </div>
         <div class="card-row">
-          <span>Urutan:</span>
+          <span><span class="material-symbols-outlined">format_list_numbered</span> Urutan:</span>
           <span>${order}</span>
         </div>
         <div class="card-row" style="margin-top:4px;">
@@ -1224,8 +1237,8 @@ function renderCategoryCards() {
         </div>
       </div>
       <div class="card-actions">
-        <button class="neo-btn warning" onclick="editCategory('${cat.id}')">Edit</button>
-        <button class="neo-btn danger" onclick="deleteCategory('${cat.id}')">Hapus</button>
+        <button class="neo-btn warning" onclick="editCategory('${cat.id}')"><span class="material-symbols-outlined">edit</span> Edit</button>
+        <button class="neo-btn danger" onclick="deleteCategory('${cat.id}')"><span class="material-symbols-outlined">delete</span> Hapus</button>
       </div>
     </div>
     `;
@@ -1350,7 +1363,7 @@ function renderUISettingsForm(lang) {
     return `
     <div style="margin-bottom:16px; padding:12px; background:#f9f9f9; border:2px solid #111; border-radius:12px;">
       <label style="font-weight:700; display:block; margin-bottom:8px; text-transform:uppercase; font-size:0.8rem;">
-        ${def.key}
+        <span class="material-symbols-outlined">label</span> ${def.key}
       </label>
       <div class="form-grid" style="margin-bottom:0;">
         <input type="text" class="neo-input ui-setting-input" 
@@ -1440,9 +1453,18 @@ function showSection(sectionId, element) {
   document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
   element.classList.add('active');
   const titleText = element.innerText.split('. ')[1] || element.innerText;
-  document.getElementById('page-title').innerText = titleText;
+  document.getElementById('page-title').innerHTML = `<span class="material-symbols-outlined">${getIconForSection(sectionId)}</span> ${titleText}`;
   if (window.innerWidth <= 1024) toggleSidebar();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function getIconForSection(sectionId) {
+  const icons = {
+    dashboard: 'dashboard', users: 'group', languages: 'language', vocabulary: 'menu_book', categories: 'category',
+    'ui-settings': 'palette', analytics: 'monitoring', leaderboard: 'leaderboard', feedback: 'feedback',
+    security: 'security', integrations: 'integration_instructions', logs: 'list_alt', settings: 'settings',
+    'admin-management': 'admin_panel_settings'
+  };
+  return icons[sectionId] || 'circle';
 }
 document.querySelectorAll('.menu-item').forEach(item => {
   item.addEventListener('keydown', (e) => {
@@ -1501,7 +1523,7 @@ async function loadFeedback() {
         const user = fb.get('user') ? fb.get('user').getUsername() : 'Anonymous';
         const time = fb.get('createdAt') ? new Date(fb.get('createdAt')).toLocaleString() : '-';
         const status = fb.get('status') || 'baru';
-        const badge = status === 'baru' ? '<span class="badge danger">Baru</span>' : '<span class="badge success">Dibaca</span>';
+        const badge = status === 'baru' ? '<span class="badge danger"><span class="material-symbols-outlined">new_releases</span> Baru</span>' : '<span class="badge success"><span class="material-symbols-outlined">check_circle</span> Dibaca</span>';
         return `<tr><td>${user}</td><td>${fb.get('message')}</td><td>${time}</td><td>${badge}</td></tr>`;
       }).join('');
     }
@@ -1513,11 +1535,11 @@ async function loadFeedback() {
         const user = fb.get('user') ? fb.get('user').getUsername() : 'Anonymous';
         return `<div style="border:2px solid #111; padding:16px; border-radius:12px; background:white;">
           <div style="display:flex; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-            <b>${user}</b><span style="font-size:0.8rem; color:var(--text-sub);">${new Date(fb.get('createdAt')).toLocaleString()}</span>
+            <b><span class="material-symbols-outlined">person</span> ${user}</b><span style="font-size:0.8rem; color:var(--text-sub);"><span class="material-symbols-outlined">schedule</span> ${new Date(fb.get('createdAt')).toLocaleString()}</span>
           </div>
           <p style="margin-bottom:12px;">"${fb.get('message')}"</p>
           <div class="neo-btn-group" style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="neo-btn" style="padding:10px 16px; font-size:0.85rem;" onclick="markFeedbackRead('${fb.id}')">Tandai Dibaca</button>
+            <button class="neo-btn" style="padding:10px 16px; font-size:0.85rem;" onclick="markFeedbackRead('${fb.id}')"><span class="material-symbols-outlined">done</span> Tandai Dibaca</button>
           </div>
         </div>`;
       }).join('');
@@ -1543,11 +1565,11 @@ async function loadUsers() {
     tbody.innerHTML = users.map(u => {
       const created = u.get('createdAt') ? new Date(u.get('createdAt')).toLocaleDateString() : '-';
       return `<tr>
-        <td>${u.getUsername()}</td>
-        <td>${u.getEmail() || '-'}</td>
-        <td>User</td>
-        <td>${created}</td>
-        <td><div class="action-btns"><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteUser('${u.id}')">Hapus</button></div></td>
+        <td><span class="material-symbols-outlined">badge</span> ${u.getUsername()}</td>
+        <td><span class="material-symbols-outlined">email</span> ${u.getEmail() || '-'}</td>
+        <td><span class="material-symbols-outlined">person</span> User</td>
+        <td><span class="material-symbols-outlined">calendar_month</span> ${created}</td>
+        <td><div class="action-btns"><button class="neo-btn danger" style="padding:8px 12px; font-size:0.8rem;" onclick="deleteUser('${u.id}')"><span class="material-symbols-outlined">delete</span> Hapus</button></div></td>
       </tr>`;
     }).join('');
   }
@@ -1581,7 +1603,7 @@ async function loadVocabulary(page = 1) {
   }
 }
 function updateVocabSummary(count) {
-  document.getElementById('vocab-summary').innerText = `Total: ${count} Kata`;
+  document.getElementById('vocab-summary').innerHTML = `<span class="material-symbols-outlined">abc</span> Total: ${count} Kata`;
 }
 function groupVocabularyData(items) {
   const groups = {};
@@ -1599,7 +1621,7 @@ function groupVocabularyData(items) {
 function renderHierarchicalVocabulary(items) {
   const tbody = document.getElementById('vocab-table-body');
   if (items.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;">📭 Tidak ada kosakata</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:30px;"><span class="material-symbols-outlined">folder_off</span> Tidak ada kosakata</td></tr>';
     return;
   }
   const groupedData = groupVocabularyData(items);
@@ -1609,37 +1631,37 @@ function renderHierarchicalVocabulary(items) {
     const levelCount = Object.values(languages).reduce((acc, langs) => acc + Object.values(langs).reduce((a, c) => a + c.length, 0), 0);
     html += `
     <tr class="tr-group-header group-level-1" id="${levelId}" onclick="toggleGroup('${levelId}')">
-        <td><span class="toggle-icon" id="icon-${levelId}">▶</span></td>
-        <td colspan="7" class="indent-1">LEVEL ${level} <span style="font-weight:400; font-size:0.8em;">(${levelCount} Kata)</span></td>
+        <td><span class="toggle-icon material-symbols-outlined" id="icon-${levelId}">chevron_right</span></td>
+        <td colspan="7" class="indent-1"><span class="material-symbols-outlined">signal_cellular_alt</span> LEVEL ${level} <span style="font-weight:400; font-size:0.8em;">(${levelCount} Kata)</span></td>
     </tr>`;
     for (const [lang, categories] of Object.entries(languages)) {
       const langId = `${levelId}-lang-${lang.replace(/\s+/g, '-')}`;
       const langCount = Object.values(categories).reduce((a, c) => a + c.length, 0);
       html += `
       <tr class="tr-group-header group-level-2 row-hidden" data-parent="${levelId}" id="${langId}" onclick="toggleGroup('${langId}')">
-          <td><span class="toggle-icon" id="icon-${langId}">▶</span></td>
-          <td colspan="7" class="indent-2">🌐 ${lang} <span style="font-weight:400; font-size:0.8em;">(${langCount} Kata)</span></td>
+          <td><span class="toggle-icon material-symbols-outlined" id="icon-${langId}">chevron_right</span></td>
+          <td colspan="7" class="indent-2"><span class="material-symbols-outlined">language</span> ${lang} <span style="font-weight:400; font-size:0.8em;">(${langCount} Kata)</span></td>
       </tr>`;
       for (const [cat, words] of Object.entries(categories)) {
         const catId = `${langId}-cat-${cat.replace(/\s+/g, '-')}`;
         html += `
         <tr class="tr-group-header group-level-3 row-hidden" data-parent="${langId}" id="${catId}" onclick="toggleGroup('${catId}')">
-            <td><span class="toggle-icon" id="icon-${catId}">▶</span></td>
-            <td colspan="7" class="indent-3">📁 ${cat} <span style="font-weight:400; font-size:0.8em;">(${words.length} Kata)</span></td>
+            <td><span class="toggle-icon material-symbols-outlined" id="icon-${catId}">chevron_right</span></td>
+            <td colspan="7" class="indent-3"><span class="material-symbols-outlined">folder</span> ${cat} <span style="font-weight:400; font-size:0.8em;">(${words.length} Kata)</span></td>
         </tr>`;
         words.forEach(v => {
           html += `
           <tr class="tr-data-row row-hidden" data-parent="${catId}">
               <td></td>
-              <td class="indent-3">${v.get('word') || '-'}</td>
-              <td>${v.get('translation') || '-'}</td>
-              <td>${v.get('romaji') || '-'}</td>
-              <td>${v.get('language') || '-'}</td>
-              <td>${v.get('category') || '-'}</td>
-              <td><span class="badge warning">L${v.get('level') || '1'}</span></td>
+              <td class="indent-3"><span class="material-symbols-outlined">translate</span> ${v.get('word') || '-'}</td>
+              <td><span class="material-symbols-outlined">swap_horiz</span> ${v.get('translation') || '-'}</td>
+              <td><span class="material-symbols-outlined">abc</span> ${v.get('romaji') || '-'}</td>
+              <td><span class="material-symbols-outlined">language</span> ${v.get('language') || '-'}</td>
+              <td><span class="material-symbols-outlined">folder</span> ${v.get('category') || '-'}</td>
+              <td><span class="badge warning"><span class="material-symbols-outlined">signal_cellular_alt</span> L${v.get('level') || '1'}</span></td>
               <td>
                   <div class="action-btns">
-                      <button class="neo-btn danger" style="padding:4px 8px; font-size:0.7rem;" onclick="deleteVocab('${v.id}')">Hapus</button>
+                      <button class="neo-btn danger" style="padding:4px 8px; font-size:0.7rem;" onclick="deleteVocab('${v.id}')"><span class="material-symbols-outlined">delete</span> Hapus</button>
                   </div>
               </td>
           </tr>`;
@@ -1657,8 +1679,7 @@ function toggleGroup(groupId, forceOpen = false) {
   const isHidden = children.length > 0 && children[0].classList.contains('row-hidden');
   const shouldOpen = forceOpen || isHidden;
   if (icon) {
-    icon.classList.toggle('rotated', shouldOpen);
-    icon.innerText = shouldOpen ? '▼' : '▶';
+    icon.innerText = shouldOpen ? 'expand_more' : 'chevron_right';
   }
   children.forEach(child => {
     if (shouldOpen) {
@@ -1667,8 +1688,7 @@ function toggleGroup(groupId, forceOpen = false) {
       child.classList.add('row-hidden');
       const childIcon = document.getElementById(`icon-${child.id}`);
       if (childIcon) {
-        childIcon.classList.remove('rotated');
-        childIcon.innerText = '▶';
+        childIcon.innerText = 'chevron_right';
       }
       const grandchildren = document.querySelectorAll(`[data-parent="${child.id}"]`);
       grandchildren.forEach(gc => gc.classList.add('row-hidden'));

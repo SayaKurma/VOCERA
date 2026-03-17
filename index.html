@@ -990,14 +990,18 @@
           };
         });
         const defaults = {
-          study: { t: "Study" }, quiz: { t: "Quiz" }, tf: { t: "True/False" },
-          match: { t: "Match" }, guess: { t: "Guess" }
+          study: { t: "Study", icon: "📚" }, quiz: { t: "Quiz", icon: "🎯" }, tf: { t: "True/False", icon: "⚖️" },
+          match: { t: "Match", icon: "🧩" }, guess: { t: "Guess", icon: "🤔" }
         };
         state.localUI[state.lang] = { ...defaults, ...uiData };
         localStorage.setItem('vocera_ui_settings_' + state.lang, JSON.stringify(state.localUI[state.lang]));
         localStorage.setItem('vocera_ui_settings_time_' + state.lang, now.toString());
       } catch (e) {
         console.error("Gagal load UI settings", e);
+        state.localUI[state.lang] = {
+          study: { t: "Study" }, quiz: { t: "Quiz" }, tf: { t: "True/False" },
+          match: { t: "Match" }, guess: { t: "Guess" }
+        };
       }
     }
     function renderMainMenu() {

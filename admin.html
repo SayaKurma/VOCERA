@@ -884,9 +884,7 @@ body {
                 </p>
                 <div class="form-grid" style="margin-top:20px;">
                     <select class="neo-select" id="ui-language" onchange="loadUISettingsForLang()">
-                        <option value="Inggris">Inggris</option>
-                        <option value="Jepang">Jepang</option>
-                        <option value="Spanyol">Spanyol</option>
+                        <option value="" disabled selected>Memuat bahasa...</option>
                     </select>
                 </div>
                 <div id="ui-settings-list" style="margin-top:20px;">
@@ -1053,6 +1051,7 @@ async function loadLanguages() {
     renderLanguageTable();
     populateLanguageDropdowns();
     populateCategoryLanguageDropdown();
+    populateUILanguageDropdown();
   } catch (e) {
     console.error("Gagal load bahasa", e);
     document.getElementById('lang-table-body').innerHTML = '<tr><td colspan="5">Gagal memuat data</td></tr>';
@@ -1110,6 +1109,26 @@ function populateCategoryLanguageDropdown() {
   });
   if (currentValue && allLanguages.some(l => l.get('name') === currentValue)) {
     select.value = currentValue;
+  }
+}
+function populateUILanguageDropdown() {
+  const select = document.getElementById('ui-language');
+  if (!select) return;
+  const currentValue = select.value;
+  select.innerHTML = '<option value="" disabled selected>Pilih Bahasa...</option>';
+  allLanguages.forEach(lang => {
+    if (lang.get('isActive')) {
+      const opt = document.createElement('option');
+      opt.value = lang.get('name');
+      opt.innerText = `${lang.get('icon') || '🌐'} ${lang.get('name')}`;
+      select.appendChild(opt);
+    }
+  });
+  if (currentValue && allLanguages.some(l => l.get('name') === currentValue)) {
+    select.value = currentValue;
+  } else if (allLanguages.length > 0) {
+    select.value = allLanguages[0].get('name');
+    loadUISettingsForLang();
   }
 }
 function showAddLanguageForm() {
@@ -1383,6 +1402,10 @@ function renderUISettingsForm(lang) {
 }
 async function saveAllUISettings() {
   const lang = document.getElementById('ui-language').value;
+  const btn = document.querySelector('#ui-settings .neo-btn');
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined">sync</span> Menyimpan...';
   const inputs = document.querySelectorAll('.ui-setting-input');
   const icons = document.querySelectorAll('.ui-setting-icon');
   const UISettings = Parse.Object.extend("LanguageSettings");
@@ -1407,7 +1430,11 @@ async function saveAllUISettings() {
     }
     showMsg(true, "Label UI berhasil disimpan");
   } catch (e) {
+    console.error(e);
     showMsg(false, "Gagal menyimpan: " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
   }
 }
 async function checkAdmin() {
@@ -1428,11 +1455,11 @@ async function checkAdmin() {
   document.getElementById('admin-avatar').innerText = user.getUsername()[0].toUpperCase();
   await loadLanguages();
   await loadCategories();
+  populateUILanguageDropdown();
   loadDashboardStats();
   loadFeedback();
   loadUsers();
   loadVocabulary(1);
-  loadUISettingsForLang();
 }
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
